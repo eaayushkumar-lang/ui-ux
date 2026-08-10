@@ -1,9 +1,14 @@
 {
   "name": "ui-ux",
+  "private": true,
   "version": "1.0.0",
+  "type": "module",
   "description": "",
-  "main": "index.js",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,6 +23,15 @@
   },
   "homepage": "https://github.com/eaayushkumar-lang/ui-ux#readme",
   "dependencies": {
-    "framer-motion": "^13.1.0"
+    "framer-motion": "^13.1.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "oxlint": "^1.75.0",
+    "vite": "^8.2.0"
   }
 }
