@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { PenTool, Rocket, Search, TrendingUp, type LucideIcon } from "lucide-react";
-import { EASE_OUT as EASE } from "@/lib/motion";
+import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
 
 interface Step {
   index: string;
@@ -66,10 +66,11 @@ export function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.6, delay: i * 0.07, ease: EASE }}
-              className="relative border-l border-line pl-6 md:border-l-0 md:pl-0"
+              whileHover={{ scale: 1.03, transition: SPRING_HOVER }}
+              className="gpu group relative cursor-pointer border-l border-line pl-6 md:border-l-0 md:pl-0"
             >
               <div className="relative z-10 flex items-center gap-3 md:mb-6">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-bg text-accent">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-bg text-accent shadow-[0_0_0px_rgba(255,184,0,0)] transition-[box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-accent group-hover:shadow-[0_0_22px_2px_rgba(255,184,0,0.4)]">
                   <step.icon className="h-5 w-5" strokeWidth={1.75} />
                 </span>
                 <span className="font-mono text-sm text-ink-faint md:hidden">

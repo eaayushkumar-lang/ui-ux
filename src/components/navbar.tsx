@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/logo-mark";
 import { Button } from "@/components/ui/button";
-import { EASE_DRAWER, EASE_OUT } from "@/lib/motion";
+import { EASE_DRAWER, EASE_OUT, SPRING_HOVER } from "@/lib/motion";
 
 const links = [
   { id: "services", label: "Services" },
@@ -30,14 +30,18 @@ export function Navbar() {
 
         <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
           {links.map((link) => (
-            <button
+            <motion.button
               key={link.id}
               type="button"
               onClick={() => scrollTo(link.id)}
-              className="text-sm text-ink-dim transition-colors hover:text-ink"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={SPRING_HOVER}
+              className="group relative cursor-pointer text-sm text-ink-dim transition-colors hover:text-ink"
             >
               {link.label}
-            </button>
+              <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
+            </motion.button>
           ))}
         </nav>
 
@@ -96,14 +100,16 @@ export function Navbar() {
           >
             <nav aria-label="Mobile" className="flex flex-col gap-1 px-6 pb-8 pt-4">
               {links.map((link) => (
-                <button
+                <motion.button
                   key={link.id}
                   type="button"
                   onClick={() => scrollTo(link.id)}
-                  className="py-3 text-left text-base text-ink-dim transition-colors hover:text-ink"
+                  whileTap={{ scale: 0.96 }}
+                  transition={SPRING_HOVER}
+                  className="cursor-pointer py-3 text-left text-base text-ink-dim transition-colors hover:text-ink"
                 >
                   {link.label}
-                </button>
+                </motion.button>
               ))}
               <Button className="mt-2 w-full" onClick={() => scrollTo("cta")}>
                 Book a Call

@@ -1,7 +1,12 @@
 import { motion } from "framer-motion";
 import { Bot, Network, PhoneCall, Workflow, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { EASE_OUT as EASE } from "@/lib/motion";
+import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
+
+const CARD_HOVER_SHADOW =
+  "0 0 0 1px rgba(255,184,0,0.4), 0 28px 56px -20px rgba(0,0,0,0.65), 0 0 44px -8px rgba(255,184,0,0.35)";
+const CARD_BASE_SHADOW =
+  "0 0 0 1px rgba(255,184,0,0), 0 28px 56px -20px rgba(0,0,0,0), 0 0 44px -8px rgba(255,184,0,0)";
 
 interface Service {
   icon: LucideIcon;
@@ -75,14 +80,17 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.6, delay: index * 0.06, ease: EASE }}
+      whileHover={{
+        scale: 1.05,
+        y: -6,
+        boxShadow: CARD_HOVER_SHADOW,
+        transition: SPRING_HOVER,
+      }}
       className={cn(
-        "group relative overflow-hidden rounded-[var(--radius-card)] border border-line/70 p-8",
+        "gpu glass-card group relative cursor-pointer overflow-hidden rounded-[var(--radius-card)] p-8",
         service.featured ? "md:col-span-3 md:p-10" : "md:col-span-1",
-        service.tone === "glow" && "bg-surface-2",
-        service.tone === "grid" && "bg-surface-2",
-        service.tone === "plain" && "bg-surface-2",
-        service.featured && "bg-gradient-to-br from-surface-3 via-surface-2 to-surface-2",
       )}
+      style={{ boxShadow: CARD_BASE_SHADOW }}
     >
       {service.tone === "glow" && (
         <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/20 blur-3xl transition-opacity duration-500 motion-safe:animate-breathe group-hover:opacity-80" />

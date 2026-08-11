@@ -1,7 +1,11 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { EASE_OUT as EASE } from "@/lib/motion";
+import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
+
+const CARD_HOVER_SHADOW =
+  "0 0 0 1px rgba(255,184,0,0.4), 0 32px 60px -20px rgba(0,0,0,0.7), 0 0 40px -10px rgba(255,184,0,0.3)";
+const CARD_BASE_SHADOW = "0 0 0 1px rgba(255,184,0,0), 0 32px 60px -20px rgba(0,0,0,0), 0 0 40px -10px rgba(255,184,0,0)";
 
 function initials(name: string) {
   return name
@@ -125,10 +129,17 @@ export function Testimonials() {
           className="no-scrollbar mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4"
         >
           {testimonials.map((t) => (
-            <article
+            <motion.article
               key={t.name}
               data-card
-              className="w-[85%] shrink-0 snap-start rounded-[var(--radius-card)] border border-line/70 bg-surface-2 p-8 sm:w-[60%] lg:w-[36%]"
+              whileHover={{
+                scale: 1.04,
+                y: -6,
+                boxShadow: CARD_HOVER_SHADOW,
+                transition: SPRING_HOVER,
+              }}
+              style={{ boxShadow: CARD_BASE_SHADOW }}
+              className="gpu glass-card w-[85%] shrink-0 cursor-pointer snap-start rounded-[var(--radius-card)] p-8 sm:w-[60%] lg:w-[36%]"
             >
               <p className="text-lg leading-relaxed text-ink">
                 “{t.quote}”
@@ -142,7 +153,7 @@ export function Testimonials() {
                   </p>
                 </div>
               </div>
-            </article>
+            </motion.article>
           ))}
         </motion.div>
       </div>

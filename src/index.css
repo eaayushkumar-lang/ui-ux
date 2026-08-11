@@ -9,19 +9,19 @@
   --font-sans: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  --color-bg: #0a0a0a;
-  --color-surface: #120d09;
-  --color-surface-2: #1c140d;
-  --color-surface-3: #241a10;
-  --color-line: #3a2a1880;
-  --color-ink: #f7f3ee;
-  --color-ink-dim: #ab9d8c;
-  --color-ink-faint: #6f6255;
-  --color-accent: #f59e0b;
-  --color-accent-2: #ea580c;
-  --color-coral: #ff6b4a;
-  --color-accent-dim: #92400e;
-  --color-accent-ink: #180f03;
+  --color-bg: #050505;
+  --color-surface: #0f0a06;
+  --color-surface-2: #180f08;
+  --color-surface-3: #21140a;
+  --color-line: #3a260f80;
+  --color-ink: #fafafa;
+  --color-ink-dim: #a0a0a0;
+  --color-ink-faint: #6b6259;
+  --color-accent: #ffb800;
+  --color-accent-2: #ff6b00;
+  --color-coral: #ffd770;
+  --color-accent-dim: #995400;
+  --color-accent-ink: #160e02;
 
   --radius-card: 1.25rem;
   --radius-pill: 999px;
@@ -77,9 +77,23 @@
   }
 }
 
+@utility glass-card {
+  background-color: rgb(255 255 255 / 0.035);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgb(255 184 0 / 0.1);
+}
+
+@utility gpu {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
 @layer base {
   * {
     border-color: var(--color-line);
+    -webkit-font-smoothing: antialiased;
+    backface-visibility: hidden;
   }
 
   html {
