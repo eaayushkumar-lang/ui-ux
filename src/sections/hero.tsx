@@ -1,7 +1,9 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Compass } from "lucide-react";
 import { NeuralVisual } from "@/components/neural-visual";
 import { Button } from "@/components/ui/button";
+import { LiquidHeroTitle, ShimmerText } from "@/components/liquid-text";
 import { EASE_OUT as EASE } from "@/lib/motion";
 
 function scrollToId(id: string) {
@@ -10,10 +12,19 @@ function scrollToId(id: string) {
 
 export function Hero() {
   const reduceMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  // Subtle parallax: the visual drifts slower than the page scrolls past it.
+  const visualY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 60]);
 
   return (
     <section
       id="hero"
+      ref={sectionRef}
       className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-8"
     >
       {/* Visual comes first in source order so it stacks on top on mobile;
@@ -23,6 +34,7 @@ export function Hero() {
           initial={reduceMotion ? undefined : { opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: EASE }}
+          style={{ y: visualY }}
           className="mx-auto aspect-square w-full max-w-[380px] sm:max-w-[440px] lg:max-w-none"
         >
           <NeuralVisual className="h-full w-full" />
@@ -35,16 +47,20 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
             className="text-5xl font-medium tracking-tight text-ink sm:text-6xl lg:text-7xl"
           >
-            AUXAI<span className="text-accent">.AI</span>
+            <LiquidHeroTitle>
+              AUXAI<span className="text-accent">.AI</span>
+            </LiquidHeroTitle>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2, ease: EASE }}
-            className="mt-6 text-balance text-lg leading-relaxed text-ink-dim sm:text-xl"
+            className="mt-6 text-balance text-lg leading-relaxed sm:text-xl"
           >
-            We don't automate tasks. We build systems that outperform everyone.
+            <ShimmerText>
+              We don't automate tasks. We build systems that outperform everyone.
+            </ShimmerText>
           </motion.p>
 
           <motion.div

@@ -1,6 +1,9 @@
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { PenTool, Rocket, Search, TrendingUp, type LucideIcon } from "lucide-react";
 import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
+import { LiquidHeadingReveal } from "@/components/liquid-text";
+import { cn } from "@/lib/utils";
 
 interface Step {
   index: string;
@@ -40,54 +43,97 @@ const steps: Step[] = [
   },
 ];
 
-export function HowItWorks() {
-  return (
-    <section id="how-it-works" className="relative z-10 bg-bg py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, ease: EASE }}
-          className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
-        >
-          From first call to a system that runs itself.
-        </motion.h2>
+const Heading = () => (
+  <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl">
+    <LiquidHeadingReveal>From first call to a system that runs itself.</LiquidHeadingReveal>
+  </h2>
+);
 
-        <div className="relative mt-16 grid grid-cols-1 gap-10 md:grid-cols-4 md:gap-6">
-          <div
-            className="absolute left-0 right-0 top-6 hidden h-px bg-line md:block"
-            aria-hidden="true"
-          />
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: i * 0.07, ease: EASE }}
-              whileHover={{ scale: 1.03, transition: SPRING_HOVER }}
-              className="gpu group relative cursor-pointer border-l border-line pl-6 md:border-l-0 md:pl-0"
-            >
-              <div className="relative z-10 flex items-center gap-3 md:mb-6">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-bg text-accent shadow-[0_0_0px_rgba(255,184,0,0)] transition-[box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-accent group-hover:shadow-[0_0_22px_2px_rgba(255,184,0,0.4)]">
-                  <step.icon className="h-5 w-5" strokeWidth={1.75} />
-                </span>
-                <span className="font-mono text-sm text-ink-faint md:hidden">
-                  {step.index}
-                </span>
-              </div>
-              <span className="hidden font-mono text-sm text-ink-faint md:block">
-                {step.index}
-              </span>
-              <h3 className="mt-2 text-lg font-medium text-ink">{step.title}</h3>
-              <p className="mt-2 max-w-xs text-[15px] leading-relaxed text-ink-dim">
-                {step.description}
-              </p>
-            </motion.div>
-          ))}
+export function HowItWorks() {
+  const reduceMotion = useReducedMotion();
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [distance, setDistance] = useState(0);
+
+  useEffect(() => {
+    function measure() {
+      if (trackRef.current) {
+        setDistance(Math.max(0, trackRef.current.scrollWidth - window.innerWidth + 48));
+      }
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: wrapRef,
+    offset: ["start start", "end end"],
+  });
+  const x = useTransform(scrollYProgress, [0, 1], [0, -distance]);
+
+  if (reduceMotion) {
+    return (
+      <section id="how-it-works" className="relative z-10 bg-bg py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-6">
+          <Heading />
+          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((step) => (
+              <StepCard key={step.title} step={step} />
+            ))}
+          </div>
         </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="how-it-works" ref={wrapRef} className="relative bg-bg" style={{ height: "220vh" }}>
+      <div className="sticky top-0 flex h-dvh flex-col justify-center overflow-hidden py-16">
+        <div className="mx-auto w-full max-w-7xl px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.6, ease: EASE }}
+          >
+            <Heading />
+          </motion.div>
+        </div>
+
+        <motion.div
+          ref={trackRef}
+          style={{ x }}
+          className="mt-14 flex w-max gap-6 px-6 lg:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
+        >
+          {steps.map((step) => (
+            <StepCard key={step.title} step={step} />
+          ))}
+        </motion.div>
       </div>
     </section>
+  );
+}
+
+function StepCard({ step }: { step: Step }) {
+  const Icon = step.icon;
+  return (
+    <motion.div
+      whileHover={{ scale: 1.03, y: -4, transition: SPRING_HOVER }}
+      className={cn(
+        "gpu glass-card group flex w-[280px] shrink-0 cursor-pointer flex-col gap-6 rounded-[var(--radius-card)] p-7 sm:w-[320px] sm:p-8",
+      )}
+    >
+      <div className="flex items-center justify-between">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-bg text-accent shadow-[0_0_0px_rgba(255,184,0,0)] transition-[box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-accent group-hover:shadow-[0_0_22px_2px_rgba(255,184,0,0.4)]">
+          <Icon className="h-5 w-5" strokeWidth={1.75} />
+        </span>
+        <span className="font-mono text-sm text-ink-faint">{step.index}</span>
+      </div>
+      <div>
+        <h3 className="text-lg font-medium text-ink">{step.title}</h3>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-dim">{step.description}</p>
+      </div>
+    </motion.div>
   );
 }

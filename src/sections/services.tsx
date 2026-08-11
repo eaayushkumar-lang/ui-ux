@@ -5,6 +5,7 @@ import { ArrowRight, Bot, Network, PhoneCall, Workflow, type LucideIcon } from "
 import { cn } from "@/lib/utils";
 import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
 import { Button } from "@/components/ui/button";
+import { LiquidHeadingReveal } from "@/components/liquid-text";
 import { AIAgentDemo } from "@/components/service-demos/ai-agent-demo";
 import { WorkflowDemo } from "@/components/service-demos/workflow-demo";
 import { VoiceAgentDemo } from "@/components/service-demos/voice-agent-demo";
@@ -75,7 +76,7 @@ export function Services() {
           transition={{ duration: 0.6, ease: EASE }}
           className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          Four ways we put AI to work inside your business.
+          <LiquidHeadingReveal>Four ways we put AI to work inside your business.</LiquidHeadingReveal>
         </motion.h2>
 
         <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">

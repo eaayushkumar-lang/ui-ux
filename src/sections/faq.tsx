@@ -6,6 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { EASE_OUT as EASE } from "@/lib/motion";
+import { LiquidHeadingReveal } from "@/components/liquid-text";
 
 const faqs = [
   {
@@ -51,7 +52,7 @@ export function FAQ() {
           transition={{ duration: 0.6, ease: EASE }}
           className="text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          Questions worth asking before you commit.
+          <LiquidHeadingReveal>Questions worth asking before you commit.</LiquidHeadingReveal>
         </motion.h2>
 
         <motion.div

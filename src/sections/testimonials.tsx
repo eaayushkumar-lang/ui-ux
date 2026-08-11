@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
+import { SplitText } from "@/components/split-text";
 
 const CARD_HOVER_SHADOW =
   "0 0 0 1px rgba(255,184,0,0.4), 0 32px 60px -20px rgba(0,0,0,0.7), 0 0 40px -10px rgba(255,184,0,0.3)";
@@ -90,15 +91,9 @@ export function Testimonials() {
     <section id="testimonials" className="relative z-10 bg-surface py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
-          >
-            Operators who stopped competing on effort.
-          </motion.h2>
+          <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl">
+            <SplitText text="Operators who stopped competing on effort." />
+          </h2>
 
           <div className="flex gap-3">
             <button
@@ -125,7 +120,7 @@ export function Testimonials() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: EASE }}
           className="no-scrollbar mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4"
         >
           {testimonials.map((t) => (

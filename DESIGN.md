@@ -226,3 +226,87 @@ public bundle is a credential leak, not a demo shortcut, and this is a
 static site with no backend to proxy the call through - so the honest,
 secure choice is a scripted-but-fully-interactive chat, with the same
 typing-indicator and bubble UX a live integration would have.
+
+## 9. Liquid Text, Liquid Metal, Scroll Systems & Particle Field
+
+A fourth round added four cinematic systems on top of the existing theme.
+Each was scoped deliberately rather than applied at maximum literal
+intensity everywhere it was requested - the scoping calls are documented
+inline below.
+
+**Liquid text** (`components/liquid-text.tsx`): an SVG `feTurbulence` +
+`feDisplacementMap` filter drives a subtle wobble on text.
+- `LiquidHeroTitle` gets a *continuous* wobble, animated for free by an SMIL
+  `<animate>` element on `feTurbulence`'s `baseFrequency` (the browser's own
+  timeline, zero JS/React cost per frame) plus a hover "melt and reform"
+  driven by an imperative Motion `animate()` call that writes straight to
+  the `feDisplacementMap`'s `scale` attribute via a ref, bypassing React
+  state entirely.
+- `LiquidHeadingReveal` (used on Services/How It Works/FAQ/CTA headings)
+  intentionally does **not** wobble continuously - it plays the distortion
+  once, from `scale: 30` down to `0`, the first time the heading enters the
+  viewport, then removes the SVG filter from the DOM entirely. Continuous
+  turbulence on every section heading site-wide reads as gimmicky and costs
+  a live filter recompute on every heading at all times; a one-shot reveal
+  keeps the "liquid" language without the ongoing cost.
+- `ShimmerText` (the hero tagline) is a `background-clip: text` sweep
+  (`--animate-shimmer` in `index.css`), a deliberate, acknowledged exception
+  to the transform/opacity/filter-only rule - it's one small text run, and a
+  background-position sweep is the standard, cheap way to do text shimmer.
+
+**Liquid metal buttons** (`components/ui/button.tsx`): every `Button`
+variant (including `asChild` usage wrapping `<Link>`/`<a>` via
+`motion.create(Slot)`) now carries a cursor-tracked radial-gradient sheen
+and a click ripple. Cursor position is written straight to `--mx`/`--my`
+CSS custom properties via `element.style.setProperty()` in the mousemove
+handler - not React state - so the sheen tracks the pointer without a
+re-render per pixel. Click ripple reuses the same pattern: `--cx`/`--cy` are
+set, then a `data-rippling` attribute is toggled off/on (forcing a reflow in
+between) to restart the CSS `liquid-ripple-pulse` keyframe on the button's
+`::after` pseudo-element on every click. Effects live entirely in CSS custom
+properties and pseudo-elements rather than extra child `<span>`s, because
+Radix `Slot` (used for `asChild`) can only clone props onto a single child -
+adding sibling DOM nodes there would break the `<Link>` case.
+
+**Scroll systems:**
+- `SplitText` (`components/split-text.tsx`) does word-by-word stagger
+  reveal on scroll-into-view. Used on exactly one heading (Testimonials) -
+  the same trick on every section's heading would read as templated rather
+  than as a signature moment.
+- Hero's visual column has a parallax `y` offset driven by
+  `useScroll`/`useTransform` against the section's own scroll progress.
+- CTA's background image has scroll-linked opacity (faintest at the
+  section's edges, fullest mid-section) and a slight parallax scale-down,
+  also via `useScroll`/`useTransform`.
+- How It Works (`sections/how-it-works.tsx`) is the one horizontal-pan
+  section: a `height: 220vh` wrapper with a `position: sticky` inner panel
+  pins the section while `useScroll` (`target: wrapRef`) drives a
+  `motion.div`'s `x` transform to pan the four step cards horizontally as
+  the page scrolls vertically. `useReducedMotion()` renders the same cards
+  as a plain static grid instead, with no pin and no `x` transform.
+
+**Particle field** (`components/particle-field.tsx`): a fixed,
+`pointer-events-none`, `mix-blend-mode: screen` canvas overlay (same
+layering pattern as `NoiseOverlay`) rendered once at the page root in
+`pages/home.tsx`, sitting behind the Dynamic Island nav/progress bar/noise
+chrome but above every section's background. 260 particles on desktop / 100
+on mobile lerp between five shapes keyed to the page's existing section ids
+(brain at Hero, grid at Services, arrow at How It Works, star cluster at
+Testimonials, funnel at CTA), blended by how far scroll has progressed
+between the current pair of adjacent sections, and fade out over 400px once
+scrolled past the CTA section so the field never renders over the Footer.
+Mouse position repels nearby particles. Kept **additive** rather than
+replacing the existing `NeuralVisual` hero sphere - the ambient field is a
+separate, subtler, page-wide layer, and swapping out an already-working,
+previously-verified hero visual for a new system carried real regression
+risk against "don't break any existing sections" for no requirement that
+actually asked for it.
+
+Two deliberate performance guards: the O(n²) pairwise distance check that
+builds connecting edges only runs every 4th frame (edges only need to look
+"roughly right", not be recomputed at 60fps), and the scroll/mousemove
+listeners are passive and only write to refs - all the per-frame math
+happens inside the already-scheduled `requestAnimationFrame` loop, not
+inside the event handlers themselves. `useReducedMotion()` renders one
+static frame with no rAF loop and no scroll/mouse listeners attached at
+all.
