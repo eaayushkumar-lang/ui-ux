@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { Bot, Network, PhoneCall, Workflow, type LucideIcon } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Bot, Network, PhoneCall, Workflow, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
+import { Button } from "@/components/ui/button";
 import { AIAgentDemo } from "@/components/service-demos/ai-agent-demo";
 import { WorkflowDemo } from "@/components/service-demos/workflow-demo";
 import { VoiceAgentDemo } from "@/components/service-demos/voice-agent-demo";
@@ -18,6 +20,7 @@ interface Service {
   title: string;
   description: string;
   demo: ReactNode;
+  path: string;
   featured?: boolean;
   tone?: "glow" | "grid" | "plain";
 }
@@ -29,6 +32,7 @@ const services: Service[] = [
     description:
       "Custom agents that read documents, take actions across your tools, and escalate to a person only when a decision actually needs one.",
     demo: <AIAgentDemo />,
+    path: "/try/ai-agents",
     featured: true,
   },
   {
@@ -37,6 +41,7 @@ const services: Service[] = [
     description:
       "We rebuild the workflows eating your team's week, so software does the repeating and your people do the deciding.",
     demo: <WorkflowDemo />,
+    path: "/try/automation",
     tone: "glow",
   },
   {
@@ -45,6 +50,7 @@ const services: Service[] = [
     description:
       "Phone agents that book, qualify, and follow up around the clock, sounding like your best rep on their best day.",
     demo: <VoiceAgentDemo />,
+    path: "/try/voice-agent",
     tone: "grid",
   },
   {
@@ -53,6 +59,7 @@ const services: Service[] = [
     description:
       "End-to-end systems that connect your agents, data, and tools into one operation built to run without you in the room.",
     demo: <FullSystemDemo />,
+    path: "/try/ai-system",
     tone: "plain",
   },
 ];
@@ -134,7 +141,17 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
         </div>
       </div>
 
-      <div className="relative mt-6 border-t border-line/50 pt-6">{service.demo}</div>
+      <div className="relative mt-6 border-t border-line/50 pt-6">
+        {service.demo}
+        <div className="mt-5 flex justify-end">
+          <Button asChild size="sm">
+            <Link to={service.path} onClick={(e) => e.stopPropagation()}>
+              Try It Live
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+            </Link>
+          </Button>
+        </div>
+      </div>
     </motion.article>
   );
 }

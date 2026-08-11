@@ -202,3 +202,27 @@ clichés ("Elevate", "Seamless", "Unleash") · no scroll-cue text ("Scroll to
 explore") · no version-label eyebrows · no em-dashes anywhere on the page ·
 no border on every row of a list · no `transition: all` · no `ease-in` on UI
 elements · no animating `top`/`left`/`width`/`height`/`margin`/`padding`.
+
+## 8. Routing & Trial Pages
+
+React Router (`App.tsx`) wraps `<Routes>` in `<AnimatePresence mode="wait">`
+keyed on `location.pathname`, so every navigation - including from a service
+card's "Try It Live" button - gets a real exit/enter transition
+(`components/page-transition.tsx`) instead of a hard cut. A `ScrollToTop`
+effect resets scroll on every route change.
+
+Four trial routes (`/try/ai-agents`, `/try/automation`, `/try/voice-agent`,
+`/try/ai-system`) each render a full interactive product demo through the
+shared `TrialShell` (back-to-home link, wordmark, page title, and a bottom
+"Ready to build yours? Book a Call" section reusing the same primary
+`Button`). They intentionally do **not** carry the home page's `Navbar` /
+`NavDots` / `ProgressBar` - those are built around the home page's own
+section ids and would either no-op or mis-track on a different route.
+
+**On not calling a real LLM API:** the AI Agents trial page simulates
+replies client-side (`lib/simulated-ai.ts`) rather than calling the
+Anthropic API directly from the browser. Shipping a real API key in a
+public bundle is a credential leak, not a demo shortcut, and this is a
+static site with no backend to proxy the call through - so the honest,
+secure choice is a scripted-but-fully-interactive chat, with the same
+typing-indicator and bubble UX a live integration would have.
