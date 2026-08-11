@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Compass } from "lucide-react";
-import { NeuralVisual } from "@/components/neural-visual";
+import { Globe } from "@/components/ui/globe";
 import { Button } from "@/components/ui/button";
 import { LiquidHeroTitle, ShimmerText } from "@/components/liquid-text";
 import { EASE_OUT as EASE } from "@/lib/motion";
@@ -37,7 +37,7 @@ export function Hero() {
           style={{ y: visualY }}
           className="mx-auto aspect-square w-full max-w-[380px] sm:max-w-[440px] lg:max-w-none"
         >
-          <NeuralVisual className="h-full w-full" />
+          <Globe />
         </motion.div>
 
         <div className="mx-auto max-w-lg text-center lg:mx-0 lg:text-left">

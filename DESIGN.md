@@ -162,13 +162,14 @@ plus two spring presets for physics-driven interactions:
 | `SPRING_HOVER` | `stiffness: 300, damping: 20` | Every pointer-driven pop-out: cards, buttons, nav links, FAQ trigger, how-it-works steps |
 | `SPRING_SMOOTH` | `stiffness: 100, damping: 30, mass: 0.5` | Continuous scroll-linked values: the top progress bar |
 
-- **Hero visual:** `components/neural-visual.tsx` - a canvas-drawn,
-  Fibonacci-sphere network of nodes and edges (no external image, so it has
-  no network dependency), auto-rotating via `requestAnimationFrame`, wrapped
-  in a `motion.div` that breathes (`y: [0, -14, 0], scale: [1, 1.02, 1]`,
-  6s, `repeat: Infinity`, `EASE_IN_OUT`) - the "subtle floating" requirement,
-  implemented as a genuine Motion animation distinct from the canvas's own
-  internal rotation loop.
+- **Hero visual:** `components/ui/globe.tsx` - a CSS-animated rotating
+  earth (background-position sweep on a JPEG texture, `twinkling` star
+  dots) inside the Hero's existing `motion.div` visual column, which still
+  owns the parallax drift (`useScroll`/`useTransform`) as scroll progresses
+  through the section. Replaced the earlier canvas-drawn Fibonacci-sphere
+  `NeuralVisual` (still described in git history / older revisions of this
+  doc) - the swap only touched the visual inside that column, not the
+  column's own motion, sizing, or the rest of the Hero.
 - All entrance animations start from `opacity: 0, y: 20-28` (never `scale(0)`).
 - Stagger delays are 60-70ms between siblings (emil's 30-80ms band).
 - Scroll-linked values use Motion's `useScroll`/`useTransform`/`useSpring`,
@@ -358,11 +359,10 @@ Testimonials, funnel at CTA), blended by how far scroll has progressed
 between the current pair of adjacent sections, and fade out over 400px once
 scrolled past the CTA section so the field never renders over the Footer.
 Mouse position repels nearby particles. Kept **additive** rather than
-replacing the existing `NeuralVisual` hero sphere - the ambient field is a
-separate, subtler, page-wide layer, and swapping out an already-working,
-previously-verified hero visual for a new system carried real regression
-risk against "don't break any existing sections" for no requirement that
-actually asked for it.
+replacing the Hero's own visual (originally `NeuralVisual`, since swapped
+for `components/ui/globe.tsx` - see section 11) - the ambient field is a
+separate, subtler, page-wide layer, independent of whatever sits in the
+Hero's own visual column.
 
 Two deliberate performance guards: the O(n²) pairwise distance check that
 builds connecting edges only runs every 4th frame (edges only need to look
@@ -372,3 +372,43 @@ happens inside the already-scheduled `requestAnimationFrame` loop, not
 inside the event handlers themselves. `useReducedMotion()` renders one
 static frame with no rAF loop and no scroll/mouse listeners attached at
 all.
+
+## 11. Hero Visual Swap: `NeuralVisual` → `components/ui/globe.tsx`
+
+The Hero's visual column (`sections/hero.tsx`) now renders a rotating-earth
+`Globe` instead of the canvas Fibonacci-sphere `NeuralVisual`. Everything
+*around* the visual was left untouched: the same `motion.div` wrapper still
+owns the entrance animation and the scroll-linked parallax `y` drift, the
+title/tagline/buttons/liquid-text/particle-field are unchanged, and every
+other section, the trial pages, and the amber/gold theme are unmodified.
+
+**Source and one required fix:** `Globe` was supplied as a complete,
+self-contained component (inline `<style>` keyframes, a 250px sphere with a
+JPEG texture pulled from a user-provided R2 URL, seven twinkling star
+dots). The only change from the supplied source was swapping its outer
+wrapper from `h-screen` to `h-full`: the original was written to fill an
+entire viewport as a standalone demo, and `h-screen` inside the Hero's
+existing (much smaller) aspect-square visual column would have forced that
+column to 100vh, breaking the Hero's layout. Everything else - sphere size,
+star positions, animation timings, the inline `<style>` block - is
+unchanged.
+
+**What was intentionally not built:** the request also included a second
+component (`ScrollGlobe` in a `landing-page.tsx`) meant to reposition the
+globe across the page as a fixed overlay while also rendering its own
+Hero/Services/How It Works/CTA section content. That code was supplied
+incomplete (no JSX return - just a comment placeholder) and, even
+completed, its own section content would have duplicated what
+`sections/services.tsx`, `sections/how-it-works.tsx`, and `sections/cta.tsx`
+already render, and its full-page scroll-repositioning would have
+competed for the same screen space as the particle field. Given the
+instruction to keep everything else exactly the same, the chosen scope was
+the visual only, confirmed with the user before implementing: swap what's
+inside the Hero's existing visual column, keep its existing parallax, add
+nothing page-wide.
+
+**Cleanup:** `components/neural-visual.tsx` is now unreferenced anywhere in
+the codebase and was deleted rather than left as dead code, consistent
+with how the same swap was handled earlier in this project's history (see
+the changelog for the original `globe.tsx` → `NeuralVisual` swap this one
+reverses).
