@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { EASE_OUT as EASE } from "@/lib/motion";
 
 function initials(name: string) {
   return name
@@ -34,8 +35,6 @@ function Avatar({ name, src }: { name: string; src: string }) {
     />
   );
 }
-
-const EASE = [0.16, 1, 0.3, 1] as const;
 
 interface Testimonial {
   quote: string;
@@ -102,7 +101,7 @@ export function Testimonials() {
               type="button"
               onClick={() => scrollByCard(-1)}
               aria-label="Previous testimonial"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink-dim transition-colors hover:border-ink/40 hover:text-ink"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink-dim transition-[transform,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-ink/40 hover:text-ink active:scale-90 active:duration-100"
             >
               <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
             </button>
@@ -110,7 +109,7 @@ export function Testimonials() {
               type="button"
               onClick={() => scrollByCard(1)}
               aria-label="Next testimonial"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink-dim transition-colors hover:border-ink/40 hover:text-ink"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink-dim transition-[transform,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-ink/40 hover:text-ink active:scale-90 active:duration-100"
             >
               <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
             </button>

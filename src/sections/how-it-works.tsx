@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { PenTool, Rocket, Search, TrendingUp, type LucideIcon } from "lucide-react";
-
-const EASE = [0.16, 1, 0.3, 1] as const;
+import { EASE_OUT as EASE } from "@/lib/motion";
 
 interface Step {
   index: string;
@@ -66,7 +65,7 @@ export function HowItWorks() {
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: EASE }}
+              transition={{ duration: 0.6, delay: i * 0.07, ease: EASE }}
               className="relative border-l border-line pl-6 md:border-l-0 md:pl-0"
             >
               <div className="relative z-10 flex items-center gap-3 md:mb-6">

@@ -28,7 +28,7 @@ const AccordionTrigger = React.forwardRef<
     >
       {children}
       <Plus
-        className="h-5 w-5 shrink-0 text-ink-faint transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-data-[state=open]:rotate-45 group-data-[state=open]:text-accent"
+        className="h-5 w-5 shrink-0 text-ink-faint transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-data-[state=open]:rotate-45 group-data-[state=open]:text-accent"
         strokeWidth={1.75}
       />
     </AccordionPrimitive.Trigger>

@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const EASE = [0.16, 1, 0.3, 1] as const;
+import { EASE_OUT as EASE } from "@/lib/motion";
 
 export function CTA() {
   return (

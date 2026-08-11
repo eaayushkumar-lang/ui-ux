@@ -5,8 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-const EASE = [0.16, 1, 0.3, 1] as const;
+import { EASE_OUT as EASE } from "@/lib/motion";
 
 const faqs = [
   {

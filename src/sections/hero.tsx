@@ -1,10 +1,12 @@
 import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { cubicBezier, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Compass } from "lucide-react";
 import { Globe } from "@/components/globe";
 import { Button } from "@/components/ui/button";
+import { EASE_IN_OUT, EASE_OUT } from "@/lib/motion";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
+const EASE = EASE_OUT;
+const scrollEase = cubicBezier(...EASE_IN_OUT);
 
 function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -41,10 +43,16 @@ function HeroCopy() {
       >
         <Button onClick={() => scrollToId("cta")}>
           Book a Call
-          <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
+          <ArrowRight
+            className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5"
+            strokeWidth={1.75}
+          />
         </Button>
         <Button variant="secondary" onClick={() => scrollToId("services")}>
-          <Compass className="h-4 w-4" strokeWidth={1.75} />
+          <Compass
+            className="h-4 w-4 transition-transform duration-150 ease-out group-hover:rotate-45"
+            strokeWidth={1.75}
+          />
           Explore Services
         </Button>
       </motion.div>
@@ -61,10 +69,12 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 0.75, 1], [1, 1, 0.35]);
-  const radius = useTransform(scrollYProgress, [0, 1], [0, 40]);
-  const panelY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9], { ease: scrollEase });
+  const opacity = useTransform(scrollYProgress, [0, 0.75, 1], [1, 1, 0.35], {
+    ease: [scrollEase, scrollEase],
+  });
+  const radius = useTransform(scrollYProgress, [0, 1], [0, 40], { ease: scrollEase });
+  const panelY = useTransform(scrollYProgress, [0, 1], [0, -60], { ease: scrollEase });
 
   if (reduceMotion) {
     return (

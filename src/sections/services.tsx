@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
 import { Bot, Network, PhoneCall, Workflow, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const EASE = [0.16, 1, 0.3, 1] as const;
+import { EASE_OUT as EASE } from "@/lib/motion";
 
 interface Service {
   icon: LucideIcon;
@@ -75,7 +74,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6, delay: index * 0.08, ease: EASE }}
+      transition={{ duration: 0.6, delay: index * 0.06, ease: EASE }}
       className={cn(
         "group relative overflow-hidden rounded-[var(--radius-card)] border border-line/70 p-8",
         service.featured ? "md:col-span-3 md:p-10" : "md:col-span-1",
@@ -86,7 +85,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
       )}
     >
       {service.tone === "glow" && (
-        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/20 blur-3xl transition-opacity duration-500 group-hover:opacity-80" />
+        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/20 blur-3xl transition-opacity duration-500 motion-safe:animate-breathe group-hover:opacity-80" />
       )}
       {service.tone === "grid" && (
         <div
