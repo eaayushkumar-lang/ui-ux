@@ -6,6 +6,7 @@ import { TryAIAgentsPage } from "@/pages/try-ai-agents";
 import { TryAutomationPage } from "@/pages/try-automation";
 import { TryVoiceAgentPage } from "@/pages/try-voice-agent";
 import { TryAISystemPage } from "@/pages/try-ai-system";
+import { ScrollMorphShowcasePage } from "@/pages/scroll-morph-showcase";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -25,6 +26,7 @@ function AnimatedRoutes() {
         <Route path="/try/automation" element={<TryAutomationPage />} />
         <Route path="/try/voice-agent" element={<TryVoiceAgentPage />} />
         <Route path="/try/ai-system" element={<TryAISystemPage />} />
+        <Route path="/experiments/scroll-morph-hero" element={<ScrollMorphShowcasePage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </AnimatePresence>

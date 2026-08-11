@@ -227,6 +227,68 @@ static site with no backend to proxy the call through - so the honest,
 secure choice is a scripted-but-fully-interactive chat, with the same
 typing-indicator and bubble UX a live integration would have.
 
+A fifth route, `/experiments/scroll-morph-hero`, hosts a one-off imported
+component (`components/ui/scroll-morph-hero.tsx`) rather than being reached
+from the main nav - see section 10 for why it's isolated this way.
+
+## 10. Third-Party Component Integration: `scroll-morph-hero`
+
+`components/ui/scroll-morph-hero.tsx` was supplied as a ready-made React
+component (default export `IntroAnimation`) to drop into the project's
+`components/ui` folder, shadcn-registry style. It needed no new
+dependencies - `framer-motion` was already a project dependency - and no
+Tailwind/TypeScript setup work, since the project already has Tailwind v4,
+strict TypeScript, path-aliased `@/*` imports, and a `components/ui` folder
+matching shadcn convention (see "shadcn structure" note below). Only two
+adaptations were made to the pasted source, both mechanical:
+- Dropped `"use client"` (a Next.js-only directive; irrelevant under Vite).
+- Dropped the unused `React` default import and the two props (`total`,
+  `phase`) that `FlipCard` received but never read, since this project's
+  `tsconfig.app.json` has `noUnusedLocals`/`noUnusedParameters` on and the
+  build fails otherwise. `total`/`phase` stay in `FlipCardProps` for
+  caller-side typing; they're just not destructured into unused locals.
+
+**Why it's not part of the site's real Hero.** The component captures
+wheel and touch input on its own
+container and calls `preventDefault()` on every event to drive a "virtual
+scroll" morph - by design, the page can never scroll past it via mouse
+wheel while the cursor is over it. That's fine, even desirable, for a
+focused, single-purpose showcase (the component's own supplied `demo.tsx`
+wraps it in a fixed-height bordered box for exactly this reason) but it
+actively conflicts with how the rest of this site scrolls: the pinned
+horizontal-pan How It Works section, the particle field's scroll-position
+blending, and ordinary section-to-section scrolling all assume the mouse
+wheel keeps moving the page. Swapping it in as the real Hero - or splicing
+it into the homepage's scroll flow anywhere - would trap visitors the
+moment their cursor crossed it.
+
+So it's mounted at its own route, `/experiments/scroll-morph-hero`
+(`pages/scroll-morph-showcase.tsx`), inside the same fixed-height bordered
+box pattern the component's own demo used, wrapped in the existing
+`TrialShell` for a consistent header/back-link/footer-CTA rather than a
+bare unstyled page. It's linked from the site `Footer`'s bottom bar
+("Experiments") so it's reachable without being presented as part of the
+core product experience.
+
+**Component path note:** the project's default `components/ui` already
+existed and already held shadcn-style, Radix-backed primitives
+(`button.tsx`, `accordion.tsx`) before this integration, so the pasted
+component's own convention (drop it straight into `components/ui`) matched
+what was already there with no path changes needed. Keeping generated/
+installed UI primitives in one dedicated folder - rather than scattered
+next to whichever page first used them - is what makes future shadcn-style
+additions (`npx shadcn add ...` or copy-paste like this one) predictable to
+find, diff, and update without hunting through page and section files.
+
+Note: the project has no `components.json`, so it was never bootstrapped
+via the shadcn CLI proper - `components/ui` and the `cn()` helper in
+`lib/utils.ts` were hand-built to match the convention. Nothing here
+required running `npx shadcn init`; if a future component is pulled from
+the shadcn CLI/registry, adding `components.json` (pointing `aliases.ui` at
+`@/components/ui` and `aliases.utils` at `@/lib/utils`) would let `npx
+shadcn add <name>` install straight into the existing structure without
+reorganizing anything.
+
 ## 9. Liquid Text, Liquid Metal, Scroll Systems & Particle Field
 
 A fourth round added four cinematic systems on top of the existing theme.

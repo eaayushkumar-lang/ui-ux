@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Linkedin, Mail, Twitter } from "lucide-react";
 import { Logo } from "@/components/logo-mark";
 import { Button } from "@/components/ui/button";
@@ -77,7 +78,15 @@ export function Footer() {
 
         <div className="mt-16 flex flex-col gap-2 border-t border-line/60 pt-8 text-[13px] text-ink-faint sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} AUXAI.AI. All rights reserved.</p>
-          <p>Built for teams who build systems, not task lists.</p>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/experiments/scroll-morph-hero"
+              className="transition-colors hover:text-ink"
+            >
+              Experiments
+            </Link>
+            <p>Built for teams who build systems, not task lists.</p>
+          </div>
         </div>
       </div>
     </footer>
