@@ -14,7 +14,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-[72px]"
+      className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-8"
     >
       {/* Visual comes first in source order so it stacks on top on mobile;
           the lg: grid puts it in the left column on desktop. */}

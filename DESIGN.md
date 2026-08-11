@@ -79,6 +79,21 @@ never triggers repaints during scroll.
 
 ## 4. Component Stylings
 
+- **Navigation (Dynamic Island):** `components/navbar.tsx` is a floating,
+  centered, pill-shaped nav (`glass-card`, gold border glow), not a
+  full-width bar. It has two content states - expanded (icon + label per
+  item) and compact (icon only) - toggled by scroll position
+  (`useScroll`/`useMotionValueEvent`, threshold 32px), hover on desktop, or
+  tap on mobile (with a click-outside listener to close). The outer pill
+  carries Motion's `layout` prop so the width/shape morph between states is
+  a real FLIP-based layout animation, not a manual width tween. The
+  currently-active section (shared with the right-side nav dots via the
+  same `useActiveSection` hook) is rendered as a `layoutId="nav-active-pill"`
+  glow behind whichever item is current - because it's one shared element
+  across both compact and expanded renders, Motion morphs its position and
+  size automatically when the nav's mode changes, not just when the active
+  section changes. All of it runs on one spring (`SPRING_ISLAND`:
+  `stiffness 300, damping 25`), so the pill reads as one physical object.
 - **Buttons:** Pill radius, gold-to-ember gradient fill (primary) with a
   baked-in diagonal glass-shine layer, or bordered ghost (secondary/ghost).
   Built as `motion.button` / `motion.create(Slot)` so hover and press are
@@ -102,11 +117,19 @@ never triggers repaints during scroll.
   `motion.create(AccordionPrimitive.Trigger)` with a spring `whileHover`
   (`scale: 1.02`, subtle lift + amber shadow). Content height animates via
   Radix's `--radix-accordion-content-height` custom property.
-- **Nav links:** spring `whileHover={{ scale: 1.05 }}` plus a CSS
-  `scale-x` underline (transform-only, GPU-safe) that grows from the left on
-  hover.
 - **Avatars:** Real photo first, graceful initials-in-a-circle fallback on
   load error - never a broken-image glyph or a generic person icon.
+- **Service demos:** each services card ends with a small "live product"
+  panel under a hairline divider (`components/service-demos/`) - a chat
+  transcript that types itself out, a 4-node pipeline that lights up in
+  sequence, an audio waveform + typed voice response, and a dashboard with
+  count-up metrics, a mini bar chart, and animated progress bars. Every demo
+  is gated by `onViewportEnter`/`useInView` (play once, on scroll into
+  view), and every looping or interval-driven animation collapses to a
+  static end-state under `prefers-reduced-motion` rather than just
+  continuing to flash. Two shared primitives back all four:
+  `TypingText` (character-by-character reveal + blinking cursor) and
+  `CountUp` (a Motion `animate()` call driving a number from 0 to target).
 
 ## 5. Layout Principles
 

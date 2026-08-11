@@ -1,7 +1,12 @@
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { Bot, Network, PhoneCall, Workflow, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
+import { AIAgentDemo } from "@/components/service-demos/ai-agent-demo";
+import { WorkflowDemo } from "@/components/service-demos/workflow-demo";
+import { VoiceAgentDemo } from "@/components/service-demos/voice-agent-demo";
+import { FullSystemDemo } from "@/components/service-demos/full-system-demo";
 
 const CARD_HOVER_SHADOW =
   "0 0 0 1px rgba(255,184,0,0.4), 0 28px 56px -20px rgba(0,0,0,0.65), 0 0 44px -8px rgba(255,184,0,0.35)";
@@ -12,6 +17,7 @@ interface Service {
   icon: LucideIcon;
   title: string;
   description: string;
+  demo: ReactNode;
   featured?: boolean;
   tone?: "glow" | "grid" | "plain";
 }
@@ -22,6 +28,7 @@ const services: Service[] = [
     title: "Building AI Agents",
     description:
       "Custom agents that read documents, take actions across your tools, and escalate to a person only when a decision actually needs one.",
+    demo: <AIAgentDemo />,
     featured: true,
   },
   {
@@ -29,6 +36,7 @@ const services: Service[] = [
     title: "Workflow Automation",
     description:
       "We rebuild the workflows eating your team's week, so software does the repeating and your people do the deciding.",
+    demo: <WorkflowDemo />,
     tone: "glow",
   },
   {
@@ -36,6 +44,7 @@ const services: Service[] = [
     title: "Voice Agents",
     description:
       "Phone agents that book, qualify, and follow up around the clock, sounding like your best rep on their best day.",
+    demo: <VoiceAgentDemo />,
     tone: "grid",
   },
   {
@@ -43,6 +52,7 @@ const services: Service[] = [
     title: "Full AI Systems",
     description:
       "End-to-end systems that connect your agents, data, and tools into one operation built to run without you in the room.",
+    demo: <FullSystemDemo />,
     tone: "plain",
   },
 ];
@@ -81,7 +91,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.6, delay: index * 0.06, ease: EASE }}
       whileHover={{
-        scale: 1.05,
+        scale: 1.03,
         y: -6,
         boxShadow: CARD_HOVER_SHADOW,
         transition: SPRING_HOVER,
@@ -123,6 +133,8 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
           </p>
         </div>
       </div>
+
+      <div className="relative mt-6 border-t border-line/50 pt-6">{service.demo}</div>
     </motion.article>
   );
 }

@@ -16,3 +16,6 @@ export const EASE_DRAWER = [0.32, 0.72, 0, 1] as const;
 //   to frame.
 export const SPRING_HOVER = { type: "spring", stiffness: 300, damping: 20 } as const;
 export const SPRING_SMOOTH = { type: "spring", stiffness: 100, damping: 30, mass: 0.5 } as const;
+// Dynamic Island nav: pill morph and active-item indicator share this spring
+// so the whole component reads as one physical object.
+export const SPRING_ISLAND = { type: "spring", stiffness: 300, damping: 25 } as const;

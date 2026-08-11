@@ -30,6 +30,7 @@
   --animate-accordion-down: accordion-down 0.25s cubic-bezier(0.23, 1, 0.32, 1);
   --animate-accordion-up: accordion-up 0.2s cubic-bezier(0.23, 1, 0.32, 1);
   --animate-breathe: breathe 4.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  --animate-blink: blink 1s steps(1) infinite;
 }
 
 @keyframes breathe {
@@ -41,6 +42,17 @@
   50% {
     opacity: 0.85;
     transform: scale(1.06);
+  }
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
   }
 }
 
