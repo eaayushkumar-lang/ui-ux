@@ -19,3 +19,9 @@ export const SPRING_SMOOTH = { type: "spring", stiffness: 100, damping: 30, mass
 // Dynamic Island nav: pill morph and active-item indicator share this spring
 // so the whole component reads as one physical object.
 export const SPRING_ISLAND = { type: "spring", stiffness: 300, damping: 25 } as const;
+// Slow, heavy drift for large scroll-linked position/scale changes that
+// should glide rather than track the scrollbar 1:1 - tuned to settle in
+// roughly the ~1.4s a duration+cubic-bezier tween would take, without the
+// linear/mechanical feel a fixed-duration tween has under variable-speed
+// scrolling.
+export const SPRING_DRIFT = { type: "spring", stiffness: 30, damping: 22, mass: 1 } as const;

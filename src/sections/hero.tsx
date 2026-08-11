@@ -37,7 +37,11 @@ export function Hero() {
           style={{ y: visualY }}
           className="mx-auto aspect-square w-full max-w-[380px] sm:max-w-[440px] lg:max-w-none"
         >
-          <Globe />
+          {/* The moving/scaling/fading Globe now lives in the page-root
+              FloatingGlobe overlay so it can drift across every section.
+              Reduced-motion users get a static Globe here instead, since
+              FloatingGlobe itself renders nothing when motion is reduced. */}
+          {reduceMotion && <Globe />}
         </motion.div>
 
         <div className="mx-auto max-w-lg text-center lg:mx-0 lg:text-left">
