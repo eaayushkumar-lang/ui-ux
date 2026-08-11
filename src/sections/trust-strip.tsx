@@ -3,7 +3,7 @@ import { ClientLogos } from "@/components/client-logos";
 
 export function TrustStrip() {
   return (
-    <section className="relative z-10 rounded-t-[2rem] border-b border-line/60 bg-surface py-10 shadow-[0_-32px_64px_-32px_rgba(0,0,0,0.55)]">
+    <section className="relative z-10 rounded-t-[2rem] border-b border-line/60 bg-surface py-10 shadow-[0_-32px_64px_-32px_rgba(10,6,3,0.6)]">
       <div className="mx-auto max-w-7xl px-6">
         <motion.p
           initial={{ opacity: 0 }}

@@ -1,12 +1,11 @@
-import { useRef } from "react";
-import { cubicBezier, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Compass } from "lucide-react";
-import { Globe } from "@/components/globe";
+import { ScrollFlyIn } from "@/components/ui/hero-section-3";
 import { Button } from "@/components/ui/button";
-import { EASE_IN_OUT, EASE_OUT } from "@/lib/motion";
+import { EASE_OUT as EASE } from "@/lib/motion";
 
-const EASE = EASE_OUT;
-const scrollEase = cubicBezier(...EASE_IN_OUT);
+const AI_IMAGE_URL =
+  "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1400&h=1000&q=80";
 
 function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -14,32 +13,35 @@ function scrollToId(id: string) {
 
 function HeroCopy() {
   return (
-    <div className="max-w-4xl">
+    <div className="relative mx-auto flex max-w-2xl flex-col items-center px-6">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 left-1/2 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-accent/20 blur-[130px] motion-safe:animate-breathe"
+      />
+
       <motion.h1
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: EASE }}
-        className="text-balance text-3xl font-medium leading-[1.15] tracking-tight text-ink sm:text-4xl"
+        className="relative text-6xl font-medium tracking-tight text-ink sm:text-7xl lg:text-8xl"
       >
-        We don't automate tasks.{" "}
-        <span className="text-accent">We build systems that outperform everyone.</span>
+        AUXAI<span className="text-accent">.AI</span>
       </motion.h1>
 
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.12, ease: EASE }}
-        className="mt-6 max-w-md text-[17px] leading-relaxed text-ink-dim"
+        className="relative mt-6 max-w-lg text-balance text-lg leading-relaxed text-ink-dim sm:text-xl"
       >
-        AUXAI.AI designs, builds, and deploys AI agents and automation systems for
-        teams who refuse to compete on effort.
+        We don't automate tasks. We build systems that outperform everyone.
       </motion.p>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.24, ease: EASE }}
-        className="mt-10 flex flex-wrap items-center gap-4"
+        className="relative mt-10 flex flex-wrap items-center justify-center gap-4"
       >
         <Button onClick={() => scrollToId("cta")}>
           Book a Call
@@ -61,57 +63,27 @@ function HeroCopy() {
 }
 
 export function Hero() {
-  const pinRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
-
-  const { scrollYProgress } = useScroll({
-    target: pinRef,
-    offset: ["start start", "end start"],
-  });
-
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9], { ease: scrollEase });
-  const opacity = useTransform(scrollYProgress, [0, 0.75, 1], [1, 1, 0.35], {
-    ease: [scrollEase, scrollEase],
-  });
-  const radius = useTransform(scrollYProgress, [0, 1], [0, 40], { ease: scrollEase });
-  const panelY = useTransform(scrollYProgress, [0, 1], [0, -60], { ease: scrollEase });
 
   if (reduceMotion) {
     return (
-      <section id="hero" className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg">
-        <HeroBackground />
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-[72px]">
-          <HeroCopy />
-        </div>
+      <section
+        id="hero"
+        className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-bg pt-[72px]"
+      >
+        <HeroCopy />
       </section>
     );
   }
 
   return (
-    <div id="hero" ref={pinRef} className="relative h-[170dvh]">
-      <div className="sticky top-0 h-dvh overflow-hidden">
-        <motion.div
-          style={{ scale, opacity, borderRadius: radius, y: panelY }}
-          className="relative flex h-full w-full items-center overflow-hidden bg-bg"
-        >
-          <HeroBackground />
-          <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-[72px]">
-            <HeroCopy />
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-function HeroBackground() {
-  return (
-    <>
-      <div className="absolute inset-y-0 right-[-10%] w-full opacity-80 lg:w-[64%]">
-        <Globe />
-      </div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-bg via-bg/75 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
-    </>
+    <ScrollFlyIn
+      id="hero"
+      imageUrl={AI_IMAGE_URL}
+      imageAlt="A human hand and a robotic hand reaching toward each other, representing AI and human collaboration"
+      className="overflow-hidden bg-bg [&>div]:pt-16 [&_img]:max-h-[62vh] [&_img]:w-auto [&_img]:rounded-[2rem] [&_img]:shadow-[0_30px_90px_-20px_rgba(245,158,11,0.4)] [&_img]:saturate-[0.85] [&_img]:contrast-[1.05]"
+    >
+      <HeroCopy />
+    </ScrollFlyIn>
   );
 }

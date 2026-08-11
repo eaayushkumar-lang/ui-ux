@@ -9,17 +9,19 @@
   --font-sans: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  --color-bg: #08090c;
-  --color-surface: #0e1116;
-  --color-surface-2: #151922;
-  --color-surface-3: #1b202b;
-  --color-line: #23293380;
-  --color-ink: #f3f4f6;
-  --color-ink-dim: #9aa1ad;
-  --color-ink-faint: #656c78;
-  --color-accent: #3fd9be;
-  --color-accent-dim: #2a8f7d;
-  --color-accent-ink: #04120e;
+  --color-bg: #0a0a0a;
+  --color-surface: #120d09;
+  --color-surface-2: #1c140d;
+  --color-surface-3: #241a10;
+  --color-line: #3a2a1880;
+  --color-ink: #f7f3ee;
+  --color-ink-dim: #ab9d8c;
+  --color-ink-faint: #6f6255;
+  --color-accent: #f59e0b;
+  --color-accent-2: #ea580c;
+  --color-coral: #ff6b4a;
+  --color-accent-dim: #92400e;
+  --color-accent-ink: #180f03;
 
   --radius-card: 1.25rem;
   --radius-pill: 999px;

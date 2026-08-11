@@ -8,16 +8,21 @@ against `ui-ux-pro-max`, `emil-design-eng`, `impeccable-lite`,
 ## 1. Visual Theme & Atmosphere
 
 A dark, cinematic, confident interface for an AI automation agency selling to
-operators who are tired of vendor theater. The mood is clinical-premium, not
-flashy: a single teal signal color against near-black, one animated centerpiece
-(the hero network globe), and restraint everywhere else. Dense enough to feel
-substantive, airy enough to feel expensive.
+operators who are tired of vendor theater. The mood is warm-premium and
+kinetic: a single amber-to-coral signal gradient against near-black, one
+cinematic centerpiece (the hero's scroll-driven image fly-through), and
+restraint everywhere else. Dense enough to feel substantive, airy enough to
+feel expensive.
 
 - **Density:** Daily App Balanced (4/10) - standard `py-24` to `py-32` section
   rhythm, no cockpit-density data.
-- **Variance:** Offset Asymmetric (9/10) - asymmetric hero split, 1+3 bento
-  services grid, no centered hero, no 3-equal-card rows.
-- **Motion:** Cinematic Choreography (8/10) - scroll-pinned hero stack, but
+- **Variance:** Offset Asymmetric (9/10) overall, with one deliberate
+  exception: the hero is a centered manifesto composition (brand mark + one
+  sentence + one visual event), which is the documented override for
+  centered heroes where the message itself is the design. Services keeps a
+  1+3 bento grid, never 3 equal cards.
+- **Motion:** Cinematic Choreography (8/10) - the hero pins for a full extra
+  viewport of scroll while a large image flies through it edge to edge;
   every animation is scoped to `transform`/`opacity`, motivated, and
   `prefers-reduced-motion`-safe.
 
@@ -25,21 +30,28 @@ substantive, airy enough to feel expensive.
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| Void Black (`--color-bg`) | `#08090C` | Primary background |
-| Slate Surface (`--color-surface`) | `#0E1116` | Section-level tint (trust strip, services, testimonials) |
-| Raised Surface (`--color-surface-2`) | `#151922` | Card fill |
-| Elevated Surface (`--color-surface-3`) | `#1B202B` | Featured card gradient stop |
-| Hairline (`--color-line`) | `#23293380` | 1px borders, dividers |
-| Ink (`--color-ink`) | `#F3F4F6` | Primary text |
-| Ink Dim (`--color-ink-dim`) | `#9AA1AD` | Secondary text, body copy |
-| Ink Faint (`--color-ink-faint`) | `#656C78` | Tertiary text, mono labels |
-| Signal Teal (`--color-accent`) | `#3FD9BE` | The one accent - CTAs, links, active states, glow |
-| Signal Teal Dim (`--color-accent-dim`) | `#2A8F7D` | Reserved for future disabled/dim accent states |
-| Accent Ink (`--color-accent-ink`) | `#04120E` | Text on accent-filled surfaces (contrast-checked) |
+| Void Black (`--color-bg`) | `#0A0A0A` | Primary background |
+| Warm Surface (`--color-surface`) | `#120D09` | Section-level tint (trust strip, services, testimonials) |
+| Raised Surface (`--color-surface-2`) | `#1C140D` | Card fill |
+| Elevated Surface (`--color-surface-3`) | `#241A10` | Featured card gradient stop |
+| Hairline (`--color-line`) | `#3A2A1880` | 1px borders, dividers (warm-tinted, not neutral gray) |
+| Ink (`--color-ink`) | `#F7F3EE` | Primary text (warm off-white, never pure white) |
+| Ink Dim (`--color-ink-dim`) | `#AB9D8C` | Secondary text, body copy |
+| Ink Faint (`--color-ink-faint`) | `#6F6255` | Tertiary text, mono labels |
+| Amber (`--color-accent`) | `#F59E0B` | The primary accent - CTAs, links, active states, focus rings |
+| Ember Orange (`--color-accent-2`) | `#EA580C` | Gradient mid-stop (buttons, glows) |
+| Coral (`--color-coral`) | `#FF6B4A` | Gradient end-stop, used sparingly for glow highlights |
+| Deep Amber (`--color-accent-dim`) | `#92400E` | Reserved for disabled/dim accent states |
+| Accent Ink (`--color-accent-ink`) | `#180F03` | Text on accent-filled surfaces (contrast-checked, 8.5:1) |
 
-No pure black, no pure white. One accent, used identically in every section
-(hero CTA, nav dots, service icons, FAQ hover, CTA button). No purple, no
-neon glow - the "AI Purple" default is explicitly rejected.
+No pure black, no pure white. One accent family (amber → ember → coral, all
+part of the same warm hue range, never treated as separate accents), used
+identically in every section (hero glow, nav dots, service icons, FAQ hover,
+CTA button, progress bar). No purple, no cool-toned neon - the "AI Purple"
+default is explicitly rejected in favor of a warm, branded signal color.
+Gradients are reserved for buttons and glow/blur decoration; body and
+headline text stay solid-color (see Section 3) per the anti-gradient-text
+rule for large headers.
 
 ## 3. Typography Rules
 
@@ -74,7 +86,11 @@ neon glow - the "AI Purple" default is explicitly rejected.
 
 ## 5. Layout Principles
 
-- Hero is an asymmetric split (copy left, globe right), never centered.
+- Hero is the one deliberate centered composition on the page (brand mark,
+  one-sentence mission, one primary + one secondary CTA), justified because
+  the scroll-driven image event and the wordmark itself are the design - not
+  a default centered-hero fallback. Every section below it stays off-center
+  or grid-driven.
 - Services is a 1+3 bento (never 3 equal cards) with at least two cells
   carrying real visual variation (ambient glow, grid texture) beyond flat
   white-on-white text.
@@ -91,20 +107,28 @@ Three easing curves, chosen by what the element is doing (not decoration):
 | Curve | Value | Used for |
 | --- | --- | --- |
 | `EASE_OUT` | `cubic-bezier(0.23, 1, 0.32, 1)` | Entering/exiting elements: reveals, buttons, icon crossfades, accordion |
-| `EASE_IN_OUT` | `cubic-bezier(0.77, 0, 0.175, 1)` | On-screen morphing while staying visible: the hero's scroll-linked pin/scale/recede |
+| `EASE_IN_OUT` | `cubic-bezier(0.77, 0, 0.175, 1)` | On-screen morphing while staying visible |
 | `EASE_DRAWER` | `cubic-bezier(0.32, 0.72, 0, 1)` | Drawer-style panels: the mobile nav sheet |
 
+- **Hero centerpiece:** `ScrollFlyIn` (`components/ui/hero-section-3.tsx`)
+  pins the hero for a 200vh scroll range and flies a large image across the
+  full width, fading in/out via `useScroll`/`useTransform` scroll progress.
+  The flying image gets a warm treatment applied non-invasively via
+  descendant selectors on the wrapper (`saturate-[0.85]`, an amber glow
+  shadow, rounded corners, and a `max-h-[62vh]` viewport-height safety cap)
+  rather than modifying the vendored component's markup.
 - All entrance animations start from `opacity: 0, y: 20-28` (never `scale(0)`).
 - Stagger delays are 60-70ms between siblings (emil's 30-80ms band).
 - Scroll-linked values use Motion's `useScroll`/`useTransform`, never
   `window.addEventListener('scroll')`.
-- One perpetual micro-loop exists on the whole page: a slow 4.5s breathing
-  pulse on the Workflow Automation card's ambient glow, gated by
-  `motion-safe:` - deliberately not applied to every card, per "not every
-  card needs an infinite loop."
+- One perpetual micro-loop exists on the hero: a slow 4.5s breathing amber
+  glow behind the wordmark, and one on the Workflow Automation card's
+  ambient glow - both gated by `motion-safe:` - deliberately not applied to
+  every element, per "not every card needs an infinite loop."
 - Every non-trivial animation is wrapped for `prefers-reduced-motion`
-  (`useReducedMotion()` in Hero, Navbar, Globe; `motion-reduce:` /
-  `motion-safe:` utilities elsewhere).
+  (`useReducedMotion()` in Hero and Navbar; `motion-reduce:` /
+  `motion-safe:` utilities elsewhere). The Hero's reduced-motion fallback
+  skips `ScrollFlyIn` entirely and renders a static centered section.
 
 ## 7. Anti-Patterns (Banned, and verified absent)
 
