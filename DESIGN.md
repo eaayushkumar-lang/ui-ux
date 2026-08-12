@@ -429,14 +429,15 @@ on non-reduced-motion - see below for why.
 technique both already use so it can render above every section's opaque
 background without painting over text - screen blending only ever
 brightens what's beneath it). It slides in one continuous motion across
-the *whole* page scroll, not per-section: right → center → left
-horizontally on desktop (`x`, `±28vw`), or below → center → above
-vertically on mobile (`y`, `±18vh`, `x` held at 0) as `scrollYProgress`
-goes `0 → 0.5 → 1`. Scale eases `1.0 → 0.7` and opacity `0.85 → 0.3`
-across the same full-page range, each wrapped in `useSpring` on the
-project's existing `SPRING_SMOOTH` preset (`stiffness 100, damping 30,
-mass 0.5`) so the drift glides under scroll of any speed instead of
-tracking the scrollbar frame-for-frame.
+the *whole* page scroll, not per-section: on desktop, `x` goes right
+(`28vw`) at 0% scroll → center (`0vw`) by 30% scroll, then **holds
+center** for the remaining 70% of the page - it does not continue on to
+the left. On mobile, `y` still drifts below → center → above (`±18vh`,
+`x` held at 0) across `0 → 0.5 → 1`, unchanged. Scale eases `1.0 → 0.7`
+and opacity `0.85 → 0.3` across the full-page range on both, each wrapped
+in `useSpring` on the project's existing `SPRING_SMOOTH` preset
+(`stiffness 100, damping 30, mass 0.5`) so the drift glides under scroll
+of any speed instead of tracking the scrollbar frame-for-frame.
 
 This replaced an earlier version (built one round prior, kept here for
 context since it's what "Supersedes..." referred to before this

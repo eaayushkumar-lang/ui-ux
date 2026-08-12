@@ -8,10 +8,11 @@ const MOBILE_DRIFT_VH = 18;
 const MOBILE_SCALE_MULTIPLIER = 0.75;
 
 /**
- * Fixed, page-wide floating Globe. Slides right -> center -> left (desktop)
- * or below -> center -> above (mobile, vertical instead of horizontal) as
- * the user scrolls through the whole page, shrinking from 1.0x to 0.7x and
- * fading from 0.85 to 0.3 opacity along the way.
+ * Fixed, page-wide floating Globe. Slides right -> center and then holds
+ * there (desktop) or below -> center -> above (mobile, vertical instead of
+ * horizontal - unchanged) as the user scrolls through the whole page,
+ * shrinking from 1.0x to 0.7x and fading from 0.85 to 0.3 opacity along
+ * the way.
  *
  * mix-blend-screen (same technique as NoiseOverlay/ParticleField) is what
  * lets this render above every section's own opaque background without
@@ -34,10 +35,12 @@ export function FloatingGlobe() {
 
   const { scrollYProgress } = useScroll();
 
+  // Desktop: right -> center by 30% scroll, then holds center for the rest
+  // of the page. Mobile has no horizontal drift (see rawY below).
   const rawX = useTransform(
     scrollYProgress,
-    [0, 0.5, 1],
-    isMobile ? ["0vw", "0vw", "0vw"] : [`${DESKTOP_DRIFT_VW}vw`, "0vw", `${-DESKTOP_DRIFT_VW}vw`],
+    [0, 0.3, 1],
+    isMobile ? ["0vw", "0vw", "0vw"] : [`${DESKTOP_DRIFT_VW}vw`, "0vw", "0vw"],
   );
   const rawY = useTransform(
     scrollYProgress,
