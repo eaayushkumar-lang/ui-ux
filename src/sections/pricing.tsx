@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BookACallButton } from "@/components/book-a-call-button";
 import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
 import { LiquidHeadingReveal } from "@/components/liquid-text";
 import { useCursorGlow } from "@/hooks/use-cursor-glow";
@@ -10,49 +10,38 @@ const CARD_HOVER_SHADOW =
   "0 0 0 1px rgba(255,184,0,0.4), 0 30px 60px -20px rgba(0,0,0,0.65), 0 0 46px -8px rgba(255,184,0,0.4)";
 const CARD_BASE_SHADOW =
   "0 0 0 1px rgba(255,184,0,0), 0 30px 60px -20px rgba(0,0,0,0), 0 0 46px -8px rgba(255,184,0,0)";
-const POPULAR_BASE_SHADOW =
+const FEATURED_BASE_SHADOW =
   "0 0 0 1px rgba(255,184,0,0.35), 0 34px 68px -20px rgba(0,0,0,0.7), 0 0 60px -10px rgba(255,184,0,0.5)";
 
-interface Tier {
+interface Step {
   name: string;
-  price: string;
-  period: string;
-  features: string[];
-  popular?: boolean;
+  description: string;
+  cta: string;
+  /** The middle step is a real conversion point (submitting the contact
+   * form), not just a step along the way, so it keeps the same visually
+   * emphasized treatment the old "Most Popular" tier used - minus the
+   * pricing-specific badge, which doesn't make sense for a process step. */
+  featured?: boolean;
 }
 
-const tiers: Tier[] = [
+const steps: Step[] = [
   {
-    name: "Starter",
-    price: "$997",
-    period: "/mo",
-    features: ["1 AI Agent", "Basic Automation", "Email Support", "Monthly Review"],
+    name: "Discovery Call",
+    description:
+      "We learn about your business, workflows, and goals. Free, no obligation. 30 minutes.",
+    cta: "Book Free Call",
   },
   {
-    name: "Growth",
-    price: "$2,497",
-    period: "/mo",
-    features: [
-      "3 AI Agents",
-      "Advanced Automation",
-      "Voice Agent",
-      "Priority Support",
-      "Weekly Reviews",
-    ],
-    popular: true,
+    name: "Custom Proposal",
+    description:
+      "We design a tailored AI solution with transparent pricing based on your exact requirements.",
+    cta: "Get Your Proposal",
+    featured: true,
   },
   {
-    name: "Enterprise",
-    price: "$4,997+",
-    period: "/mo",
-    features: [
-      "Unlimited AI Agents",
-      "Full AI System",
-      "Custom Voice Agents",
-      "Dedicated Support",
-      "Daily Reviews",
-      "Custom Integrations",
-    ],
+    name: "Build & Launch",
+    description: "We build, test, and deploy your AI system. Ongoing support included.",
+    cta: "Let's Start",
   },
 ];
 
@@ -69,22 +58,42 @@ export function Pricing() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="text-center text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
+          className="mx-auto max-w-2xl text-center text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          <LiquidHeadingReveal>Simple, Transparent Pricing</LiquidHeadingReveal>
+          <LiquidHeadingReveal>Every AI System Is Unique. So Is Our Pricing.</LiquidHeadingReveal>
         </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
+          className="mx-auto mt-4 max-w-xl text-center text-[15px] leading-relaxed text-ink-dim"
+        >
+          We build custom solutions based on your specific needs. No cookie-cutter packages.
+        </motion.p>
 
         <div className="mt-14 grid grid-cols-1 items-start gap-6 lg:grid-cols-3 lg:gap-5">
-          {tiers.map((tier, i) => (
-            <TierCard key={tier.name} tier={tier} index={i} />
+          {steps.map((step, i) => (
+            <StepCard key={step.name} step={step} index={i} />
           ))}
         </div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
+          className="mt-10 text-center text-[14px] text-ink-faint"
+        >
+          Starting from <span className="text-ink-dim">$997/month</span>. Final pricing depends on
+          complexity, integrations, and scale.
+        </motion.p>
       </div>
     </section>
   );
 }
 
-function TierCard({ tier, index }: { tier: Tier; index: number }) {
+function StepCard({ step, index }: { step: Step; index: number }) {
   const { ref, onMouseMove } = useCursorGlow<HTMLDivElement>();
 
   return (
@@ -96,45 +105,30 @@ function TierCard({ tier, index }: { tier: Tier; index: number }) {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.6, delay: index * 0.08, ease: EASE }}
       whileHover={{
-        scale: tier.popular ? 1.04 : 1.03,
+        scale: step.featured ? 1.04 : 1.03,
         y: -8,
         boxShadow: CARD_HOVER_SHADOW,
         transition: SPRING_HOVER,
       }}
-      style={{ boxShadow: tier.popular ? POPULAR_BASE_SHADOW : CARD_BASE_SHADOW }}
+      style={{ boxShadow: step.featured ? FEATURED_BASE_SHADOW : CARD_BASE_SHADOW }}
       className={cn(
         "gpu liquid-metal-card glass-card relative flex cursor-pointer flex-col overflow-hidden rounded-[var(--radius-card)] p-8",
-        tier.popular && "border-accent/40 lg:-translate-y-4",
+        step.featured && "border-accent/40 lg:-translate-y-4",
       )}
     >
-      {tier.popular && (
-        <span className="absolute right-6 top-6 rounded-full bg-gradient-to-r from-accent to-accent-2 px-3 py-1 font-mono text-[11px] font-medium tracking-[0.04em] text-accent-ink shadow-[0_0_20px_-4px_rgba(255,184,0,0.8)]">
-          Most Popular
-        </span>
+      <span className="font-mono text-sm text-ink-faint">0{index + 1}</span>
+      <h3 className="mt-4 text-lg font-medium text-ink">{step.name}</h3>
+      <p className="mt-3 flex-1 text-[14px] leading-relaxed text-ink-dim">{step.description}</p>
+
+      {step.featured ? (
+        <Button variant="primary" className="mt-8 w-full" onClick={scrollToContact}>
+          {step.cta}
+        </Button>
+      ) : (
+        <BookACallButton variant="secondary" className="mt-8 w-full">
+          {step.cta}
+        </BookACallButton>
       )}
-
-      <h3 className="text-lg font-medium text-ink">{tier.name}</h3>
-      <p className="mt-4 flex items-baseline gap-1">
-        <span className="text-4xl font-medium tracking-tight text-ink">{tier.price}</span>
-        <span className="text-sm text-ink-faint">{tier.period}</span>
-      </p>
-
-      <ul className="mt-7 flex flex-1 flex-col gap-3">
-        {tier.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2.5 text-[14px] text-ink-dim">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2} />
-            {feature}
-          </li>
-        ))}
-      </ul>
-
-      <Button
-        variant={tier.popular ? "primary" : "secondary"}
-        className="mt-8 w-full"
-        onClick={scrollToContact}
-      >
-        Get Started
-      </Button>
     </motion.div>
   );
 }
