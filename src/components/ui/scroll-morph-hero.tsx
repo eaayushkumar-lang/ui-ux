@@ -53,7 +53,12 @@ function FlipCard({ src, index, target }: FlipCardProps) {
           className="absolute inset-0 h-full w-full overflow-hidden rounded-xl shadow-lg bg-gray-200"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <img src={src} alt={`hero-${index}`} className="h-full w-full object-cover" />
+          <img
+            src={src}
+            alt={`hero-${index}`}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
           <div className="absolute inset-0 bg-black/10 transition-colors group-hover:bg-transparent" />
         </div>
 

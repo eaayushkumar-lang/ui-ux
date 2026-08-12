@@ -148,6 +148,65 @@
   }
 }
 
+/* Cursor-tracked hover sheen for premium cards (About/Case Studies) - a
+ * subtler cousin of the button's liquid-metal: no ripple, no click state,
+ * just a soft radial highlight that follows --mx/--my (set imperatively
+ * by useCursorGlow, never through React state) and fades in on hover. */
+@utility cursor-glow {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 20%), rgba(255, 184, 0, 0.14), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Same cursor-tracking, layered with a diagonal glass shine for a more
+ * metallic read - used on Pricing cards ("liquid metal card style"). */
+@utility liquid-metal-card {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(240px circle at var(--mx, 50%) var(--my, 20%), rgba(255, 255, 255, 0.16), transparent 62%),
+      linear-gradient(135deg, rgba(255, 184, 0, 0.1), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+@utility marquee-track {
+  animation: marquee 28s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-line);

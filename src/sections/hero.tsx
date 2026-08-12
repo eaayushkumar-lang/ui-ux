@@ -1,8 +1,9 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Compass } from "lucide-react";
+import { Compass } from "lucide-react";
 import { Globe } from "@/components/ui/globe";
 import { Button } from "@/components/ui/button";
+import { BookACallButton } from "@/components/book-a-call-button";
 import { LiquidHeroTitle, ShimmerText } from "@/components/liquid-text";
 import { EASE_OUT as EASE } from "@/lib/motion";
 
@@ -59,13 +60,7 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.3, ease: EASE }}
             className="mt-10 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
           >
-            <Button onClick={() => scrollToId("cta")}>
-              Book a Call
-              <ArrowRight
-                className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5"
-                strokeWidth={1.75}
-              />
-            </Button>
+            <BookACallButton />
             <Button variant="secondary" onClick={() => scrollToId("services")}>
               <Compass
                 className="h-4 w-4 transition-transform duration-150 ease-out group-hover:rotate-45"

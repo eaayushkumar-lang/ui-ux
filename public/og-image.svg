@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#ffb800" stop-opacity="0.35"/>
+      <stop offset="55%" stop-color="#ff6b00" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#050505" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffb800"/>
+      <stop offset="100%" stop-color="#ff6b00"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#050505"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <g transform="translate(600 235)">
+    <path d="M0 -70 L58 60 H23 L0 8 L-23 60 H-58 Z" fill="url(#mark)"/>
+  </g>
+
+  <text
+    x="600"
+    y="380"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="72"
+    font-weight="600"
+    letter-spacing="1"
+    fill="#fafafa"
+  >AUXAI<tspan fill="#ffb800">.AI</tspan></text>
+
+  <text
+    x="600"
+    y="432"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="26"
+    letter-spacing="0.5"
+    fill="#a0a0a0"
+  >AI Agents &amp; Automation Systems That Outperform</text>
+</svg>

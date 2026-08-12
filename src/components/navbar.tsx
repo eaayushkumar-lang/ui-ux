@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import {
   AnimatePresence,
   motion,
@@ -6,11 +7,22 @@ import {
   useReducedMotion,
   useScroll,
 } from "framer-motion";
-import { CircleHelp, LayoutGrid, PhoneCall, Star, Workflow, type LucideIcon } from "lucide-react";
+import {
+  BookOpen,
+  CircleHelp,
+  LayoutGrid,
+  PhoneCall,
+  Star,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
 import { LogoMark } from "@/components/logo-mark";
 import { SPRING_ISLAND } from "@/lib/motion";
+import { CAL_LINK } from "@/lib/links";
 import { useActiveSection } from "@/hooks/use-active-section";
 import { cn } from "@/lib/utils";
+
+const MotionLink = motion.create(Link);
 
 const SECTION_IDS = ["hero", "services", "how-it-works", "testimonials", "faq", "cta"];
 
@@ -83,21 +95,37 @@ function NavItem({
   );
 }
 
-function NavCTA({ expanded, active }: { expanded: boolean; active: boolean }) {
+function NavBlogLink({ expanded }: { expanded: boolean }) {
   return (
-    <motion.button
+    <MotionLink
       layout
-      type="button"
-      onClick={() => scrollTo("cta")}
+      to="/blog"
+      transition={SPRING_ISLAND}
+      className="relative flex shrink-0 cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-ink-dim transition-colors hover:text-ink"
+    >
+      <span className="relative z-10 flex items-center gap-2">
+        <BookOpen className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+        <NavLabel expanded={expanded}>Blog</NavLabel>
+      </span>
+    </MotionLink>
+  );
+}
+
+function NavCTA({ expanded }: { expanded: boolean }) {
+  return (
+    <motion.a
+      layout
+      href={CAL_LINK}
+      target="_blank"
+      rel="noreferrer"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={SPRING_ISLAND}
-      aria-current={active}
       className="relative flex shrink-0 cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-2 px-3 py-2 text-sm font-medium text-accent-ink shadow-[0_0_0_1px_rgba(255,184,0,0.35),0_10px_24px_-10px_rgba(255,107,0,0.7)]"
     >
       <PhoneCall className="h-4 w-4 shrink-0" strokeWidth={1.75} />
       <NavLabel expanded={expanded}>Book a Call</NavLabel>
-    </motion.button>
+    </motion.a>
   );
 }
 
@@ -172,7 +200,8 @@ export function Navbar() {
               active={active === link.id}
             />
           ))}
-          <NavCTA expanded={expanded} active={active === "cta"} />
+          <NavBlogLink expanded={expanded} />
+          <NavCTA expanded={expanded} />
         </div>
       </motion.div>
     </header>

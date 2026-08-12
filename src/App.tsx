@@ -1,12 +1,44 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { HomePage } from "@/pages/home";
-import { TryAIAgentsPage } from "@/pages/try-ai-agents";
-import { TryAutomationPage } from "@/pages/try-automation";
-import { TryVoiceAgentPage } from "@/pages/try-voice-agent";
-import { TryAISystemPage } from "@/pages/try-ai-system";
-import { ScrollMorphShowcasePage } from "@/pages/scroll-morph-showcase";
+import { ComingSoonPage } from "@/pages/coming-soon";
+import { ToastProvider } from "@/hooks/use-toast";
+import { LoadingScreen } from "@/components/loading-screen";
+
+// Home stays a static import since it's the entry route almost every
+// visitor lands on first. Everything else is route-level code-split: each
+// only downloads when actually navigated to. This is deliberately NOT
+// applied to the home page's own sections (About, Pricing, etc.) - those
+// live inside one continuously-scrollable page tracked by
+// useActiveSection, which queries document.getElementById synchronously
+// on mount; a section whose chunk hasn't resolved yet at that point would
+// silently never be observed, breaking the nav dots/Dynamic Island's
+// active-section highlighting for it.
+const TryAIAgentsPage = lazy(() =>
+  import("@/pages/try-ai-agents").then((m) => ({ default: m.TryAIAgentsPage })),
+);
+const TryAutomationPage = lazy(() =>
+  import("@/pages/try-automation").then((m) => ({ default: m.TryAutomationPage })),
+);
+const TryVoiceAgentPage = lazy(() =>
+  import("@/pages/try-voice-agent").then((m) => ({ default: m.TryVoiceAgentPage })),
+);
+const TryAISystemPage = lazy(() =>
+  import("@/pages/try-ai-system").then((m) => ({ default: m.TryAISystemPage })),
+);
+const ScrollMorphShowcasePage = lazy(() =>
+  import("@/pages/scroll-morph-showcase").then((m) => ({ default: m.ScrollMorphShowcasePage })),
+);
+const BlogPage = lazy(() => import("@/pages/blog").then((m) => ({ default: m.BlogPage })));
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-dvh items-center justify-center bg-bg">
+      <span className="h-2.5 w-2.5 rounded-full bg-accent motion-safe:animate-breathe" />
+    </div>
+  );
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -22,11 +54,56 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/try/ai-agents" element={<TryAIAgentsPage />} />
-        <Route path="/try/automation" element={<TryAutomationPage />} />
-        <Route path="/try/voice-agent" element={<TryVoiceAgentPage />} />
-        <Route path="/try/ai-system" element={<TryAISystemPage />} />
-        <Route path="/experiments/scroll-morph-hero" element={<ScrollMorphShowcasePage />} />
+        <Route
+          path="/try/ai-agents"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <TryAIAgentsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/try/automation"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <TryAutomationPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/try/voice-agent"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <TryVoiceAgentPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/try/ai-system"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <TryAISystemPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/experiments/scroll-morph-hero"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <ScrollMorphShowcasePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/blog"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <BlogPage />
+            </Suspense>
+          }
+        />
+        <Route path="/privacy" element={<ComingSoonPage title="Privacy Policy" />} />
+        <Route path="/terms" element={<ComingSoonPage title="Terms of Service" />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </AnimatePresence>
@@ -35,9 +112,12 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <AnimatedRoutes />
-    </BrowserRouter>
+    <ToastProvider>
+      <LoadingScreen />
+      <BrowserRouter>
+        <ScrollToTop />
+        <AnimatedRoutes />
+      </BrowserRouter>
+    </ToastProvider>
   );
 }

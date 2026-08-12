@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { BookACallButton } from "@/components/book-a-call-button";
 import { EASE_OUT as EASE } from "@/lib/motion";
 import { LiquidHeadingReveal } from "@/components/liquid-text";
 
@@ -62,12 +61,7 @@ export function CTA() {
           transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
           className="mt-10"
         >
-          <Button size="lg" asChild>
-            <a href="mailto:hello@auxai.ai?subject=Book%20a%20call%20with%20AUXAI.AI">
-              Book a Call
-              <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
-            </a>
-          </Button>
+          <BookACallButton size="lg" />
         </motion.div>
       </div>
     </section>

@@ -8,10 +8,14 @@ import { FloatingGlobe } from "@/components/floating-globe";
 import { Hero } from "@/sections/hero";
 import { TrustStrip } from "@/sections/trust-strip";
 import { Services } from "@/sections/services";
+import { About } from "@/sections/about";
+import { Pricing } from "@/sections/pricing";
+import { CaseStudies } from "@/sections/case-studies";
 import { HowItWorks } from "@/sections/how-it-works";
 import { Testimonials } from "@/sections/testimonials";
 import { FAQ } from "@/sections/faq";
 import { CTA } from "@/sections/cta";
+import { Contact } from "@/sections/contact";
 
 export function HomePage() {
   return (
@@ -27,10 +31,14 @@ export function HomePage() {
         <Hero />
         <TrustStrip />
         <Services />
+        <About />
+        <Pricing />
+        <CaseStudies />
         <HowItWorks />
         <Testimonials />
         <FAQ />
         <CTA />
+        <Contact />
       </main>
 
       <Footer />

@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/logo-mark";
-import { Button } from "@/components/ui/button";
+import { BookACallButton } from "@/components/book-a-call-button";
 import { NoiseOverlay } from "@/components/noise-overlay";
 import { PageTransition } from "@/components/page-transition";
 import { EASE_OUT, SPRING_HOVER } from "@/lib/motion";
@@ -90,12 +90,7 @@ function TrialCTA() {
           transition={{ duration: 0.6, delay: 0.1, ease: EASE_OUT }}
           className="mt-8"
         >
-          <Button size="lg" asChild>
-            <a href="mailto:hello@auxai.ai?subject=Book%20a%20call%20with%20AUXAI.AI">
-              Book a Call
-              <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
-            </a>
-          </Button>
+          <BookACallButton size="lg" />
         </motion.div>
       </div>
     </section>

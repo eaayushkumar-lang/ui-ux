@@ -479,3 +479,101 @@ choreography.
 gets an extra 0.75x multiplier on top of the 1.0→0.7 scroll-driven range,
 keeping the sphere sized sensibly on a narrow viewport rather than
 introducing a second, different position system for mobile.
+
+## 13. Marketing Page Expansion: About, Pricing, Case Studies, Contact, Blog
+
+A large round adding five new page-level surfaces and a batch of site-wide
+plumbing. New home-page sections sit between existing ones in this order:
+Hero, TrustStrip, Services, **About, Pricing, Case Studies**, How It Works,
+Testimonials, FAQ, CTA, **Contact**, Footer - so every previously-existing
+section keeps its own relative order, and the new ones slot in exactly
+where requested ("after Services", "after Pricing", "before Footer")
+without reshuffling anything else. Background alternation (`bg-bg` /
+`bg-surface`) continues through the new sections; with three insertions
+between two already-fixed endpoints, one adjacent repeat is unavoidable by
+parity - same tradeoff the original Services/TrustStrip pairing already
+made.
+
+**About** (`sections/about.tsx`): a photo-placeholder card (deliberately
+an icon in an amber-glow frame, not a generated "photo" - fabricating a
+photorealistic image of a specific named person would be inventing a fake
+photo, not filling a placeholder) plus founder copy and four `CountUp`
+stat cards (the existing count-up-on-scroll primitive from
+`service-demos/count-up.tsx`, reused rather than rebuilt).
+
+**Pricing** (`sections/pricing.tsx`): three tiers using a new
+`liquid-metal-card` utility (`index.css`) - a cursor-tracked sheen +
+diagonal glass shine, the card-scale cousin of the button's `liquid-metal`
+utility, both driven by the same `--mx`/`--my` custom-property pattern via
+a new shared `useCursorGlow` hook (`hooks/use-cursor-glow.ts`) so the
+mouse-tracking logic isn't copy-pasted per section. The Growth tier also gets
+`lg:-translate-y-4` and a persistent (not just hover) glow to read as
+"Most Popular" at rest, not only on interaction.
+
+**Case Studies** (`sections/case-studies.tsx`): reuses the exact
+`onViewportEnter` + `scaleX` progress-bar pattern already established in
+`service-demos/full-system-demo.tsx`, rather than inventing a second one.
+Metrics that exceed 100% (e.g. "340% faster") cap the bar's visual fill at
+100% while still displaying the real number as the label - a maxed-out bar
+reads as "target hit" rather than rendering nonsensically wide.
+
+**Contact** (`sections/contact.tsx`): client-side validation (name,
+email format, service selection, message all required; company
+optional), inline error states, and a success animation that swaps in via
+`AnimatePresence`. No backend exists for this static site, so a
+submission is saved to `localStorage` (`auxai_contact_submissions`) as an
+honest backup rather than silently discarded or faked as a real network
+call.
+
+**Blog** (`pages/blog.tsx`, route `/blog`): six placeholder posts in a
+responsive `md:grid-cols-3` grid. "Read More" intentionally does **not**
+navigate anywhere - detail pages don't exist yet, and a link to a
+non-existent page is worse than an honest toast. It calls a new global
+`useToast()` (`hooks/use-toast.tsx`, provider mounted once in `App.tsx`)
+instead. `/privacy` and `/terms` are different: those are real footer nav
+targets, so they get a real (if minimal) route each -
+`pages/coming-soon.tsx` - rather than a dead `href="#"`.
+
+**Book a Call, unified**: every "Book a Call" surface (Hero, CTA, Navbar,
+Footer, TrialShell) now routes through one `BookACallButton`
+(`components/book-a-call-button.tsx`) pointing at `CAL_LINK`
+(`lib/links.ts`, currently `https://cal.com` as an explicit placeholder),
+opening in a new tab with a trailing arrow icon - previously these five
+buttons had three different behaviors (scroll-to-CTA, `mailto:`, and
+scroll-to-CTA again). The Dynamic Island's compact nav pill keeps its
+existing icon-leads style (`PhoneCall` icon, no arrow) rather than forcing
+in a trailing arrow that would break the icon-then-label pattern shared
+by every other item in that nav.
+
+**Loading screen** (`components/loading-screen.tsx`): a 1.5s splash shown
+once per hard page load (it lives at the `App` root, which route changes
+never remount, so it can't replay on client-side navigation). Reuses
+`LiquidHeroTitle` for the wordmark rather than inventing a second liquid
+effect. Skipped entirely under `prefers-reduced-motion`.
+
+**Trust strip → metrics marquee** (`sections/trust-strip.tsx`): replaced
+the fabricated client-logo monograms (`components/client-logos.tsx`,
+deleted) with a duplicated-array CSS marquee (`marquee-track` utility) of
+real, honest metric labels. Reduced motion gets a static wrapped row
+instead of the scrolling track, not a paused-but-still-present one.
+
+**SEO & favicon**: `index.html` now carries a real title/description, Open
+Graph + Twitter Card tags, and a canonical URL - all pointed at
+`https://auxai.ai` as an explicit placeholder domain until the site has a
+real one. `og-image.svg`/`twitter:image` is a hand-built branded graphic
+(same reasoning as the About photo: a placeholder should look like a
+placeholder, not a faked photo). The favicon was quietly still the
+scaffold default (`#3fd9be` teal, never updated when the site's palette
+became amber/gold) - fixed to the real brand mark and colors.
+
+**Lazy loading - scoped to routes, not home sections.** `useActiveSection`
+(`hooks/use-active-section.ts`) queries `document.getElementById` exactly
+once, synchronously, in an effect that runs on mount - confirmed by
+reading its source before deciding this. If any home-page section were
+`React.lazy`-split, its element wouldn't exist in the DOM yet when that
+query ran, and it would never be observed again: the nav dots and Dynamic
+Island's active-section highlighting would silently break for that
+section. So `React.lazy` + `Suspense` was applied at the **route** level
+in `App.tsx` instead (every route except `/` and the tiny
+`ComingSoonPage`) - a real, safe instance of the same technique that
+doesn't touch the single continuously-scrollable home page at all.
