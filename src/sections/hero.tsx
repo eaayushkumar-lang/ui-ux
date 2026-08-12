@@ -27,24 +27,10 @@ export function Hero() {
       ref={sectionRef}
       className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-8"
     >
-      {/* Visual comes first in source order so it stacks on top on mobile;
-          the lg: grid puts it in the left column on desktop. */}
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:gap-10 lg:py-0">
-        <motion.div
-          initial={reduceMotion ? undefined : { opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: EASE }}
-          style={{ y: visualY }}
-          className="mx-auto aspect-square w-full max-w-[380px] sm:max-w-[440px] lg:max-w-none"
-        >
-          {/* The moving/scaling/fading Globe now lives in the page-root
-              FloatingGlobe overlay so it can drift across every section.
-              Reduced-motion users get a static Globe here instead, since
-              FloatingGlobe itself renders nothing when motion is reduced. */}
-          {reduceMotion && <Globe />}
-        </motion.div>
-
-        <div className="mx-auto max-w-lg text-center lg:mx-0 lg:text-left">
+      {/* Text comes first in source order so it stacks on top on mobile;
+          flex-row puts it in the left column on desktop, globe on the right. */}
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-12 px-6 py-16 lg:flex-row lg:gap-10 lg:py-0">
+        <div className="mx-auto max-w-lg text-center lg:mx-0 lg:basis-1/2 lg:text-left">
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -89,6 +75,20 @@ export function Hero() {
             </Button>
           </motion.div>
         </div>
+
+        <motion.div
+          initial={reduceMotion ? undefined : { opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: EASE }}
+          style={{ y: visualY }}
+          className="mx-auto aspect-square w-full max-w-[380px] sm:max-w-[440px] lg:max-w-none lg:basis-1/2"
+        >
+          {/* The moving/scaling/fading Globe lives in the page-root
+              FloatingGlobe overlay so it can slide across the whole page.
+              Reduced-motion users get a static Globe here instead, since
+              FloatingGlobe itself renders nothing when motion is reduced. */}
+          {reduceMotion && <Globe />}
+        </motion.div>
       </div>
     </section>
   );

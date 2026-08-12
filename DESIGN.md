@@ -413,53 +413,54 @@ with how the same swap was handled earlier in this project's history (see
 the changelog for the original `globe.tsx` → `NeuralVisual` swap this one
 reverses).
 
-## 12. Floating Globe: Scroll-Linked Cross-Section Movement
+## 12. Hero Split Layout & Floating Globe Scroll Drift
 
-Supersedes the hero-scoped placement from section 11. The Globe is now a
-page-root, `position: fixed` overlay (`components/floating-globe.tsx`,
-mounted once in `pages/home.tsx` next to `NoiseOverlay`/`ParticleField`)
-that drifts side to side, rescales, and fades as the user scrolls past
-each section - Hero (right, 1.4x, 0.85 opacity) → Services (left, 0.9x,
-0.5) → How It Works (right, 1.2x, 0.7) → Testimonials (left, 0.8x, 0.4) →
-FAQ (right, 1.0x, 0.5) → CTA (center, 1.8x, 0.3 backdrop). It fades fully
-to 0 opacity past the CTA section's bottom edge so it never lingers over
-the Footer, mirroring the fade-out `ParticleField` already does at the
-same boundary.
+**Hero layout** (`sections/hero.tsx`): a flexbox split, not a grid -
+`flex flex-col lg:flex-row`. Text is first in source order (title,
+tagline, buttons), the Globe's layout slot second, so mobile naturally
+stacks text-on-top/globe-below via source order alone, and desktop's
+`lg:flex-row` puts text left / globe right with `lg:basis-1/2` on both
+children for an explicit 50/50 split. The Globe slot itself renders empty
+on non-reduced-motion - see below for why.
 
-**Why this needed real DOM measurement, not evenly-spaced breakpoints:**
-mapping scroll progress to section targets with a naive 1/6th-per-section
-split would drift out of sync with what's actually on screen, because
-sections aren't equal height - How It Works alone is a pinned 220vh
-section. Breakpoints are instead measured from each section's real
-`getBoundingClientRect()` top (the same ids `useActiveSection` and
-`ParticleField` already track), re-measured on resize/load and once more
-after a settle delay for late image/font-driven layout shifts.
+**Floating Globe** (`components/floating-globe.tsx`): a page-root,
+`position: fixed`, `mix-blend-screen` overlay (mounted once in
+`pages/home.tsx` next to `NoiseOverlay`/`ParticleField`, same layering
+technique both already use so it can render above every section's opaque
+background without painting over text - screen blending only ever
+brightens what's beneath it). It slides in one continuous motion across
+the *whole* page scroll, not per-section: right → center → left
+horizontally on desktop (`x`, `±28vw`), or below → center → above
+vertically on mobile (`y`, `±18vh`, `x` held at 0) as `scrollYProgress`
+goes `0 → 0.5 → 1`. Scale eases `1.0 → 0.7` and opacity `0.85 → 0.3`
+across the same full-page range, each wrapped in `useSpring` on the
+project's existing `SPRING_SMOOTH` preset (`stiffness 100, damping 30,
+mass 0.5`) so the drift glides under scroll of any speed instead of
+tracking the scrollbar frame-for-frame.
 
-**Why `mix-blend-screen`:** every section has an opaque background, so a
-fixed overlay rendered above them (it has to be, to stay visible while
-scrolling past solid-filled sections) would otherwise paint over text.
-Screen blending - the same technique `NoiseOverlay` and `ParticleField`
-already use - only ever brightens what's beneath it, so the globe's dark
-pixels contribute nothing and it reads as ambient light behind the copy
-rather than an image sitting on top of it.
+This replaced an earlier version (built one round prior, kept here for
+context since it's what "Supersedes..." referred to before this
+rewrite) that measured each section's real DOM position and gave the
+globe a distinct side/scale/opacity *per named section*, alternating
+sides on every section boundary. The current spec asks for one simple,
+continuous slide across total scroll progress instead, so the per-section
+DOM-measurement machinery (and the `SPRING_DRIFT` preset it used) was
+removed rather than left as unused dead code alongside the simpler
+replacement - two competing position systems living in the same file
+would only invite drift between them.
 
-**Spring vs. tween:** the request asked for both "spring physics" and a
-"1400ms cubic-bezier(0.23, 1, 0.32, 1)" transition - two different
-animation systems that can't both literally apply to the same value. Built
-it as a spring (a new `SPRING_DRIFT` preset in `lib/motion.ts`: stiffness
-30, damping 22, mass 1) tuned to settle in roughly the same ~1.4s a
-duration+easing tween would take, since a spring is what makes the drift
-glide smoothly under scroll of any speed rather than tracking the
-scrollbar 1:1 or snapping linearly - a fixed-duration tween re-triggered
-on every scroll tick would fight itself.
+One consequence worth naming: opacity now bottoms out at 0.3 (never 0),
+by explicit spec, so the globe is faintly visible over the Footer at the
+very bottom of the page rather than fading out completely the way the
+prior version's CTA-boundary fade did.
 
 **Reduced motion:** `FloatingGlobe` renders nothing at all when
-`prefers-reduced-motion` is set (no scroll-driven repositioning, full
-stop) - `sections/hero.tsx` falls back to rendering a single static Globe
-in its own visual column in that case, so reduced-motion visitors still
-see the sphere, just without any of the drift/scale/fade choreography.
+`prefers-reduced-motion` is set - `sections/hero.tsx` falls back to
+rendering a single static Globe in its own layout slot in that case, so
+reduced-motion visitors still see the sphere, just without any scroll
+choreography.
 
-**Mobile:** side-drift offset shrinks from 26vw to 15vw and scale gets an
-additional 0.75x multiplier on top of each section's own scale, keeping
-the sphere on-screen at every breakpoint on a narrow viewport without
+**Mobile:** beyond switching the drift axis from `x` to `y`, scale also
+gets an extra 0.75x multiplier on top of the 1.0→0.7 scroll-driven range,
+keeping the sphere sized sensibly on a narrow viewport rather than
 introducing a second, different position system for mobile.
