@@ -74,7 +74,7 @@ export function HowItWorks() {
 
   if (reduceMotion) {
     return (
-      <section id="how-it-works" className="relative z-10 bg-bg py-24 lg:py-32">
+      <section id="how-it-works" className="relative z-10 bg-bg py-24 lg:py-32 [contain:layout_style_paint]">
         <div className="mx-auto max-w-7xl px-6">
           <Heading />
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -88,7 +88,12 @@ export function HowItWorks() {
   }
 
   return (
-    <section id="how-it-works" ref={wrapRef} className="relative bg-bg" style={{ height: "220vh" }}>
+    <section
+      id="how-it-works"
+      ref={wrapRef}
+      className="relative bg-bg [contain:layout_style]"
+      style={{ height: "220vh" }}
+    >
       <div className="sticky top-0 flex h-dvh flex-col justify-center overflow-hidden py-16">
         <div className="mx-auto w-full max-w-7xl px-6">
           <motion.div

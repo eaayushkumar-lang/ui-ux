@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { SPRING_HOVER } from "@/lib/motion";
@@ -101,13 +101,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? MotionSlot : MotionButton;
     const localRef = React.useRef<HTMLButtonElement>(null);
     const v = (variant ?? "primary") as ButtonVariant;
+    const reduceMotion = useReducedMotion();
 
     function handleMouseMove(event: React.MouseEvent<HTMLButtonElement>) {
-      const el = localRef.current;
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        el.style.setProperty("--mx", `${event.clientX - rect.left}px`);
-        el.style.setProperty("--my", `${event.clientY - rect.top}px`);
+      // Liquid-metal cursor-follow sheen is purely decorative - skip the
+      // imperative style writes under reduced motion so --mx/--my stay at
+      // their static CSS-default fallback (a fixed, non-tracking highlight).
+      if (!reduceMotion) {
+        const el = localRef.current;
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          el.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+          el.style.setProperty("--my", `${event.clientY - rect.top}px`);
+        }
       }
       onMouseMove?.(event);
     }

@@ -1,13 +1,21 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, ChevronDown, MailCheck } from "lucide-react";
+import emailjs from "@emailjs/browser";
+import { AlertCircle, CheckCircle2, ChevronDown, Loader2, MailWarning } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EASE_OUT as EASE } from "@/lib/motion";
 import { LiquidHeadingReveal } from "@/components/liquid-text";
+import {
+  CONTACT_DESTINATION_EMAIL,
+  EMAILJS_PUBLIC_KEY,
+  EMAILJS_SERVICE_ID,
+  EMAILJS_TEMPLATE_ID,
+} from "@/lib/emailjs";
 import { cn } from "@/lib/utils";
 
 const SERVICES = ["AI Agents", "Workflow Automation", "Voice Agents", "Full AI System"];
 const STORAGE_KEY = "auxai_contact_submissions";
+const MESSAGE_MIN_LENGTH = 10;
 
 interface FormState {
   name: string;
@@ -16,6 +24,8 @@ interface FormState {
   service: string;
   message: string;
 }
+
+type Status = "idle" | "sending" | "success" | "error";
 
 const initialState: FormState = { name: "", email: "", company: "", service: "", message: "" };
 
@@ -28,12 +38,15 @@ function validate(values: FormState) {
   else if (!EMAIL_RE.test(values.email)) errors.email = "That doesn't look like a valid email.";
   if (!values.service) errors.service = "Pick the service you need.";
   if (!values.message.trim()) errors.message = "Add a few words about what you need.";
+  else if (values.message.trim().length < MESSAGE_MIN_LENGTH)
+    errors.message = `Message must be at least ${MESSAGE_MIN_LENGTH} characters.`;
   return errors;
 }
 
-/** No backend exists for this static site, so a submission is persisted
- * to localStorage as a lightweight backup rather than silently discarded -
- * an honest placeholder for a real submission endpoint, not a pretend one. */
+/** No backend exists for this static site, so every submission attempt
+ * is persisted to localStorage as a backup regardless of whether the
+ * EmailJS send itself succeeds - real data is never lost just because
+ * the EmailJS placeholder IDs above haven't been swapped in yet. */
 function saveSubmission(values: FormState) {
   try {
     const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
@@ -42,37 +55,61 @@ function saveSubmission(values: FormState) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   } catch {
     // localStorage can throw in private-browsing/storage-full edge cases -
-    // the submission still "succeeds" from the visitor's perspective.
+    // the submission still gets its EmailJS attempt either way.
   }
 }
 
 const fieldClass =
-  "w-full rounded-xl border border-line bg-bg/60 px-4 py-3 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-accent/50 focus:outline-none";
+  "w-full rounded-xl border border-line bg-bg/60 px-4 py-3 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-accent/50 focus:outline-none disabled:opacity-50";
 const errorFieldClass = "border-[#ff6b6b]/50 focus:border-[#ff6b6b]/70";
 
 export function Contact() {
   const [values, setValues] = useState<FormState>(initialState);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+  const sending = status === "sending";
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setValues((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     const nextErrors = validate(values);
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       return;
     }
+
+    setStatus("sending");
     saveSubmission(values);
-    setSubmitted(true);
+
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name: values.name,
+          from_email: values.email,
+          company: values.company,
+          service: values.service,
+          message: values.message,
+          to_email: CONTACT_DESTINATION_EMAIL,
+        },
+        { publicKey: EMAILJS_PUBLIC_KEY },
+      );
+      setStatus("success");
+    } catch {
+      // Expected until the placeholder EMAILJS_* ids in lib/emailjs.ts are
+      // swapped for real ones - the submission is already safe in
+      // localStorage from saveSubmission() above regardless.
+      setStatus("error");
+    }
   }
 
   return (
-    <section id="contact" className="relative z-10 bg-bg py-24 lg:py-32">
+    <section id="contact" className="relative z-10 bg-bg py-24 lg:py-32 [contain:layout_style_paint]">
       <div className="mx-auto max-w-2xl px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -92,7 +129,7 @@ export function Contact() {
           className="glass-card relative mt-12 overflow-hidden rounded-[var(--radius-card)] border-accent/20 p-8 sm:p-10"
         >
           <AnimatePresence mode="wait">
-            {submitted ? (
+            {status === "success" ? (
               <motion.div
                 key="success"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -105,19 +142,19 @@ export function Contact() {
                   initial={{ scale: 0, rotate: -30 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.1 }}
-                  className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-accent to-accent-2 text-accent-ink shadow-[0_0_40px_-6px_rgba(255,184,0,0.7)]"
+                  className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-[#22c55e] to-[#4ade80] text-[#04140a] shadow-[0_0_40px_-6px_rgba(74,222,128,0.6)]"
                 >
-                  <MailCheck className="h-8 w-8" strokeWidth={1.75} />
+                  <CheckCircle2 className="h-8 w-8" strokeWidth={1.75} />
                 </motion.span>
                 <h3 className="mt-6 text-xl font-medium text-ink">Message Sent!</h3>
                 <p className="mt-2 max-w-xs text-[15px] leading-relaxed text-ink-dim">
-                  We'll get back within 24 hours.
+                  We'll respond within 24 hours.
                 </p>
                 <button
                   type="button"
                   onClick={() => {
                     setValues(initialState);
-                    setSubmitted(false);
+                    setStatus("idle");
                   }}
                   className="mt-6 text-[13px] text-ink-faint underline decoration-line underline-offset-4 transition-colors hover:text-ink"
                 >
@@ -141,6 +178,7 @@ export function Contact() {
                     value={values.name}
                     onChange={(e) => update("name", e.target.value)}
                     placeholder="Your name"
+                    disabled={sending}
                     className={cn(fieldClass, errors.name && errorFieldClass)}
                   />
                 </Field>
@@ -152,6 +190,7 @@ export function Contact() {
                       value={values.email}
                       onChange={(e) => update("email", e.target.value)}
                       placeholder="you@company.com"
+                      disabled={sending}
                       className={cn(fieldClass, errors.email && errorFieldClass)}
                     />
                   </Field>
@@ -161,6 +200,7 @@ export function Contact() {
                       value={values.company}
                       onChange={(e) => update("company", e.target.value)}
                       placeholder="Company name"
+                      disabled={sending}
                       className={fieldClass}
                     />
                   </Field>
@@ -171,6 +211,7 @@ export function Contact() {
                     <select
                       value={values.service}
                       onChange={(e) => update("service", e.target.value)}
+                      disabled={sending}
                       className={cn(
                         fieldClass,
                         "appearance-none pr-10",
@@ -200,12 +241,33 @@ export function Contact() {
                     onChange={(e) => update("message", e.target.value)}
                     placeholder="What do you want to automate?"
                     rows={4}
+                    disabled={sending}
                     className={cn(fieldClass, "resize-none", errors.message && errorFieldClass)}
                   />
                 </Field>
 
-                <Button type="submit" size="lg" className="mt-2 w-full">
-                  Send Message
+                {status === "error" && (
+                  <div className="flex items-start gap-2.5 rounded-xl border border-[#ff6b6b]/30 bg-[#ff6b6b]/10 px-4 py-3 text-[13px] leading-relaxed text-[#ff8787]">
+                    <MailWarning className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.75} />
+                    <span>
+                      Something went wrong. Please try again or email us directly at{" "}
+                      <a href={`mailto:${CONTACT_DESTINATION_EMAIL}`} className="underline decoration-current underline-offset-2">
+                        {CONTACT_DESTINATION_EMAIL}
+                      </a>
+                      .
+                    </span>
+                  </div>
+                )}
+
+                <Button type="submit" size="lg" className="mt-2 w-full" disabled={sending}>
+                  {sending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.75} />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Message"
+                  )}
                 </Button>
               </motion.form>
             )}

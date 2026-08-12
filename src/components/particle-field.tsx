@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
+import { watchForElements } from "@/lib/watch-for-elements";
 
 interface Pt {
   x: number;
@@ -114,18 +115,34 @@ function buildShapes(count: number): Record<ShapeKey, Pt[]> {
  * to look "roughly right", and skipping most frames meaningfully cuts the
  * per-frame cost at 250+ particles.
  */
+/** Rough low-end-device heuristic: few logical cores and/or little RAM, per
+ * the Device Memory / Hardware Concurrency APIs. Both are undefined on
+ * browsers that don't support them (notably Safari), so an unknown value is
+ * treated as "not low-end" rather than penalizing those visitors. */
+function isLowEndDevice(): boolean {
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  const cores = navigator.hardwareConcurrency;
+  return (memory !== undefined && memory <= 4) || (cores !== undefined && cores <= 4);
+}
+
 export function ParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
+    // Reduced motion hides the field entirely rather than freezing it on a
+    // static frame - the canvas is purely decorative ambient motion, and
+    // there's no readable "content" lost by skipping it outright.
+    if (reduceMotion) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const isMobile = window.innerWidth < 768;
-    const COUNT = isMobile ? 100 : 260;
+    const isLowEnd = isLowEndDevice();
+    const COUNT = isMobile ? (isLowEnd ? 80 : 100) : 260;
     const EDGE_THRESHOLD = isMobile ? 0.13 : 0.1;
     const shapes = buildShapes(COUNT);
     const current: Pt[] = shapes.hero.map((p) => ({ ...p }));
@@ -164,6 +181,11 @@ export function ParticleField() {
       measureZones();
     }
     window.addEventListener("resize", handleResize);
+
+    // Sections below the fold may be React.lazy-loaded and not yet in the
+    // DOM on first measure - re-measure as each one mounts so scroll-linked
+    // shape blending lines up with the real section boundaries once ready.
+    const stopWatchingSections = watchForElements([...SHAPE_ORDER, "cta"], measureZones);
 
     const scrollState = { y: window.scrollY };
     function onScroll() {
@@ -279,27 +301,24 @@ export function ParticleField() {
       raf = requestAnimationFrame(tick);
     }
 
-    if (reduceMotion) {
-      recomputeEdges();
-      canvas!.style.opacity = "0.4";
-      drawFrame(1);
-    } else {
-      raf = requestAnimationFrame(tick);
-    }
+    raf = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("mousemove", onMouseMove);
+      stopWatchingSections();
     };
   }, [reduceMotion]);
+
+  if (reduceMotion) return null;
 
   return (
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="gpu pointer-events-none fixed inset-0 z-[15] mix-blend-screen"
+      className="gpu-active pointer-events-none fixed inset-0 z-[15] mix-blend-screen"
     />
   );
 }

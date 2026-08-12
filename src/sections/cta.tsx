@@ -19,14 +19,14 @@ export function CTA() {
     <section
       id="cta"
       ref={sectionRef}
-      className="relative z-10 overflow-hidden bg-surface py-28 lg:py-36"
+      className="relative z-10 overflow-hidden bg-surface py-28 lg:py-36 [contain:layout_style_paint]"
     >
       <div className="absolute inset-0">
         <motion.img
           src="https://picsum.photos/seed/auxai-systems-dark/1800/900"
           alt=""
           style={{ opacity: imageOpacity, scale: imageScale }}
-          className="gpu h-full w-full object-cover"
+          className="gpu-active h-full w-full object-cover"
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/85 to-surface/70" />

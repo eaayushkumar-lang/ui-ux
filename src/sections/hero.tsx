@@ -26,7 +26,7 @@ export function Hero() {
     <section
       id="hero"
       ref={sectionRef}
-      className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-8"
+      className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-8 [contain:layout_style_paint]"
     >
       {/* Text comes first in source order so it stacks on top on mobile;
           flex-row puts it in the left column on desktop, globe on the right. */}

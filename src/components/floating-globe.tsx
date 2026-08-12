@@ -86,7 +86,7 @@ export function FloatingGlobe() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-[14] flex items-center justify-center mix-blend-screen"
     >
-      <motion.div className="gpu" style={{ x, y, scale, opacity }}>
+      <motion.div className="gpu-active" style={{ x, y, scale, opacity }}>
         <Globe />
       </motion.div>
     </div>

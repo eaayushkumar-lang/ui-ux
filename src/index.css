@@ -106,7 +106,23 @@
   border: 1px solid rgb(255 184 0 / 0.1);
 }
 
+/* Promotes to a GPU compositing layer only while actually interacted with
+ * (hover/focus) - most usages sit on cards/buttons whose transform only
+ * changes on a Framer Motion whileHover, so leaving will-change: transform
+ * on permanently would hold a compositing layer open for every card on the
+ * page for no benefit. Continuously-animating elements (marquee, breathe,
+ * scroll-linked parallax, the particle canvas) use `gpu-active` instead. */
 @utility gpu {
+  will-change: auto;
+  transform: translateZ(0);
+
+  &:hover,
+  &:focus-visible {
+    will-change: transform;
+  }
+}
+
+@utility gpu-active {
   will-change: transform;
   transform: translateZ(0);
 }
@@ -241,6 +257,27 @@
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* Global escape hatch for every *CSS*-driven animation/transition site-
+   * wide (marquee, breathe, blink, shimmer, accordion open/close, the
+   * liquid-metal click ripple, hover transitions, etc.). !important is
+   * deliberate here - it's the one place in this codebase intentionally
+   * overriding component-level utility classes, since a bare `*` selector
+   * otherwise loses to literally every more-specific animation/transition
+   * class already in use. This does NOT reach Framer Motion's own
+   * transform/opacity animations (Motion drives those via direct inline
+   * style writes on every frame, not CSS transitions), which is why the
+   * app is also wrapped in <MotionConfig reducedMotion="user"> and why
+   * the canvas/SVG-filter-driven effects (particle field, floating globe,
+   * liquid text) each have their own useReducedMotion() checks. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

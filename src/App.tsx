@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, MotionConfig } from "framer-motion";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { HomePage } from "@/pages/home";
 import { ComingSoonPage } from "@/pages/coming-soon";
@@ -112,12 +112,21 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
-    <ToastProvider>
-      <LoadingScreen />
-      <BrowserRouter>
-        <ScrollToTop />
-        <AnimatedRoutes />
-      </BrowserRouter>
-    </ToastProvider>
+    // reducedMotion="user" defers to the OS-level prefers-reduced-motion
+    // setting for every Motion-driven transform/opacity animation site-wide
+    // (these are set via direct inline style writes each frame, so they sit
+    // outside the CSS `!important` escape hatch in index.css - see the
+    // comment there). Canvas/SVG-filter-driven effects that Motion doesn't
+    // touch (particle field, floating globe, liquid text, this button's
+    // cursor-follow sheen) still carry their own useReducedMotion() checks.
+    <MotionConfig reducedMotion="user">
+      <ToastProvider>
+        <LoadingScreen />
+        <BrowserRouter>
+          <ScrollToTop />
+          <AnimatedRoutes />
+        </BrowserRouter>
+      </ToastProvider>
+    </MotionConfig>
   );
 }

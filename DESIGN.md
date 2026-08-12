@@ -566,14 +566,112 @@ placeholder, not a faked photo). The favicon was quietly still the
 scaffold default (`#3fd9be` teal, never updated when the site's palette
 became amber/gold) - fixed to the real brand mark and colors.
 
-**Lazy loading - scoped to routes, not home sections.** `useActiveSection`
-(`hooks/use-active-section.ts`) queries `document.getElementById` exactly
-once, synchronously, in an effect that runs on mount - confirmed by
-reading its source before deciding this. If any home-page section were
-`React.lazy`-split, its element wouldn't exist in the DOM yet when that
-query ran, and it would never be observed again: the nav dots and Dynamic
-Island's active-section highlighting would silently break for that
-section. So `React.lazy` + `Suspense` was applied at the **route** level
-in `App.tsx` instead (every route except `/` and the tiny
-`ComingSoonPage`) - a real, safe instance of the same technique that
-doesn't touch the single continuously-scrollable home page at all.
+**Lazy loading - routes, and (as of the performance round below) home
+sections too.** `React.lazy` + `Suspense` was applied at the **route**
+level in `App.tsx` (every route except `/` and the tiny
+`ComingSoonPage`). Home-page sections were initially left alone: earlier,
+`useActiveSection` and `ParticleField` both queried `document.getElementById`
+exactly once, synchronously, on mount, so a lazy-split section's element
+wouldn't exist yet when that query ran and would never be observed after
+- silently breaking nav-dot/Dynamic-Island highlighting and the particle
+shape morphing for that section. The performance round below replaced
+that one-shot query with a shared `watchForElements` MutationObserver
+utility in both places, which is what made it safe to also code-split the
+home page's own sections (see below).
+
+## 9. Round 4: Backend Wiring, Analytics, and Performance
+
+**Contact form → EmailJS** (`sections/contact.tsx`, `lib/emailjs.ts`):
+client-side send via `@emailjs/browser`, config split into its own module
+with three explicit placeholders (`YOUR_EMAILJS_SERVICE_ID`/`_TEMPLATE_ID`/
+`_PUBLIC_KEY`) commented with where to get the real values. The
+`localStorage` backup from Round 3 stays and now runs *before* the send
+attempt, unconditionally - so a submission is never lost even before the
+placeholders are swapped for real credentials. Status is now a 4-state
+`"idle" | "sending" | "success" | "error"` machine instead of a boolean:
+a spinner + disabled inputs while sending, a green success state (the
+one deliberate, narrow exception to the amber-only palette - success
+green is a distinct semantic signal, same reasoning as the existing red
+error-state exception), and a red inline error pointing at a direct
+`mailto:` fallback. Validation gained a 10-character minimum on the
+message field.
+
+**Book a Call → real destination.** `lib/links.ts` now points
+`CAL_LINK` at `https://cal.com/auxai` (was the bare domain). Every
+`BookACallButton` (Hero, CTA, Footer, TrialShell) and the Navbar's
+Dynamic Island pill now render a leading `CalendarDays` icon in addition
+to the existing trailing arrow, and both explicitly set
+`rel="noopener noreferrer"`.
+
+**OG image, for real.** `public/og-image.svg` was rebuilt as a proper
+1200×630 hand-coded vector - dark background, the site's actual grid +
+particle-constellation visual language (not just a flat color), an amber
+glow, and the wordmark as one gradient-filled `<text>` element instead of
+two mismatched colors. It's rasterized to `public/og-image.png` via a
+Playwright screenshot (load the SVG as an `<img>` at exact target size,
+clip-capture) rather than guessed at - `index.html`'s `og:image`/
+`twitter:image` now point at the PNG, with explicit width/height meta
+tags so crawlers don't have to fetch it to know the aspect ratio.
+
+**Analytics placeholders.** `index.html` carries a standard GA4
+`gtag.js` snippet with the placeholder measurement ID `G-XXXXXXXXXX`
+(commented with where to get the real one), plus a commented-out
+Plausible Analytics `<script>` as a documented alternative - neither
+fires anything until a real ID is dropped in.
+
+**Reduced motion, actually threaded through.** `index.css` gained a
+global `@media (prefers-reduced-motion: reduce)` escape hatch
+(`animation-duration`/`transition-duration: 0.01ms !important` on `*`)
+that catches every CSS-driven animation/transition site-wide in one
+place. That doesn't reach Framer Motion's own transform/opacity
+animations, which write directly to inline styles every frame rather
+than going through CSS transitions - so `App.tsx` now also wraps the
+whole tree in `<MotionConfig reducedMotion="user">`, verified against
+Motion's own source (`use-reduced-motion-config.mjs` →
+`use-visual-element.mjs`) to confirm the prop is genuinely threaded into
+visual-element creation rather than a no-op. Component-level canvas/SVG
+effects that Motion doesn't touch keep their own `useReducedMotion()`
+checks: `ParticleField` now returns `null` outright under reduced motion
+(previously it rendered one static frame) and picks a lower particle
+count (`80` instead of `100`) on mobile devices that also report low
+`navigator.deviceMemory`/`hardwareConcurrency`; `Button`'s cursor-follow
+liquid-metal sheen skips its `--mx`/`--my` writes under reduced motion,
+leaving the sheen at its static centered CSS default instead of tracking
+the pointer. `FloatingGlobe`'s rotation was already gated the same way
+and needed no change.
+
+**Home page sections are now code-split.** `pages/home.tsx` converts
+every section below `Hero` (`TrustStrip` through `Contact`, plus
+`Footer`) to `React.lazy` under one shared `<Suspense fallback={null}>`.
+This was only safe because of a new `lib/watch-for-elements.ts` utility -
+a small MutationObserver wrapper that watches for a set of element ids to
+mount and reports them as they appear, rather than the one-shot
+`document.getElementById` both `useActiveSection` and `ParticleField`'s
+scroll-zone measurement used to rely on. Both were rewritten against it:
+`useActiveSection` creates its `IntersectionObserver` once and calls
+`.observe()` on each section as it mounts; `ParticleField` re-measures
+its shape-morph zone boundaries every time a new section appears.
+
+**Performance micro-optimizations.** `main.tsx` preloads the variable
+Outfit font via a Vite `?url` import of the exact hashed build asset
+(the filename isn't known until build time, so a static `<link>` in
+`index.html` isn't possible) rather than waiting for `index.css`'s
+`@import` to be discovered. `index.html` gained `dns-prefetch` for
+Cal.com and EmailJS's API host, plus a `fetchpriority="high"` preload
+for the hero's globe background image (the closest thing this page has
+to a hero image - there's no `<img>` in the hero itself). Every
+`<section>` gets `contain: layout style paint` (via a Tailwind arbitrary
+property, since the codebase has no matching `@utility`) for rendering
+isolation, except the desktop scroll-pinned How It Works section, which
+only gets `layout style` - `paint` containment was deliberately left off
+there given how much that section's sticky-pin + horizontal-scroll
+mechanism relies on content that visually spans its full 220vh height.
+The `gpu` utility (`will-change: transform`) used to apply permanently to
+every glass-card and button on the page; it's now conditional
+(`will-change: auto`, promoted to `transform` only on `:hover`/
+`:focus-visible`) so dozens of idle cards don't each hold open a GPU
+compositing layer for no reason. A new `gpu-active` utility keeps the old
+always-on behavior for the handful of elements that really do animate
+continuously regardless of hover state: `FloatingGlobe`, `ParticleField`,
+the About section's breathing avatar box, the trust-strip marquee, and
+the CTA section's scroll-linked background image.

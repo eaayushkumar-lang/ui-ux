@@ -8,10 +8,11 @@ import {
   useScroll,
 } from "framer-motion";
 import {
+  ArrowUpRight,
   BookOpen,
+  CalendarDays,
   CircleHelp,
   LayoutGrid,
-  PhoneCall,
   Star,
   Workflow,
   type LucideIcon,
@@ -117,14 +118,19 @@ function NavCTA({ expanded }: { expanded: boolean }) {
       layout
       href={CAL_LINK}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={SPRING_ISLAND}
       className="relative flex shrink-0 cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-2 px-3 py-2 text-sm font-medium text-accent-ink shadow-[0_0_0_1px_rgba(255,184,0,0.35),0_10px_24px_-10px_rgba(255,107,0,0.7)]"
     >
-      <PhoneCall className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-      <NavLabel expanded={expanded}>Book a Call</NavLabel>
+      <CalendarDays className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+      <NavLabel expanded={expanded}>
+        <span className="flex items-center gap-1">
+          Book a Call
+          <ArrowUpRight className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
+        </span>
+      </NavLabel>
     </motion.a>
   );
 }

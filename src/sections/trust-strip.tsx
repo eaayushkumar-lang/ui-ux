@@ -25,7 +25,7 @@ export function TrustStrip() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section className="relative z-10 overflow-hidden rounded-t-[2rem] border-b border-line/60 bg-surface py-10 shadow-[0_-32px_64px_-32px_rgba(10,6,3,0.6)]">
+    <section className="relative z-10 overflow-hidden rounded-t-[2rem] border-b border-line/60 bg-surface py-10 shadow-[0_-32px_64px_-32px_rgba(10,6,3,0.6)] [contain:layout_style_paint]">
       <div className="mx-auto max-w-7xl px-6">
         <motion.p
           initial={{ opacity: 0 }}
@@ -58,7 +58,7 @@ export function TrustStrip() {
             ))}
           </div>
         ) : (
-          <div className="gpu marquee-track flex w-max items-center">
+          <div className="gpu-active marquee-track flex w-max items-center">
             {[...metrics, ...metrics].map((metric, i) => (
               <MetricItem key={`${metric.label}-${i}`} metric={metric} />
             ))}
