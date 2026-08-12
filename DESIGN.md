@@ -428,16 +428,30 @@ on non-reduced-motion - see below for why.
 `pages/home.tsx` next to `NoiseOverlay`/`ParticleField`, same layering
 technique both already use so it can render above every section's opaque
 background without painting over text - screen blending only ever
-brightens what's beneath it). It slides in one continuous motion across
-the *whole* page scroll, not per-section: on desktop, `x` goes right
-(`28vw`) at 0% scroll → center (`0vw`) by 30% scroll, then **holds
-center** for the remaining 70% of the page - it does not continue on to
-the left. On mobile, `y` still drifts below → center → above (`±18vh`,
-`x` held at 0) across `0 → 0.5 → 1`, unchanged. Scale eases `1.0 → 0.7`
-and opacity `0.85 → 0.3` across the full-page range on both, each wrapped
-in `useSpring` on the project's existing `SPRING_SMOOTH` preset
-(`stiffness 100, damping 30, mass 0.5`) so the drift glides under scroll
-of any speed instead of tracking the scrollbar frame-for-frame.
+brightens what's beneath it).
+
+On desktop, `x` tracks scroll progress through **the hero section only**
+(a second, separate `useScroll({ target: heroRef, offset: ["start
+start", "end start"] })`, not the whole-page one used for everything
+else) - right (`28vw`) at the top of the hero → center (`0vw`) by just
+10% of the way through the hero, then holds center. Because Motion's
+`useTransform` clamps at the output range's edges once the input exceeds
+it, "holds center for the rest of the page" falls out for free: once
+scrolled past the hero, hero-scroll-progress is pinned at `1` and `x`
+stays `0` no matter how much further the page scrolls. `heroRef` is
+populated by `document.getElementById("hero")` in an effect declared
+*after* the `useScroll` call - `useScroll` explicitly supports this (see
+its source: it defers to a microtask and waits for a pending ref rather
+than latching onto the wrong scroll container), so the ordering here is
+intentional and safe, not a race.
+
+On mobile, `y` still drifts below → center → above (`±18vh`, `x` held at
+0) across the *whole page's* scroll progress, `0 → 0.5 → 1`, unchanged.
+Scale eases `1.0 → 0.7` and opacity `0.85 → 0.3` across the whole page on
+both, each wrapped in `useSpring` on the project's existing
+`SPRING_SMOOTH` preset (`stiffness 100, damping 30, mass 0.5`) so every
+axis glides under scroll of any speed instead of tracking the scrollbar
+frame-for-frame.
 
 This replaced an earlier version (built one round prior, kept here for
 context since it's what "Supersedes..." referred to before this
