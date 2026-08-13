@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Compass } from "lucide-react";
-import { Globe } from "@/components/ui/globe";
+import { RobotFlyby } from "@/components/ui/robot-flyby";
 import { Button } from "@/components/ui/button";
 import { BookACallButton } from "@/components/book-a-call-button";
 import { LiquidHeroTitle, ShimmerText } from "@/components/liquid-text";
@@ -78,11 +78,13 @@ export function Hero() {
           style={{ y: visualY }}
           className="mx-auto aspect-square w-full max-w-[380px] sm:max-w-[440px] lg:max-w-none lg:basis-1/2"
         >
-          {/* The moving/scaling/fading Globe lives in the page-root
+          {/* The moving/scaling/fading robot lives in the page-root
               FloatingGlobe overlay so it can slide across the whole page.
-              Reduced-motion users get a static Globe here instead, since
-              FloatingGlobe itself renders nothing when motion is reduced. */}
-          {reduceMotion && <Globe />}
+              Reduced-motion users get a static fallback here instead, since
+              FloatingGlobe itself renders nothing when motion is reduced -
+              RobotFlyby detects reduced motion itself and swaps in an amber
+              Bot glyph rather than ever mounting the Spline iframe. */}
+          {reduceMotion && <RobotFlyby />}
         </motion.div>
       </div>
     </section>
