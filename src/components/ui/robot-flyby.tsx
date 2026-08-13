@@ -1,6 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  animate,
   motion,
   useMotionValue,
   useMotionValueEvent,
@@ -12,21 +11,8 @@ import {
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { SPRING_ROBOT_TILT } from "@/lib/motion";
-import { LOADING_SCREEN_MS } from "@/components/loading-screen";
-
-// The hero mounts (and this entrance animation starts) immediately, at the
-// same time as the full-screen LoadingScreen overlay - without this delay
-// the whole exploded-assembly plays out hidden behind that splash and the
-// visitor never actually sees it happen. Starting exactly when the splash
-// begins its own fade-out means the assembly is revealed mid-flight through
-// the dissolving overlay, which reads as a deliberate reveal rather than a
-// coincidence of two unrelated timers.
-const LOADING_SCREEN_DELAY_MS = LOADING_SCREEN_MS;
 
 const MAX_TILT_DEG = 12;
-const DESKTOP_DURATION = 1.8;
-const MOBILE_DURATION = 1;
-const ENTRANCE_BOUNCE = 0.22;
 // Scroll maps to assembly progress across this fraction of one viewport
 // height of scrolling from the page top (Hero starts at the top and is
 // exactly one viewport tall, so this is "the first quarter of scrolling
@@ -52,12 +38,12 @@ type Piece = {
   // guaranteed by construction, since it's fundamentally one continuous
   // image viewed through three differently-shaped windows.
   clipPath: string;
-  // Where each piece starts (as CSS transform percentages, relative to the
-  // piece's own box) - "off in that direction, and behind" for the
-  // running-toward-camera effect.
-  fromX: string;
-  fromY: string;
-  fromRotate: number;
+  // Resting (exploded) position - visibly separated from its assembled
+  // position but still in-frame, not flung off-screen. This is where the
+  // piece sits by default, before any scrolling happens.
+  restX: string;
+  restY: string;
+  restRotate: number;
   // Fraction of the shared assembly progress this piece waits for before
   // it starts moving - gives the pieces a staggered arrival without
   // needing a separate timeline per piece.
@@ -65,41 +51,32 @@ type Piece = {
 };
 
 const PIECES: Piece[] = [
-  { id: "top", clipPath: "inset(0% 0% 42% 0%)", fromX: "0%", fromY: "-95%", fromRotate: -8, stagger: 0 },
-  { id: "left", clipPath: "inset(58% 50% 0% 0%)", fromX: "-115%", fromY: "22%", fromRotate: -32, stagger: 0.12 },
-  { id: "right", clipPath: "inset(58% 0% 0% 50%)", fromX: "115%", fromY: "22%", fromRotate: 32, stagger: 0.18 },
+  { id: "top", clipPath: "inset(0% 0% 42% 0%)", restX: "0%", restY: "-18%", restRotate: -4, stagger: 0 },
+  { id: "left", clipPath: "inset(58% 50% 0% 0%)", restX: "-32%", restY: "8%", restRotate: -11, stagger: 0.08 },
+  { id: "right", clipPath: "inset(58% 0% 0% 50%)", restX: "32%", restY: "8%", restRotate: 11, stagger: 0.12 },
 ];
 
 /** One exploded piece: derives every visual property (position, scale,
- * blur, rotation, glow, opacity) from a single shared 0-1 `assembly`
- * progress value via useTransform, rather than a fixed-duration
- * variants/transition. That's what lets the SAME piece be driven either by
- * a time-based spring (page-load auto-entrance) or by scroll position
- * (assemble-on-scroll) - both just set the same underlying motion value,
- * and every derived style updates reactively either way. */
+ * blur, glow) from a single shared 0-1 `assembly` progress value via
+ * useTransform, so it's a pure function of progress rather than a
+ * fixed-duration transition - required for scroll-scrubbing, since scroll
+ * position can move forward AND backward at any speed. */
 function RobotPiece({ piece, assembly }: { piece: Piece; assembly: MotionValue<number> }) {
   const local = useTransform(assembly, [piece.stagger, 1], [0, 1], { clamp: true });
 
-  const x = useTransform(local, [0, 1], [piece.fromX, "0%"]);
-  const y = useTransform(local, [0, 1], [piece.fromY, "0%"]);
-  const rotate = useTransform(local, [0, 1], [piece.fromRotate, 0]);
-  // "Running toward camera": starts small and far away, grows to full size
-  // as it arrives - the actual sense of forward motion, not just a slide.
-  const scale = useTransform(local, [0, 1], [0.3, 1]);
-  const opacity = useTransform(local, [0, 1], [0, 1]);
-  // Motion blur that's heaviest while the piece is furthest away/fastest,
-  // and resolves to a sharp image once assembled.
-  const blur = useTransform(local, [0, 0.7, 1], [10, 3, 0]);
-  // Amber glow trail - builds as the piece launches, burns off as it
-  // settles into place.
-  const glow = useTransform(local, [0, 0.35, 1], [0, 30, 0]);
-  const filter = useTransform([blur, glow], ([b, g]: number[]) => `blur(${b}px) drop-shadow(0 0 ${g}px rgba(255,184,0,0.9))`);
+  const x = useTransform(local, [0, 1], [piece.restX, "0%"]);
+  const y = useTransform(local, [0, 1], [piece.restY, "0%"]);
+  const rotate = useTransform(local, [0, 1], [piece.restRotate, 0]);
+  const scale = useTransform(local, [0, 1], [0.92, 1]);
+  // Slight blur while separated, resolving to a sharp image once joined.
+  const blur = useTransform(local, [0, 1], [4, 0]);
+  // Ambient amber glow marks the piece as "still disassembled"; it fades
+  // out as the piece arrives at its assembled position.
+  const glow = useTransform(local, [0, 1], [16, 0]);
+  const filter = useTransform([blur, glow], ([b, g]: number[]) => `blur(${b}px) drop-shadow(0 0 ${g}px rgba(255,184,0,0.85))`);
 
   return (
-    <motion.div
-      className="absolute inset-0"
-      style={{ clipPath: piece.clipPath, x, y, rotate, scale, opacity, filter }}
-    >
+    <motion.div className="absolute inset-0" style={{ clipPath: piece.clipPath, x, y, rotate, scale, filter }}>
       <img
         src="/robot.png"
         alt={piece.id === "top" ? "Android illustration" : ""}
@@ -116,30 +93,33 @@ function RobotPiece({ piece, assembly }: { piece: Piece; assembly: MotionValue<n
 
 /**
  * Original photorealistic android bust (AI-generated, not a stock asset) -
- * a single image split into three pieces purely via clip-path, so the
- * exploded-assembly entrance is "each piece's clipped window starts
- * offset and animates to (0,0)" rather than three separately-exported
- * crops that could subtly misalign at their cut edges.
+ * a single image split into three pieces purely via clip-path, so
+ * "assembly" is just each piece's clipped window moving to (0,0) rather
+ * than three separately-exported crops that could subtly misalign at
+ * their cut edges.
  *
- * Assembly is driven by one shared 0-1 progress value with two possible
- * triggers, whichever happens first: a spring-timed auto-entrance shortly
- * after page load, or the visitor scrolling within the hero before that
- * timer fires (in which case scroll position itself scrubs the assembly
- * through the first ~quarter of the hero's scroll range). Either way,
- * once progress reaches 1 the robot stays fixed - scroll is no longer
- * read at all past that point.
+ * Resting state (no scroll yet) is EXPLODED: pieces sit visibly separated,
+ * slightly blurred, with an ambient amber glow - there is no auto-timer,
+ * nothing plays on page load. Assembly is driven entirely by scroll
+ * position within the first quarter-viewport of scrolling, bidirectionally
+ * (scrolling back up re-separates the pieces) right up until the pieces
+ * fully join, at which point it locks permanently - further scrolling
+ * (in either direction) no longer affects the robot at all.
  *
  * Mouse-tracking tilts the whole assembled container a few degrees toward
- * the cursor; entrance, glow trail, and tracking are all skipped under
- * reduced motion, leaving a single static image with no window listener
- * attached at all.
+ * the cursor, but only once assembly has locked - it stays inert while
+ * still exploded. Everything scroll/glow/tracking-related is skipped
+ * under reduced motion, leaving a single static, fully assembled image
+ * with no window listener attached at all.
  */
 export const RobotFlyby = ({ className }: RobotFlybyProps) => {
   const reduceMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Shared 0-1 assembly progress, read by every piece.
+  // Shared 0-1 assembly progress, read by every piece. Starts at 0
+  // (exploded) and stays there until scroll moves it.
   const assembly = useMotionValue(0);
+  const [assembled, setAssembled] = useState(false);
 
   // Hero is exactly one viewport tall (min-h-[100dvh]), so a hero-relative
   // useScroll `offset` (e.g. "start start" -> "end start") would measure a
@@ -156,39 +136,19 @@ export const RobotFlyby = ({ className }: RobotFlybyProps) => {
     return clamp(v / range, 0, 1);
   });
 
-  // Whichever trigger fires first "claims" the entrance - auto-timer vs.
-  // scroll - so they never fight each other mid-flight.
-  const autoStartedRef = useRef(false);
-  const scrollActiveRef = useRef(false);
-  const autoTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  useEffect(() => {
-    if (reduceMotion) return;
-    const isMobile = window.innerWidth < 768;
-    const duration = isMobile ? MOBILE_DURATION : DESKTOP_DURATION;
-    autoTimeoutRef.current = setTimeout(() => {
-      if (autoStartedRef.current) return; // scroll already took over
-      autoStartedRef.current = true;
-      animate(assembly, 1, { type: "spring", duration, bounce: ENTRANCE_BOUNCE });
-    }, LOADING_SCREEN_DELAY_MS);
-    return () => clearTimeout(autoTimeoutRef.current);
-  }, [reduceMotion, assembly]);
+  // Once assembly reaches 1, further scroll (up or down) is ignored -
+  // "assembled" is a one-way lock, not just a momentary state.
+  const lockedRef = useRef(false);
 
   useMotionValueEvent(scrollProgress, "change", (v) => {
-    if (reduceMotion) return;
-    if (autoStartedRef.current && !scrollActiveRef.current) return; // auto entrance already claimed it
-    if (!scrollActiveRef.current) {
-      if (v <= 0.001) return; // no real scroll yet - keep waiting on the auto-timer
-      scrollActiveRef.current = true;
-      autoStartedRef.current = true;
-      clearTimeout(autoTimeoutRef.current);
-    }
+    if (reduceMotion || lockedRef.current) return;
     if (v >= 1) {
       assembly.set(1);
-      scrollActiveRef.current = false; // fully assembled - stop reading scroll for good
+      lockedRef.current = true;
+      setAssembled(true);
       return;
     }
-    if (v > assembly.get()) assembly.set(v); // ratchet: never un-assemble on scroll-up
+    assembly.set(v); // bidirectional: scrolling back up re-separates the pieces
   });
 
   // Container "look at cursor" tilt - written imperatively via
@@ -201,7 +161,9 @@ export const RobotFlyby = ({ className }: RobotFlybyProps) => {
   const tiltX = useSpring(rawTiltX, SPRING_ROBOT_TILT);
 
   useEffect(() => {
-    if (reduceMotion) return;
+    // Only tracks the cursor once the robot has actually assembled - while
+    // still exploded, the container stays inert.
+    if (reduceMotion || !assembled) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     function onMouseMove(event: MouseEvent) {
@@ -221,7 +183,7 @@ export const RobotFlyby = ({ className }: RobotFlybyProps) => {
 
     window.addEventListener("mousemove", onMouseMove);
     return () => window.removeEventListener("mousemove", onMouseMove);
-  }, [reduceMotion, rawTiltX, rawTiltY]);
+  }, [reduceMotion, assembled, rawTiltX, rawTiltY]);
 
   // Reduced motion: skip the whole piece-split entirely and render one
   // plain, fully assembled image - no clip-path wrappers, no motion
