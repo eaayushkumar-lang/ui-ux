@@ -8,28 +8,32 @@ const MOBILE_DRIFT_VH = 18;
 const MOBILE_SCALE_MULTIPLIER = 0.75;
 
 /**
- * Fixed, page-wide floating 3D robot (formerly a rotating-Earth Globe - the
- * positioning logic below is untouched from that version, only the
- * rendered visual changed). On desktop, x tracks scroll progress through
- * the hero section only - it slides right -> center within the first 10%
- * of the hero, then holds center for the rest of the page. On mobile it
- * drifts below -> center -> above vertically instead, tracking whole-page
- * scroll. Scale (1.0x -> 0.7x) and opacity (0.85 -> 0.3) also track
- * whole-page scroll on both.
+ * Fixed, page-wide floating carbon-fiber robot (formerly a rotating-Earth
+ * Globe, then a Spline iframe embed - the positioning logic below is
+ * untouched from that first version, only the rendered visual changed).
+ * On desktop, x tracks scroll progress through the hero section only - it
+ * slides right -> center within the first 10% of the hero, then holds
+ * center for the rest of the page. On mobile it drifts below -> center ->
+ * above vertically instead, tracking whole-page scroll. Scale (1.0x ->
+ * 0.7x) and opacity (0.85 -> 0.3) also track whole-page scroll on both.
  *
  * mix-blend-screen (same technique as NoiseOverlay/ParticleField) is what
  * lets this render above every section's own opaque background without
  * hiding text: screen blending only ever brightens what's beneath it, so
- * the robot scene's dark background contributes nothing and it reads as
- * ambient glow behind the copy rather than an image sitting on top of it.
+ * the robot's near-black carbon-fiber fill contributes nothing and
+ * effectively disappears into the page - only the glowing amber seams,
+ * reactor, eyes, and globe actually read, which is also what keeps the
+ * figure from ever looking like a pasted rectangle (see robot-flyby.tsx,
+ * which deliberately has no background/border/box-shadow of its own).
  *
- * The robot's iframe is genuinely interactive (unlike the old Globe), so
- * pointer-events is toggled on specifically for the robot's own bounding
- * box while it's still acting as the hero's visual centerpiece, and off
- * once the user scrolls past the hero - it settles dead-center of the
- * viewport for the rest of the page (see rawX/rawY below), and leaving it
- * clickable there permanently would silently block every other section's
- * center content for the entire scroll length of the page.
+ * The robot has real hover interaction (the metallic sheen sweep), so
+ * pointer-events is toggled on specifically for its own bounding box while
+ * it's still acting as the hero's visual centerpiece, and off once the
+ * user scrolls past the hero -
+ * it settles dead-center of the viewport for the rest of the page (see
+ * rawX/rawY below), and leaving it interactive there permanently would
+ * silently block every other section's center content for the entire
+ * scroll length of the page.
  */
 export function FloatingGlobe() {
   const reduceMotion = useReducedMotion();
