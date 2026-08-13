@@ -5,6 +5,10 @@ import { LiquidHeroTitle } from "@/components/liquid-text";
 import { EASE_OUT as EASE } from "@/lib/motion";
 
 const DURATION_MS = 1500;
+// Exported so anything animating "on page load" (the hero robot's entrance)
+// can delay its own start past this, since LoadingScreen is a fixed
+// full-screen overlay that would otherwise hide the whole thing.
+export const LOADING_SCREEN_MS = DURATION_MS;
 
 /** Full-screen splash shown once on first mount of the app - not on
  * client-side route changes, since those never remount App - then fades
