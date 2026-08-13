@@ -675,3 +675,67 @@ always-on behavior for the handful of elements that really do animate
 continuously regardless of hover state: `FloatingGlobe`, `ParticleField`,
 the About section's breathing avatar box, the trust-strip marquee, and
 the CTA section's scroll-linked background image.
+
+## 14. Hero Robot: Image-Based Exploded Assembly
+
+**Supersedes** the SVG-drawn android bust and the page-root
+`FloatingGlobe` scroll-drift overlay described in §12/§9-Round-4 above -
+both are gone. The hero visual is now a single AI-generated PNG
+(`public/robot.png`, original composition, transparent background,
+1024×1024) rendered directly inside `sections/hero.tsx`'s existing
+right-column slot, in normal document flow.
+
+**Why image instead of SVG:** a photorealistic chrome/amber android
+render isn't something hand-coded SVG gradients can convincingly fake -
+this round replaced that approach with a real generated asset instead.
+
+**No more scroll-linked movement.** `components/floating-globe.tsx` (the
+fixed, page-wide, `useScroll`-driven overlay that used to host the robot)
+is deleted outright, and `Hero`'s own `visualY` scroll parallax on the
+visual column is gone too. The robot now stays exactly where it's laid
+out and scrolls away with the rest of the hero section like any other
+content - there is no longer any part of this page that tracks scroll to
+reposition the robot.
+
+**Seamless exploded-assembly entrance** (`components/ui/robot-flyby.tsx`):
+the *same* `<img src="/robot.png">` is rendered three times, each copy
+wrapped in its own `motion.div` with a percentage-based CSS `clip-path`
+(`inset(...)`) that reveals only that piece's region - top (head/
+shoulders/chest), bottom-left (left arm/hand), bottom-right (right arm/
+hand). The three regions tile the full 0-100% square with no gap or
+overlap by construction, so unlike three separately-exported crops there
+is no seam-alignment problem to solve: it's one continuous image viewed
+through three differently-shaped windows, and at rest (translate 0,0)
+they necessarily reconstruct the source exactly. Each piece starts
+off its resting position (top from above, the two arm pieces from their
+own side) and springs into place (`type: "spring"`, `duration`/`bounce`
+parameterization rather than stiffness/damping, so desktop's 1.8s and
+mobile's 1s targets are explicit rather than tuned-by-feel), with a
+nested `motion.div` carrying the amber `drop-shadow` glow-trail keyframes
+so the glow follows each piece's actual clipped silhouette. The warm
+color-grade (`hue-rotate(10deg) saturate(1.1) brightness(1.05)`) lives on
+the `<img>` itself, static, independent of the entrance transforms. The
+`LOADING_SCREEN_DELAY` + `hasEntered`-flip workarounds from the SVG
+version (needed because of `App.tsx`'s app-wide
+`<AnimatePresence initial={false}>`) carry over unchanged, since the root
+cause is unrelated to SVG vs. image.
+
+**Mouse-tracking** now tilts the whole assembled container (`rotateX`/
+`rotateY` via `useMotionValue`+`useSpring`, imperative, no re-renders),
+clamped to ±6° - down from the SVG version's ±15° head-only tilt, and
+now the *container* rather than just a head sub-element. Same
+`pointer: fine` + `useReducedMotion()` gating as before.
+
+**Reduced motion:** skips the piece-split entirely and renders one plain,
+statically-positioned `<img>` at its final assembled state - no
+clip-path wrappers, no variants, no mousemove listener attached at all.
+
+**Asset provenance.** The robot render was generated with Comfy Cloud's
+free-tier `image_flux2_text_to_image_9b` template (no paid API nodes -
+confirmed via `estimate_credits` before running), then background-removed
+locally with `rembg` (the equivalent hosted BiRefNet template hit an
+account-level free-generation cap rather than a credit charge, so the
+fully local/free path was used instead). This replaced an earlier
+user-uploaded reference image that turned out to carry tiled "pngtree"
+stock-watermarks across the whole figure - flagged and swapped for an
+original generated asset rather than shipped as-is.

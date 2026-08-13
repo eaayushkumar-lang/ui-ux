@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Compass } from "lucide-react";
 import { RobotFlyby } from "@/components/ui/robot-flyby";
 import { Button } from "@/components/ui/button";
@@ -13,19 +12,10 @@ function scrollToId(id: string) {
 
 export function Hero() {
   const reduceMotion = useReducedMotion();
-  const sectionRef = useRef<HTMLElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  // Subtle parallax: the visual drifts slower than the page scrolls past it.
-  const visualY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 60]);
 
   return (
     <section
       id="hero"
-      ref={sectionRef}
       className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-8 [contain:layout_style_paint]"
     >
       {/* Text comes first in source order so it stacks on top on mobile;
@@ -75,16 +65,13 @@ export function Hero() {
           initial={reduceMotion ? undefined : { opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: EASE }}
-          style={{ y: visualY }}
           className="mx-auto aspect-square w-full max-w-[380px] sm:max-w-[440px] lg:max-w-none lg:basis-1/2"
         >
-          {/* The moving/scaling/fading robot lives in the page-root
-              FloatingGlobe overlay so it can slide across the whole page.
-              Reduced-motion users get a static fallback here instead, since
-              FloatingGlobe itself renders nothing when motion is reduced -
-              RobotFlyby detects reduced motion itself and swaps in an amber
-              Bot glyph rather than ever mounting the Spline iframe. */}
-          {reduceMotion && <RobotFlyby />}
+          {/* Renders in-flow here (not a page-root scroll-linked overlay
+              like the old FloatingGlobe) - once assembled, the robot stays
+              fixed in the hero and scrolls away with the rest of its
+              content, rather than persisting/sliding across the page. */}
+          <RobotFlyby />
         </motion.div>
       </div>
     </section>

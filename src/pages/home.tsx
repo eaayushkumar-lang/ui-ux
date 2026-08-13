@@ -4,7 +4,6 @@ import { NavDots } from "@/components/nav-dots";
 import { ProgressBar } from "@/components/progress-bar";
 import { NoiseOverlay } from "@/components/noise-overlay";
 import { ParticleField } from "@/components/particle-field";
-import { FloatingGlobe } from "@/components/floating-globe";
 import { Hero } from "@/sections/hero";
 
 // Hero renders above the fold on first paint, so it stays a static import.
@@ -35,7 +34,6 @@ export function HomePage() {
   return (
     <div className="relative min-h-dvh bg-bg">
       <NoiseOverlay />
-      <FloatingGlobe />
       <ParticleField />
       <ProgressBar />
       <Navbar />

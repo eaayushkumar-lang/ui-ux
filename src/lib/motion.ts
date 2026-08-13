@@ -19,10 +19,8 @@ export const SPRING_SMOOTH = { type: "spring", stiffness: 100, damping: 30, mass
 // Dynamic Island nav: pill morph and active-item indicator share this spring
 // so the whole component reads as one physical object.
 export const SPRING_ISLAND = { type: "spring", stiffness: 300, damping: 25 } as const;
-// Hero robot: parts flying into an exploded-assembly entrance want real
-// heft and a touch of overshoot (lower damping than SPRING_SMOOTH) so they
-// feel physically thrown into place rather than eased in.
-export const SPRING_ENTRANCE = { type: "spring", stiffness: 80, damping: 12, mass: 1 } as const;
-// Hero robot: head tracking the cursor - soft and slow enough to read as a
-// deliberate glance rather than a jittery snap-to-pointer.
-export const SPRING_HEAD_TILT = { type: "spring", stiffness: 120, damping: 18, mass: 0.6 } as const;
+// Hero robot: the whole assembled container tracking the cursor - soft and
+// slow enough to read as a deliberate glance rather than a jittery
+// snap-to-pointer. (Piece flight-in uses its own duration/bounce spring,
+// tuned per-component since it needs to hit an explicit total time.)
+export const SPRING_ROBOT_TILT = { type: "spring", stiffness: 120, damping: 18, mass: 0.6 } as const;
