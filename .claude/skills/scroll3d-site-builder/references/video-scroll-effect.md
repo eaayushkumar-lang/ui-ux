@@ -1,8 +1,3 @@
----
-name: video-scroll-effect
-description: Executes ONE section of a site plan handed to it by site-planner, using the canvas image-sequence scrub technique (frame-scrub video, not WebGL). Generates the visual (or uses a user-supplied clip), slices it into frames with ffmpeg, builds that section, and deploys the finished site to a live URL. Does NOT decide site structure, section count, or content depth — site-planner owns those decisions. Trigger only via site-planner's hand-off, or directly if the user explicitly asks for the frame-scrub technique by name.
----
-
 # Video-Scroll-Effect — frame-scrub execution engine
 
 ## What this actually is (read first)
@@ -14,20 +9,18 @@ The "3D" comes entirely from the source video — which we generate with Higgsfi
 
 Stack: plain **HTML + CSS + JS + Lenis** (zero build, runs from any static server).
 
-## Scope — this skill does NOT decide
-This skill executes a section (or sections) from a site plan produced by
-site-planner. It does not decide: how many sections a site needs, what
-type of sections those are, what the site's overall structure looks like, or
-what content depth is appropriate for the product. If invoked without a plan
-(e.g. the user asks for video-scroll-effect directly), ask for a `content_brief`,
-`motion`, and `palette` for the section being built — do not invent a full
-multi-section site structure yourself.
+## When this section is executing (read this file when a plan section's `technique` is `video-scroll-effect`)
+This file covers building ONE section from the site plan produced by the planning
+workflow in `SKILL.md`. It does not decide how many sections a site needs, what type
+those are, or what content depth is appropriate — that's already settled by the time
+you're reading this file. If asked to build a video-scroll-effect section directly,
+without a plan, ask for a `content_brief`, `motion`, and `palette` for that section
+instead of inventing a full multi-section site yourself.
 
 ## Prerequisites
 - **Higgsfield MCP** connected + credits (~$1–2 / clip) — OR the user can supply their own
   video clip instead (see Step 1b). At least one of these two paths is required.
 - **ffmpeg** — expected to already be present in the environment. Step 0 below confirms this.
-- This skill installed at `${CLAUDE_PLUGIN_ROOT}/skills/video-scroll-effect/`.
 
 ### Step 0 — Confirm ffmpeg (run first, always)
 Run `ffmpeg -version`. If this fails, tell the user ffmpeg isn't available in this environment
@@ -36,9 +29,8 @@ and stop — do not attempt to download or install it.
 ## THE PIPELINE — executes one plan section
 
 ### 1. Read the section spec
-Take the section's `motion`, `content_brief`, and the site's `palette` from the plan
-handed off by site-planner. Use `content_brief` to write this section's actual
-copy — don't invent unrelated content.
+Take the section's `motion`, `content_brief`, and the site's `palette` from the plan.
+Use `content_brief` to write this section's actual copy — don't invent unrelated content.
 
 ### 1b. Check for a user-supplied clip (skip Higgsfield if present)
 Before generating anything, check whether the user's prompt included a video file path,
@@ -80,7 +72,7 @@ one `motion` value — a chaptered scroll-scrub within a single pinned section, 
 generated from ONE shared anchor image so the subject's identity stays locked across
 beats (same lighting, same materials, same product) rather than drifting between
 independently-generated clips.
-- `asset-generator` handles the actual generation/identity-lock (see its SKILL.md) and
+- `references/asset-generator.md` covers the actual generation/identity-lock — it
   returns one clip per beat, already extracted into `frames/<section>/<beat>/`.
 - Each beat gets its own sub-range of the section's overall scroll progress (see Step
   6's `beats` config format below) — earlier beats occupy earlier progress, in the
@@ -105,16 +97,15 @@ independently-generated clips.
 If the one retry above still produces no usable clip — or video generation isn't
 available at all for this section — this section CANNOT be built as video-scroll-effect.
 Do not quietly build it as `3d-scene-effect`'s `image-plane` fallback yourself and move
-on as if nothing changed: that fallback decision belongs to `site-planner`'s
-routing rules, and silently making it here is exactly the failure mode that shipped a
-site with zero video sections despite an approved plan promising two (see
-`site-planner/SKILL.md`'s "Disclosing plan deviations"). Instead:
-- Stop generating for this section. Report upward, to whichever skill/orchestrator is
-  running this build, that this section needs `site-planner`'s image-plane
+on as if nothing changed: that fallback decision belongs to the planning workflow's
+routing rules (`SKILL.md`), and silently making it here is exactly the failure mode that
+shipped a site with zero video sections despite an approved plan promising two (see
+`SKILL.md`'s "Disclosing plan deviations"). Instead:
+- Stop generating for this section. Note that this section needs the image-plane
   fallback instead — with the reason (nsfw after retry, API failure, no Higgsfield
   video access, etc.) and whether any credits were spent on the failed attempt(s).
-- This report becomes one entry in the final "⚠️ Plan deviations" section the director
-  is required to show the user — never only a code comment or a footnote buried in a
+- This becomes one entry in the final "⚠️ Plan deviations" section you're required to
+  show the user at delivery — never only a code comment or a footnote buried in a
   longer summary.
 
 ### 5. Slice + compress frames (ffmpeg)
@@ -126,16 +117,15 @@ site with zero video sections despite an approved plan promising two (see
   compress pass, same 1600px/q88 settings.
 
 ### 6. Build this section from templates/
-- **Project scaffold (once per site, whichever skill runs FIRST):** copy
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/index.html`,
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/base.css` (as the project's `styles.css`),
-  and `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/choreography.js` into the project.
-  There is no per-skill `index.html` any more — the shell is shared so a project
-  can never end up missing the Three.js / cannon-es / choreography tags just
-  because of which technique happened to be built first.
-- **This skill's own files (every time this skill runs):** copy
-  `templates/video-scroll-effect.js` into the project, and APPEND `templates/styles.css`
-  (a fragment, not a full stylesheet) to the project's `styles.css`.
+- **Project scaffold (once per site, whichever technique builds FIRST):** copy
+  `templates/index.html`, `templates/base.css` (as the project's `styles.css`), and
+  `templates/choreography.js` into the project. The shell is shared across every
+  technique so a project can never end up missing the Three.js / cannon-es /
+  choreography tags just because of which technique happened to be built first.
+- **This technique's own files (every time a video-scroll-effect section is built):**
+  copy `templates/video-scroll-effect.js` into the project, and APPEND
+  `templates/video-scroll-effect.styles.css` (a fragment, not a full stylesheet) to the
+  project's `styles.css`.
 - If the project already has the scaffold, do not overwrite it — subsequent
   sections append into what is already there.
 - Add/edit a `SCRUB_SECTIONS` entry for this section. Single-motion sections keep the
@@ -168,48 +158,13 @@ site with zero video sections despite an approved plan promising two (see
 - **Hue-shift trick** for product variants/colorways (no extra generation):
   `ffmpeg -i base.png -vf "hue=h=120:s=1.15" variant.png`.
 - If this is the first section being built for this project (nav bar doesn't
-  exist yet in index.html), generate the `.hud-nav` links from the full
-  `plan.sections` list's `id`/`nav_label` pairs before proceeding to this
-  section's own content.
+  exist yet in index.html), generate the `.hud-nav` links from the full site
+  plan's `id`/`nav_label` pairs before proceeding to this section's own content.
 
-### 7. Deploy to Cloudflare Pages + write out to connected folder
-(unchanged from before — runs once, after all sections from site-planner's plan
-have been built into the same project)
-- Requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` set as environment variables
-  (never ask the user to paste these into chat; read them from the environment only).
-- Load credentials first: `set -a && source .env && set +a` (run this from the repo root,
-  before the wrangler command, so CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are in scope).
-- Deploy with Wrangler (installs on first use, no separate setup step):
-  `npx wrangler pages deploy <project-dir> --project-name=<slug> --branch=main`
-  - `<project-dir>` is the folder containing `index.html`, `styles.css`, `choreography.js`,
-    every engine `.js` file the plan uses, and the `frames/` folder.
-  - `<slug>` is a kebab-case name derived from the brief/brand (e.g. `acme-launch`). If the
-    project doesn't exist yet, Wrangler creates it automatically on first deploy.
-  - Wrangler prints the live URL on success, in the form `https://<slug>.pages.dev`
-    (and a unique preview URL per deployment).
-- If the deploy command fails (auth error, network error, or the Cloudflare API being
-  unreachable from this sandbox): tell the user plainly that deploy failed and why, and fall
-  back to step 7b below — do not claim a URL exists if it doesn't.
-- Confirm the live URL actually loads (`curl -sS -o /dev/null -w '%{http_code}' <url>` should
-  return 200) before telling the user it's ready.
-- Before telling the user the site is ready, read `build-reviewer`'s `plan_deviations`
-  field (if any) and include it verbatim under a `⚠️ Plan deviations` heading in the
-  final message, per `site-planner/SKILL.md`'s "Disclosing plan deviations" —
-  never omit or soften what the reviewer flagged, even when the deploy itself succeeded.
-
-### 7b. Write out to the connected folder (always, regardless of deploy success)
-- Copy the entire project folder (site files + `frames/`) into the user's connected
-  folder, under a subfolder named after the project slug, together with a `DESIGN.md`.
-- `DESIGN.md` is REQUIRED, not optional, and must contain at minimum:
-  - A summary of the design choices made (palette, section list, techniques used).
-  - A **"Plan vs. build" table**: one row per section, its planned `technique`, its
-    actual built technique, and a note if they differ (blank/"—" if they match). This
-    is the durable, offline record of any deviation — build-reviewer hard-fails if
-    this file is missing or empty, so don't skip it even under time pressure.
-- This step runs every time — even if step 7's deploy failed — since it's the only guarantee
-  the user's work survives after this session ends (the sandbox is disposable).
-- Tell the user both: the live URL (if deploy succeeded) and the local folder path where the
-  source now lives.
+### 7. Deploy
+Once every section in the plan is built (regardless of which technique(s) built them),
+see `SKILL.md`'s "Build & Deploy" section — it's shared across every technique and only
+runs once, at the very end.
 
 ## Engine rules (already in templates/video-scroll-effect.js)
 - Preload every frame; paint frame 0 on first load; redraw only when the frame index changes.
@@ -239,15 +194,15 @@ have been built into the same project)
 - The image-0 onload handler must NOT be set separately from the loop's onload/onerror
   handler — combine both behaviors in one handler (increment loadedCount AND draw frame 0
   via an `if (i === 0)` check) or the preloader will hang at (N-1)/N forever.
-- Deploy failures should never be silently swallowed — always tell the user if Cloudflare
-  deploy failed and confirm whether the write-out to their folder still succeeded.
+- Deploy failures should never be silently swallowed — always tell the user if the deploy
+  failed and confirm whether the write-out to their folder still succeeded.
 
 ## Files
 - `templates/video-scroll-effect.js` — the scrub engine.
-- `templates/styles.css` — `.cinematic` + preloader CSS fragment, appended to the project's
-  `styles.css` on top of `shared-scroll-engine/templates/base.css`.
-- The project shell (`index.html`, `base.css`, `choreography.js`) lives in
-  `shared-scroll-engine/templates/` — see "Build this section from templates/" above.
+- `templates/video-scroll-effect.styles.css` — `.cinematic` + preloader CSS fragment,
+  appended to the project's `styles.css` on top of `templates/base.css`.
+- The project shell (`index.html`, `base.css`, `choreography.js`) is shared — see
+  "Build this section from templates/" above.
 - `templates/CinematicReveal.tsx` — LEGACY React/Next drop-in (optional). Single-motion
   only: it does NOT support `beats`, `loopBack`, `bgFrom`/`bgTo` or `[data-live-count]`.
   Don't reach for it when a section uses any of those — use the vanilla engine, which is

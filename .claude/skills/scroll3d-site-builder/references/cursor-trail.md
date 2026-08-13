@@ -1,8 +1,3 @@
----
-name: cursor-trail
-description: Executes ONE section of a site plan handed to it by site-planner, using a canvas-2D particle system that trails the cursor — atmospheric/decorative, not a product-showcase technique like the other real-time engines. Scroll still pins the section and drives overlay copy; cursor position drives the particles. Does NOT decide site structure or content depth — site-planner owns those decisions. Trigger only via site-planner's hand-off, or directly if the user explicitly asks for cursor-trailing particles by name.
----
-
 # Cursor-Trail — canvas-2D particle-trail execution engine
 
 ## What this actually is (read first)
@@ -16,18 +11,18 @@ product specifics.
 
 Stack: **HTML + CSS + JS (canvas 2D)** + `choreography.js`. No Three.js needed.
 
-## Scope — this skill does NOT decide
-This skill executes a section (or sections) from a site plan produced by
-site-planner. It does not decide overall site structure or content depth. If
-invoked without a plan, ask for a `content_brief` and `palette` for the section being
-built — do not invent a full multi-section site yourself.
+## When this section is executing
+This file covers building ONE section from the site plan produced by the planning
+workflow in `SKILL.md`. It does not decide overall site structure or content depth. If
+asked to build a cursor-trail section directly, without a plan, ask for a
+`content_brief` and `palette` for that section instead of inventing a full
+multi-section site yourself.
 
 ## Asset needs
 None — this is a pure particle effect, no image/video generation involved.
 
 ## Prerequisites
-- No external API/credits needed, no external CDN dependency beyond `choreography.js`.
-- This skill installed at `${CLAUDE_PLUGIN_ROOT}/skills/cursor-trail/`.
+No external API/credits needed, no external CDN dependency beyond `choreography.js`.
 
 ## THE PIPELINE — executes one plan section
 
@@ -55,16 +50,13 @@ round-robin (or respawn the oldest-dead one) each time a new particle needs to s
   let it "die" (become eligible for respawn) once its `life` exceeds `maxLife`.
 
 ### 4. Build this section from templates/
-- **Project scaffold (once per site, whichever skill runs FIRST):** copy
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/index.html`,
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/base.css` (as the project's `styles.css`),
-  and `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/choreography.js` into the project.
-  There is no per-skill `index.html` any more — the shell is shared so a project
-  can never end up missing the Three.js / cannon-es / choreography tags just
-  because of which technique happened to be built first.
-- **This skill's own files (every time this skill runs):** copy
-  `templates/cursor-trail.js` into the project, and APPEND `templates/styles.css`
-  (a fragment, not a full stylesheet) to the project's `styles.css`.
+- **Project scaffold (once per site, whichever technique builds FIRST):** copy
+  `templates/index.html`, `templates/base.css` (as the project's `styles.css`), and
+  `templates/choreography.js` into the project.
+- **This technique's own files (every time a cursor-trail section is built):** copy
+  `templates/cursor-trail.js` into the project, and APPEND
+  `templates/cursor-trail.styles.css` (a fragment, not a full stylesheet) to the
+  project's `styles.css`.
 - If the project already has the scaffold, do not overwrite it — subsequent
   sections append into what is already there.
 - Register this section in a `TRAIL_SECTIONS` entry:
@@ -75,17 +67,11 @@ round-robin (or respawn the oldest-dead one) each time a new particle needs to s
   - `.reveal-line` + `data-in`/`data-out` — same scroll-driven overlay-copy contract as
     video-scroll-effect/3d-scene-effect
 - If this is the first section being built for this project (nav bar doesn't exist yet
-  in index.html), generate the `.hud-nav` links from the full `plan.sections` list's
-  `id`/`nav_label` pairs before proceeding to this section's own content.
+  in index.html), generate the `.hud-nav` links from the full site plan's `id`/
+  `nav_label` pairs before proceeding to this section's own content.
 
-### 5. Deploy to Cloudflare Pages + write out to connected folder
-(Same as the other engines' final step — runs once, after all sections from the plan,
-across every technique in use, are in the same project.)
-- Requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as environment variables.
-- Load credentials first: `set -a && source .env && set +a`.
-- Deploy: `npx wrangler pages deploy <project-dir> --project-name=<slug> --branch=main`.
-- Confirm the live URL loads before telling the user it's ready.
-- Always write out to the connected folder regardless of deploy success.
+### 5. Deploy
+Once every section in the plan is built, see `SKILL.md`'s "Build & Deploy" section.
 
 ## Engine rules
 - Cap pixel ratio via `window.Choreography.capDPR()`, same as the other engines.
@@ -98,8 +84,7 @@ across every technique in use, are in the same project.)
 ## Known gotchas
 - The fixed-size pool is the main trap — if particle objects are created inside the
   per-frame draw function instead of pre-allocated once, this looks fine at first and
-  then stutters increasingly as the browser's GC struggles to keep up. `build-reviewer`
-  checks for this pattern.
+  then stutters increasingly as the browser's GC struggles to keep up.
 - Keep `particleCount` modest (100-200) — a canvas-2D particle system with thousands of
   live particles is still real per-frame draw-call cost.
 - Same headless-screenshot limitation as the other engines: verify live in a real
@@ -107,5 +92,5 @@ across every technique in use, are in the same project.)
 
 ## Files
 - `templates/cursor-trail.js` — canvas-2D particle pool + scroll-driven overlay.
-- `templates/styles.css` — `.trail` CSS fragment, appended to the project's `styles.css`.
-- Project shell (`index.html`, `base.css`, `choreography.js`): `shared-scroll-engine/templates/`.
+- `templates/cursor-trail.styles.css` — `.trail` CSS fragment, appended to the project's `styles.css`.
+- Project shell (`index.html`, `base.css`, `choreography.js`) is shared across techniques.

@@ -1,8 +1,3 @@
----
-name: physics-play
-description: Executes ONE section of a site plan handed to it by site-planner, using real-time Three.js rendering plus cannon-es rigid-body physics — objects sit on a floor plane and respond to gravity, collisions, and mouse drag-to-throw interaction. Does NOT decide site structure or content depth — site-planner owns those decisions. Heavier than the other techniques (WebGL + a physics step every frame) — recommend at most one physics-play section per site. Trigger only via site-planner's hand-off, or directly if the user explicitly asks for draggable/physics-based objects by name.
----
-
 # Physics-Play — cannon-es drag-and-throw execution engine
 
 ## What this actually is (read first)
@@ -14,19 +9,19 @@ techniques and the most expensive to run — one per site is enough.
 
 Stack: **HTML + CSS + JS + Three.js + cannon-es** (both CDN-loaded) + `choreography.js`.
 
-## Scope — this skill does NOT decide
-This skill executes a section (or sections) from a site plan produced by
-site-planner. It does not decide overall site structure or content depth. If
-invoked without a plan, ask for a `content_brief` and `palette` for the section being
-built — do not invent a full multi-section site yourself.
+## When this section is executing
+This file covers building ONE section from the site plan produced by the planning
+workflow in `SKILL.md`. It does not decide overall site structure or content depth. If
+asked to build a physics-play section directly, without a plan, ask for a
+`content_brief` and `palette` for that section instead of inventing a full
+multi-section site yourself.
 
 ## Asset needs
 No image/video generation needed — objects are simple procedural shapes (boxes/spheres)
 styled from the site's palette.
 
 ## Prerequisites
-- No external API/credits needed — Three.js and cannon-es are both CDN-loaded.
-- This skill installed at `${CLAUDE_PLUGIN_ROOT}/skills/physics-play/`.
+No external API/credits needed — Three.js and cannon-es are both CDN-loaded.
 
 ## THE CANNON-ES LOADING GOTCHA (read before writing any HTML)
 cannon-es ships ES-module-only — it can't be loaded with a plain `<script src="...">`
@@ -44,7 +39,7 @@ same way — `physics-play.js` must NOT assume `window.CANNON` exists the instan
 `DOMContentLoaded` fires. Guard init: if `window.CANNON` is already set, proceed
 immediately; otherwise wait for the one-time `cannon-ready` event before initializing
 any `PHYSICS_SECTIONS` entry. Getting this ordering wrong is the single most likely bug
-in this skill — a silently-undefined `CANNON` reference throws and the whole section
+in this technique — a silently-undefined `CANNON` reference throws and the whole section
 never renders.
 
 ## THE PIPELINE — executes one plan section
@@ -86,16 +81,13 @@ disabled in this mode, matching the static-fallback principle every other engine
 Render one frame and stop.
 
 ### 6. Build this section from templates/
-- **Project scaffold (once per site, whichever skill runs FIRST):** copy
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/index.html`,
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/base.css` (as the project's `styles.css`),
-  and `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/choreography.js` into the project.
-  There is no per-skill `index.html` any more — the shell is shared so a project
-  can never end up missing the Three.js / cannon-es / choreography tags just
-  because of which technique happened to be built first.
-- **This skill's own files (every time this skill runs):** copy
-  `templates/physics-play.js` into the project, and APPEND `templates/styles.css`
-  (a fragment, not a full stylesheet) to the project's `styles.css`.
+- **Project scaffold (once per site, whichever technique builds FIRST):** copy
+  `templates/index.html`, `templates/base.css` (as the project's `styles.css`), and
+  `templates/choreography.js` into the project.
+- **This technique's own files (every time a physics-play section is built):** copy
+  `templates/physics-play.js` into the project, and APPEND
+  `templates/physics-play.styles.css` (a fragment, not a full stylesheet) to the
+  project's `styles.css`.
 - If the project already has the scaffold, do not overwrite it — subsequent
   sections append into what is already there.
 - The shared shell already carries the cannon-es module script from the loading
@@ -109,22 +101,16 @@ Render one frame and stop.
   - `.physics-hint` — optional, a small "drag the objects" affordance
 - Write this section's overlay copy (if any) from its `content_brief`.
 - If this is the first section being built for this project (nav bar doesn't exist yet
-  in index.html), generate the `.hud-nav` links from the full `plan.sections` list's
-  `id`/`nav_label` pairs before proceeding to this section's own content.
+  in index.html), generate the `.hud-nav` links from the full site plan's `id`/
+  `nav_label` pairs before proceeding to this section's own content.
 
-### 7. Deploy to Cloudflare Pages + write out to connected folder
-(Same as the other engines' final step — runs once, after all sections from the plan,
-across every technique in use, are in the same project.)
-- Requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as environment variables.
-- Load credentials first: `set -a && source .env && set +a`.
-- Deploy: `npx wrangler pages deploy <project-dir> --project-name=<slug> --branch=main`.
-- Confirm the live URL loads before telling the user it's ready.
-- Always write out to the connected folder regardless of deploy success.
+### 7. Deploy
+Once every section in the plan is built, see `SKILL.md`'s "Build & Deploy" section.
 
 ## Engine rules
 - Cap pixel ratio via `window.Choreography.capDPR()`, same as the other engines.
 - Keep `objectCount` modest (6-10) — more bodies means more collision pairs to resolve
-  each step, and this is already the heaviest technique in the plugin.
+  each step, and this is already the heaviest technique.
 - Step the physics world with a fixed timestep (`world.step(1/60, deltaTime, 3)`
   pattern) rather than a variable one, so behavior stays consistent across frame rates.
 - Dispose of geometries/materials on section teardown if the page has many sections.
@@ -144,5 +130,5 @@ across every technique in use, are in the same project.)
 
 ## Files
 - `templates/physics-play.js` — Three.js + cannon-es scene, drag-to-throw driver.
-- `templates/styles.css` — `.physics` CSS fragment, appended to the project's `styles.css`.
-- Project shell (`index.html`, `base.css`, `choreography.js`): `shared-scroll-engine/templates/`.
+- `templates/physics-play.styles.css` — `.physics` CSS fragment, appended to the project's `styles.css`.
+- Project shell (`index.html`, `base.css`, `choreography.js`) is shared across techniques.

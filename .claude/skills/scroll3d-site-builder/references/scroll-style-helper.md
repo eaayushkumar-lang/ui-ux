@@ -1,16 +1,11 @@
----
-name: scroll-style-helper
-description: Handles the small set of design decisions specific to scroll3d sites that a general design-taste tool wouldn't know about — sampling accent colors from actually-generated footage, capping overlay text density against scroll-timing math, choosing safe text-contrast against unpredictable video frame content, and sizing reveal-line windows so lines don't overlap mid-scroll. Only relevant if a general taste/design-system skill is also installed — if not, video-scroll-effect and 3d-scene-effect use their own built-in defaults instead.
----
-
 # Scroll-Style-Helper — the four scroll3d-specific taste decisions
 
 ## Scope
-This is intentionally narrow. If a general design-taste skill is installed
-alongside this plugin, let it own layout, typography, and general visual
-polish — this skill only covers the four things that are specific to how
-video-scroll-effect and 3d-scene-effect actually work, which a general tool has
-no way to know about.
+This is intentionally narrow — it covers only the four things specific to how
+video-scroll-effect and 3d-scene-effect actually work, which general layout/typography
+taste has no way to know about. If a general design-taste skill/tool is also available,
+let it own layout, typography, and general visual polish; consult this file only for
+the four decisions below.
 
 ## 1. Sample accent color from generated footage
 Once a section's asset (video/image) exists, sample a few dominant colors
@@ -49,5 +44,5 @@ general design advice.
 - Never makes layout, typography, or general brand decisions — defers to a
   general taste-skill tool if one is present, or to video-scroll-effect/
   3d-scene-effect's own existing defaults if not.
-- Never invoked if no footage/frames exist yet — color sampling specifically
-  needs Step 1's asset to already exist.
+- Never applies before a section's footage/frames already exist — color sampling
+  specifically needs the asset step to have already run.

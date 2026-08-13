@@ -1,8 +1,3 @@
----
-name: click-navigate
-description: Executes ONE section of a site plan handed to it by site-planner, using a real-time Three.js scene with clickable hotspots — clicking a hotspot animates the camera to a named waypoint (product-tour/showroom feel), rather than being driven by scroll or cursor position. Does NOT decide site structure or content depth — site-planner owns those decisions. Trigger only via site-planner's hand-off, or directly if the user explicitly asks for click-to-navigate/hotspot exploration by name.
----
-
 # Click-Navigate — hotspot camera-waypoint execution engine
 
 ## What this actually is (read first)
@@ -15,14 +10,15 @@ pointer motion does.
 
 Stack: **HTML + CSS + JS + Three.js** (CDN, zero build step) + `choreography.js`.
 
-## Scope — this skill does NOT decide
-This skill executes a section (or sections) from a site plan produced by
-site-planner. It does not decide overall site structure or content depth. If
-invoked without a plan, ask for a `content_brief`, `motion`, and `palette` for the
-section being built — do not invent a full multi-section site yourself.
+## When this section is executing
+This file covers building ONE section from the site plan produced by the planning
+workflow in `SKILL.md`. It does not decide overall site structure or content depth. If
+asked to build a click-navigate section directly, without a plan, ask for a
+`content_brief`, `motion`, and `palette` for that section instead of inventing a full
+multi-section site yourself.
 
 ## Deriving waypoints
-Unlike `motion`, waypoints are NOT supplied by the plan — this skill derives 2-4 of
+Unlike `motion`, waypoints are NOT supplied by the plan — this technique derives 2-4 of
 them itself from the section's `content_brief` when building. Each waypoint needs: a
 short `label` (1-2 words, shown on its hotspot), a one-sentence caption (shown when
 active), a camera position, and a look-at target. Pick waypoints that correspond to
@@ -31,18 +27,16 @@ genuinely distinct, defensible angles/features of the subject — don't invent g
 
 ## Asset needs
 No image/video generation needed — the subject is built procedurally, same approach as
-3d-scene-effect Step 2 (primitive geometries combined to suggest the product, favoring
+3d-scene-effect's Step 2 (primitive geometries combined to suggest the product, favoring
 simple iconic silhouettes over intricate detail).
 
 ## Prerequisites
-- No external API/credits needed — Three.js is CDN-loaded, geometry is built in code.
-- This skill installed at `${CLAUDE_PLUGIN_ROOT}/skills/click-navigate/`.
+No external API/credits needed — Three.js is CDN-loaded, geometry is built in code.
 
 ## THE PIPELINE — executes one plan section
 
 ### 1. Read the section spec
-Take the section's `motion`, `content_brief`, and the site's `palette` from the plan
-handed off by site-planner.
+Take the section's `motion`, `content_brief`, and the site's `palette` from the plan.
 
 ### 2. Build the 3D subject and derive waypoints
 - Model the subject procedurally (per "Deriving waypoints" above for how many/what).
@@ -61,16 +55,13 @@ handed off by site-planner.
   tween) — clicking still works and still updates the caption, just without animation.
 
 ### 4. Build this section from templates/
-- **Project scaffold (once per site, whichever skill runs FIRST):** copy
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/index.html`,
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/base.css` (as the project's `styles.css`),
-  and `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/choreography.js` into the project.
-  There is no per-skill `index.html` any more — the shell is shared so a project
-  can never end up missing the Three.js / cannon-es / choreography tags just
-  because of which technique happened to be built first.
-- **This skill's own files (every time this skill runs):** copy
-  `templates/click-navigate.js` into the project, and APPEND `templates/styles.css`
-  (a fragment, not a full stylesheet) to the project's `styles.css`.
+- **Project scaffold (once per site, whichever technique builds FIRST):** copy
+  `templates/index.html`, `templates/base.css` (as the project's `styles.css`), and
+  `templates/choreography.js` into the project.
+- **This technique's own files (every time a click-navigate section is built):** copy
+  `templates/click-navigate.js` into the project, and APPEND
+  `templates/click-navigate.styles.css` (a fragment, not a full stylesheet) to the
+  project's `styles.css`.
 - If the project already has the scaffold, do not overwrite it — subsequent
   sections append into what is already there.
 - Register this section in an `EXPLORE_SECTIONS` entry:
@@ -83,17 +74,11 @@ handed off by site-planner.
 - Write hotspot labels/captions from the derived waypoints — don't reuse generic
   placeholder text.
 - If this is the first section being built for this project (nav bar doesn't exist yet
-  in index.html), generate the `.hud-nav` links from the full `plan.sections` list's
-  `id`/`nav_label` pairs before proceeding to this section's own content.
+  in index.html), generate the `.hud-nav` links from the full site plan's `id`/
+  `nav_label` pairs before proceeding to this section's own content.
 
-### 5. Deploy to Cloudflare Pages + write out to connected folder
-(Same as the other engines' final step — runs once, after all sections from the plan,
-across every technique in use, are in the same project.)
-- Requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as environment variables.
-- Load credentials first: `set -a && source .env && set +a`.
-- Deploy: `npx wrangler pages deploy <project-dir> --project-name=<slug> --branch=main`.
-- Confirm the live URL loads before telling the user it's ready.
-- Always write out to the connected folder regardless of deploy success.
+### 5. Deploy
+Once every section in the plan is built, see `SKILL.md`'s "Build & Deploy" section.
 
 ## Engine rules
 - Cap pixel ratio via `window.Choreography.capDPR()`, same as the other engines.
@@ -118,5 +103,5 @@ across every technique in use, are in the same project.)
 
 ## Files
 - `templates/click-navigate.js` — Three.js scene + hotspot click-to-waypoint driver.
-- `templates/styles.css` — `.explore` CSS fragment, appended to the project's `styles.css`.
-- Project shell (`index.html`, `base.css`, `choreography.js`): `shared-scroll-engine/templates/`.
+- `templates/click-navigate.styles.css` — `.explore` CSS fragment, appended to the project's `styles.css`.
+- Project shell (`index.html`, `base.css`, `choreography.js`) is shared across techniques.

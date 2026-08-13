@@ -1,18 +1,12 @@
----
-name: shared-scroll-engine
-description: Owns the shared project scaffold every scroll3d site is built from — the canonical index.html shell, the base.css stylesheet, and choreography.js (scroll-progress calculation, reduced-motion detection, resize/DPR handling, pointer-normalization and color math). Not user-facing, never invoked directly; the technique skills copy these files once per project so they cannot drift apart or ship a shell missing a library tag.
----
-
 # Shared-Scroll-Engine — shared engine utilities
 
 ## Scope
-This isn't a skill users interact with — it holds the files every project shares,
-so the technique skills can't drift apart. Two jobs:
+Two jobs, both about keeping every technique's output from drifting apart:
 
 1. **The project scaffold.** `templates/index.html` (the canonical shell) and
-   `templates/base.css` (everything not specific to one engine). Whichever
-   technique skill runs FIRST copies these once per project; every later skill
-   appends into them. There are deliberately no per-skill copies of these files —
+   `templates/base.css` (everything not specific to one technique). Whichever
+   technique builds FIRST copies these once per project; every later technique
+   appends into them. There are deliberately no per-technique copies of these files —
    divergent shells were how a project could end up with no Three.js tag, or no
    `choreography.js` tag, purely because of build order.
 2. **The shared JS utilities** in `templates/choreography.js`, so engines don't
@@ -26,13 +20,13 @@ so the technique skills can't drift apart. Two jobs:
   release shipping `build/three.min.js`, removed in r161), the cannon-es module
   block, `choreography.js`, every engine `<script>` tag, every `*_SECTIONS`
   registry stub, and one commented example `<section>` per technique.
-- The executing skill DELETES the example sections, registry entries and engine
-  script tags for techniques the plan doesn't use, rather than each skill shipping
-  its own partial shell.
-- `base.css` is copied once as the project's `styles.css`; each technique skill then
-  APPENDS its own `templates/styles.css` fragment underneath. A fragment on its own
-  is not a working stylesheet — it has no `:root`, `.hud`, `.sticky` or `.reveal`
-  rules, which is why the base must land first.
+- The build DELETES the example sections, registry entries and engine
+  script tags for techniques the plan doesn't use, rather than shipping
+  a partial shell for unused techniques.
+- `base.css` is copied once as the project's `styles.css`; each technique then
+  APPENDS its own `templates/<technique>.styles.css` fragment underneath. A fragment
+  on its own is not a working stylesheet — it has no `:root`, `.hud`, `.sticky` or
+  `.reveal` rules, which is why the base must land first.
 
 ## What it provides
 - `Choreography.progress(rect, innerHeight)` — the pinned-section scroll
@@ -70,10 +64,11 @@ same guard — a silent throw here takes down every section on the page, not jus
 ## What this never does
 - Never renders anything itself — `choreography.js` is pure utility functions only.
 - Never makes any engine-specific decisions (frame indices, WebGL scene
-  state, camera targets) — those stay in each engine's own JS file.
+  state, camera targets) — those stay in each technique's own JS file.
 - Never holds technique-specific CSS. If a rule only applies to one engine's
   wrapper class (`.cinematic`, `.world`, `.parallax`, `.explore`, `.physics`,
-  `.hybrid`, `.trail`), it belongs in that skill's fragment, not in `base.css`.
+  `.hybrid`, `.trail`), it belongs in that technique's own `.styles.css` fragment,
+  not in `base.css`.
 
 ## Files
 - `templates/index.html` — the canonical project shell.

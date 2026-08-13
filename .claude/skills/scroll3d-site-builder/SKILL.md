@@ -1,11 +1,20 @@
 ---
-name: site-planner
-description: Plans a scroll-driven 3D website before any generation happens — decides section structure, content depth, and 3D treatment based on the product itself, or clones the structure/effects/positioning of a reference site if one is provided. Hands off a structured site plan to whichever technique skills (video-scroll-effect, 3d-scene-effect, pointer-follow-effect, click-navigate, physics-play, hybrid-2d3d, cursor-trail, and any others installed) own each section. Use this BEFORE those skills when the user gives a brief for a new 3D scroll site — this is the planning step, not the builder.
+name: scroll3d-site-builder
+description: Plans AND builds a full scroll-driven 3D website from a one-line brief, or a reference site to clone the structure of — deciding section structure and content depth, then executing every section (frame-scrub video, real-time Three.js, pointer/click-driven, physics, editorial hybrid, or cursor-trail) and deploying to a live URL. Use this whenever the user asks for a "3D website," "scroll-driven site," "immersive/cinematic landing page," a site that "feels like [some flashy product site]," or wants any single one of these effects by name: frame-scrub/video-scroll, real-time WebGL/Three.js scroll scene, cursor/pointer-driven parallax, click-to-navigate hotspots/camera waypoints, drag-and-throw physics objects, an inline rotating 3D object in an editorial layout, or a cursor particle trail. Also trigger for "clone the structure of this site but for my product" style requests. This is the single entry point — do not look for a separate planning skill or a separate skill per effect, they're all covered here.
 ---
 
-# Site-Planner — plans the site before anything gets built
+# Scroll3D Site Builder — plan, build, and deploy a scroll-driven 3D website
 
-## What this does
+## What this does, end to end
+Two phases, always in this order: **plan** the site (this file), then **execute**
+each section (the `references/<technique>.md` file matching that section's chosen
+technique), then **deploy** once (back in this file, "Build & Deploy" below). Nothing
+here requires a separate skill — the seven rendering techniques, the shared project
+scaffold, asset generation, and the scroll3d-specific style decisions all live in
+`references/` as detail you consult while executing a plan this file produced, not as
+things you invoke separately.
+
+## What this does — planning
 Two very different jobs live here, chosen by whether the user supplied a reference site:
 
 **No reference given → reason from the product.** Don't default to a fixed template.
@@ -23,15 +32,15 @@ batched into ONE turn, not asked one at a time:
 1. **Site type/purpose**: informational | marketing/commercial | ecommerce/product-sales
    | portfolio | event/launch | other (free text).
 2. **Product/theme**, if not already clear from the brief.
-3. **Any must-have pages/sections** (optional — the director still reasons about what's
+3. **Any must-have pages/sections** (optional — you still reason about what's
    needed beyond whatever the user lists here; this is a floor, not a ceiling).
-4. **Reference URL**, if any — this absorbs what used to be a separate Step 1 check
+4. **Reference URL**, if any — this absorbs what used to be a separate check
    into the same batch, since we're already asking multiple things up front.
 Skip any question the brief already answered plainly — don't re-ask what's already
-known. If the `AskUserQuestion` tool is available in this environment, use it to
-present these as structured choices; otherwise ask as a short numbered list in one
-chat message. This is the only intake stop — once answered, move straight to planning
-(Step 2a/2b) without further back-and-forth until the Step 2c review.
+known. If the `AskUserQuestion` tool is available, use it to present these as
+structured choices; otherwise ask as a short numbered list in one chat message. This
+is the only intake stop — once answered, move straight to planning (Step 2a/2b)
+without further back-and-forth until the Step 2c review.
 
 ## Step 1 — Route by reference URL
 - If Step 0 surfaced a URL to reference/clone: go to "Reference-site mode."
@@ -83,43 +92,40 @@ answers (site type, product/theme, any must-have pages):
   generated fresh for the new product.
 
 ## Available techniques
-The `technique` field is a list, not a fixed set — new techniques get added
-here as they're implemented as skills. Currently implemented:
-- **`video-scroll-effect`** — canvas frame-scrub video, driven by scroll progress.
-  Best for photorealistic/cinematic subjects where real footage sells it. Supports a
-  single `motion` (orbit/turntable, fly-through, reveal/explode, abstract, plus the
-  richer named set in its own SKILL.md: molten-birth, frozen-time, bloom, descent,
-  light-reveal) or an optional multi-`beats` chaptered scrub within one section — see
-  `video-scroll-effect/SKILL.md` for the full pattern table and `beats`/`loopBack` format.
-- **`3d-scene-effect`** — real-time Three.js scene, camera/geometry driven by
-  scroll progress. Best for procedural/abstract subjects, or as a zero-cost
-  fallback when only a static image is available (`motion: "image-plane"`).
-- **`pointer-follow-effect`** — real-time Three.js scene, camera/geometry driven by
-  CURSOR position (scroll still pins the section and drives overlay copy).
-  Best for hero/showcase sections where desktop delight is a bonus — touch
-  devices get a static fallback pose, so don't route mobile-essential content
-  here exclusively.
-- **`click-navigate`** — real-time Three.js scene with clickable hotspots that
-  tween the camera to named waypoints. Best for a "tour a few angles/features"
-  moment (showroom feel); works identically on touch and desktop.
-- **`physics-play`** — real-time Three.js + cannon-es rigid-body objects the
-  visitor can drag and throw on a floor plane. The most interactive technique
-  and the heaviest to render — use at most one per site.
-- **`hybrid-2d3d`** — flat editorial layout (real headline/paragraph/stats,
-  normal document flow, NOT pinned) with a smaller inline auto-rotating 3D
-  object. Best for content-dense sections, or to break up a site that would
-  otherwise be wall-to-wall full-bleed sections.
-- **`cursor-trail`** — canvas-2D particle trail following the cursor, scroll
-  still drives the overlay copy. Atmospheric/brand-mood technique, not a
-  product-showcase one — content shouldn't depend on the trail itself since
-  it degrades to ambient drift on touch/reduced-motion.
-Only pick from this list — see "Known gotchas" below for what to do if none fit.
+The `technique` field is a list, not a fixed set. Currently implemented — read the
+matching `references/<name>.md` file only once a section actually needs building with
+that technique, not upfront for every technique in the plan:
+
+| technique | file | best for |
+|---|---|---|
+| `video-scroll-effect` | `references/video-scroll-effect.md` | Photorealistic/cinematic subjects where real generated footage sells it. Canvas frame-scrub, driven by scroll progress. Supports a single `motion` or a multi-`beats` chaptered scrub within one section. |
+| `3d-scene-effect` | `references/3d-scene-effect.md` | Procedural/abstract subjects, or a zero-cost fallback when only a static image is available (`motion: "image-plane"`). Real-time Three.js, camera/geometry driven by scroll. |
+| `pointer-follow-effect` | `references/pointer-follow-effect.md` | Hero/showcase sections where desktop delight is a bonus. Real-time Three.js driven by CURSOR position — touch devices get a static fallback pose, so don't route mobile-essential content here exclusively. |
+| `click-navigate` | `references/click-navigate.md` | A "tour a few angles/features" moment (showroom feel). Clickable hotspots tween the camera to named waypoints; works identically on touch and desktop. |
+| `physics-play` | `references/physics-play.md` | A single playful "try it" moment. Three.js + cannon-es rigid-body objects the visitor can drag and throw. The most interactive technique and the heaviest to render — use at most one per site. |
+| `hybrid-2d3d` | `references/hybrid-2d3d.md` | Content-dense sections, or breaking up a site that would otherwise be wall-to-wall full-bleed sections. Flat editorial layout (real headline/paragraph/stats, NOT pinned) with a smaller inline auto-rotating 3D object. |
+| `cursor-trail` | `references/cursor-trail.md` | Atmospheric/brand-mood sections, section transitions. Canvas-2D particle trail following the cursor; content shouldn't depend on the trail itself since it degrades to ambient drift on touch/reduced-motion. |
+
+Supporting references, consulted while executing the above rather than chosen as a
+section's `technique`:
+- `references/asset-generator.md` — generates/ingests the source image or video a
+  section needs, before video-scroll-effect/3d-scene-effect/pointer-follow-effect build with it.
+- `references/shared-scroll-engine.md` — the shared project scaffold (`index.html`,
+  `base.css`, `choreography.js` in `templates/`) every technique builds on top of.
+- `references/scroll-style-helper.md` — four scroll3d-specific design decisions
+  (accent-color sampling from generated footage, overlay text density, contrast
+  against unpredictable frame content, reveal-line overlap) — only relevant if no
+  general design-taste skill is also available to own these calls instead.
+
+Only pick a section's `technique` from the table above — see "Known gotchas" below
+for what to do if none fit.
 
 ## Site plan format
 - `sections` length and `type` values are NOT fixed — decide per Step 2a/2b.
-- Each section's `technique` decides which skill builds it — one of the
-  "Available techniques" above.
+- Each section's `technique` decides which reference file to read when building it —
+  one of the "Available techniques" above.
 
+```
 {
 "brand": "...",
 "palette": { "accent": "#...", "bg": "#...", ... },
@@ -131,6 +137,7 @@ Only pick from this list — see "Known gotchas" below for what to do if none fi
 ...
 ]
 }
+```
 
 - Every section MUST have a stable `id` (kebab-case, used as the `<section id="...">`
   attribute) and a short `nav_label` (1-2 words, what a visitor would click to jump
@@ -138,13 +145,13 @@ Only pick from this list — see "Known gotchas" below for what to do if none fi
   The nav bar is built directly from this list — don't add a section without a
   nav_label, and don't invent nav items that don't correspond to a real section.
 - Each section MAY carry a `user_asset` field (a path/reference the user supplied
-  during the Step 2c review below) — when present, the executing skill's asset step
-  (`asset-generator`) prefers it explicitly over generating anything new for that section.
-
+  during the Step 2c review below) — when present, the asset step
+  (`references/asset-generator.md`) prefers it explicitly over generating anything
+  new for that section.
 
 ## Known gotchas
 - A "creative" plan still needs to be buildable — don't invent a 3D technique that
-  isn't in "Available techniques" above, i.e. doesn't exist as an implemented skill.
+  isn't in "Available techniques" above.
 - web_fetch may return raw HTML for server-rendered sites but little/nothing useful
   for heavily JS-rendered ones — treat sparse results as a signal to ask the user
   rather than inventing structure from a near-empty fetch.
@@ -163,9 +170,9 @@ finished, deployed site. Show, in one message:
   section's `user_asset`.
 - **Total estimated Higgsfield credit cost** across every section that will need
   generation (this is the same confirmation that credit-spending would otherwise
-  require — surfaced here instead of as a separate later stop; see "Before invoking
-  video-scroll-effect specifically" below, which this step supersedes as the actual
-  confirmation point).
+  require — surfaced here instead of as a separate later stop; see
+  `references/video-scroll-effect.md`'s "Before invoking video-scroll-effect
+  specifically" note, which this step supersedes as the actual confirmation point).
 - Ask plainly: "anything to change — palette, page count/order, nav labels, or swap in
   an asset for any section — before I start building?"
 Revise and re-show only if the requested changes are substantial (e.g. a different
@@ -173,19 +180,18 @@ section altogether); small edits (a color swap, a supplied asset) can just be ap
 and confirmed in the same reply. Proceed to Step 3 once the user confirms or has no
 further changes.
 
-## Step 3 — Hand off (call directly)
-Once the plan is confirmed at Step 2c, invoke each technique skill the plan uses (any
-combination of the "Available techniques" above) in the same conversation turn
-sequence — no separate command needed, and no further user confirmation between here
-and a finished deploy: Step 2c already covered plan approval and credit cost, so
-building proceeds straight through once confirmed there.
+## Step 3 — Build (execute the confirmed plan directly)
+Once the plan is confirmed at Step 2c, build every section it contains in the same
+conversation turn sequence — no separate command needed, and no further user
+confirmation between here and a finished deploy: Step 2c already covered plan approval
+and credit cost, so building proceeds straight through once confirmed there.
 
-### Grouping sections by skill
-Partition `plan.sections` by their `technique` field — one bucket per distinct
-technique value used in the plan (any combination of the 7 in "Available
-techniques" above), each bucket's sections in plan order. A single project can
-and often will use several of these skills for different sections of the same
-page — that's expected, not an error case.
+### Working through sections in plan order
+Go through `plan.sections` in order. For each section, read the
+`references/<technique>.md` file matching that section's `technique` field (only
+that one file — don't read every technique's reference file up front) and follow its
+pipeline. A single project routinely uses several different techniques across its
+sections — that's expected, not an error case.
 
 ### Routing when only static images are available
 If a section has no video source (no Higgsfield access, no user-supplied clip)
@@ -197,7 +203,7 @@ at zero cost. Only route to video-scroll-effect when real video (generated or
 user-supplied) exists. Tell the user this rerouting is happening and why,
 rather than silently switching techniques.
 
-### Disclosing plan deviations (mandatory, checked by build-reviewer)
+### Disclosing plan deviations (mandatory)
 Any section whose ACTUALLY-BUILT technique differs from what Step 2c approved — for
 any reason: video generation failed after its one retry, Higgsfield video access
 wasn't available, or anything else — MUST appear, by name, under a dedicated
@@ -206,15 +212,12 @@ not satisfied by mentioning it in passing inside a longer description sentence �
 needs its own clearly-labeled section so it can't be missed. Each entry states:
 - The section name/id.
 - Planned technique → actual technique.
-- Why (the reason reported by the executing skill, e.g. video-scroll-effect's Step 4
-  stop condition).
+- Why (the reason `references/asset-generator.md` or `references/video-scroll-effect.md`
+  reported for the failure).
 - Whether credits were spent on the failed/skipped attempt, so the user knows whether
   the credit estimate shown at Step 2c was charged for something that didn't ship.
 If zero deviations occurred, omit this section entirely — it only appears when
-something actually changed from what was approved. `build-reviewer`'s
-`plan_deviations` field (see its own doc) is the enforcement mechanism: read it before
-declaring the build done, and relay every entry here verbatim, not paraphrased down to
-nothing.
+something actually changed from what was approved.
 
 ### Routing to pointer-follow-effect
 Only route a section to `pointer-follow-effect` if its content still lands
@@ -247,42 +250,71 @@ defaults with no special mobile caveat. `click-navigate` suits a "tour a few
 angles/features" moment; `hybrid-2d3d` suits content-dense sections, or
 breaking up a site that would otherwise be wall-to-wall full-bleed sections.
 
-### Execution order
-1. Invoke the *first* skill needed (whichever owns the first section in `plan.sections`)
-   with the full ordered list of sections it owns, plus:
-   - `plan.brand`, `plan.palette` (shared across all sections)
-   - The connected folder / project slug, so all sections land in the same project
-     rather than each skill starting a fresh project directory.
-2. That skill builds/generates for each of its sections into the shared project folder
-   (per its own SKILL.md — templates copied once, sections appended to
-   `SCRUB_SECTIONS`, `WORLD_SECTIONS`, `PARALLAX_SECTIONS`, `EXPLORE_SECTIONS`,
-   `PHYSICS_SECTIONS`, `HYBRID_SECTIONS`, or `TRAIL_SECTIONS` as applicable).
-3. Invoke each remaining skill the plan uses, in the same way, into the *same*
-   project folder — each should find the templates already copied and just add its
-   own section-registry entries and `<section>` markup alongside what earlier skills
-   already built.
-4. Only ONE skill should actually run its deploy step (Step 7/6, depending on the
-   skill) — whichever skill owns the LAST section in `plan.sections` runs it, after
-   every other skill's generation work is complete. Tell every other invoked skill
-   explicitly to skip its own deploy step.
-
 ### Building the nav bar
-The nav bar is built ONCE, from the full `plan.sections` list, by whichever skill
-executes FIRST (before any section-specific work) — not duplicated per section, and
-not owned by whichever skill happens to be invoked last. Pass the full ordered list
-of `{id, nav_label}` pairs from all sections (regardless of which skill builds that
-section) to the first-invoked skill, so nav links can point at sections built by any
-of the technique skills on the same page.
-
-
-### Before invoking video-scroll-effect specifically
-Credit-cost confirmation already happened at Step 2c (sum ~54 credits per 1080p clip
-across every section needing generation, shown and confirmed there) — don't ask again
-here. If a section's `user_asset` was supplied during Step 2c, `video-scroll-effect`
-skips generation for it entirely per its own Step 1b.
+The nav bar is built ONCE, from the full `plan.sections` list, while building the
+FIRST section — not duplicated per section, and not deferred to whichever section
+happens to be built last. Every later section's build finds the nav bar already
+present and just leaves it alone.
 
 ### If a section's technique doesn't match any implemented skill
 This shouldn't happen if Step 2a/2b constrained treatment choices correctly, but if it
 does: don't guess or invent an unimplemented technique. Tell the user which section is
 unclear and ask whether it should be reassigned to one of the "Available techniques"
 listed above.
+
+## Build & Deploy (runs once, after every section is built)
+Every technique's own reference file ends its pipeline by pointing back here — this
+step is shared and only runs once per site, after the last section in `plan.sections`
+is built, regardless of which technique(s) built which sections.
+
+1. **Deploy to Cloudflare Pages.**
+   - Requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` set as environment
+     variables (never ask the user to paste these into chat; read them from the
+     environment only).
+   - Load credentials first: `set -a && source .env && set +a` (run this from the repo
+     root, before the wrangler command, so both variables are in scope).
+   - Deploy with Wrangler (installs on first use, no separate setup step):
+     `npx wrangler pages deploy <project-dir> --project-name=<slug> --branch=main`
+     - `<project-dir>` is the folder containing `index.html`, `styles.css`,
+       `choreography.js`, every engine `.js` file the plan uses, and the `frames/`
+       folder.
+     - `<slug>` is a kebab-case name derived from the brief/brand (e.g.
+       `acme-launch`). If the project doesn't exist yet, Wrangler creates it
+       automatically on first deploy.
+     - Wrangler prints the live URL on success, in the form
+       `https://<slug>.pages.dev` (and a unique preview URL per deployment).
+   - If the deploy command fails (auth error, network error, or the Cloudflare API
+     being unreachable from this sandbox): tell the user plainly that deploy failed
+     and why, and fall back to step 2 below regardless — do not claim a URL exists
+     if it doesn't.
+   - Confirm the live URL actually loads
+     (`curl -sS -o /dev/null -w '%{http_code}' <url>` should return 200) before
+     telling the user it's ready.
+
+2. **Write out to the connected folder (always, regardless of deploy success).**
+   - Copy the entire project folder (site files + `frames/`) into the user's
+     connected folder, under a subfolder named after the project slug, together
+     with a `DESIGN.md`.
+   - `DESIGN.md` is REQUIRED, not optional, and must contain at minimum:
+     - A summary of the design choices made (palette, section list, techniques used).
+     - A **"Plan vs. build" table**: one row per section, its planned `technique`,
+       its actual built technique, and a note if they differ (blank/"—" if they
+       match). This is the durable, offline record of any deviation — don't skip it
+       even under time pressure.
+   - This step runs every time — even if deploy failed — since it's the only
+     guarantee the user's work survives after this session ends (the sandbox is
+     disposable).
+   - Tell the user both: the live URL (if deploy succeeded) and the local folder
+     path where the source now lives, plus the `⚠️ Plan deviations` section from
+     Step 3 above if it applies.
+
+## Verifying a build (applies across every technique)
+- The headless screenshot tool blanks sticky-canvas sections when scrolled, and
+  `requestAnimationFrame`/`IntersectionObserver` are suspended in a backgrounded/
+  headless pane — this is the harness, not the site. Verify live in a real browser
+  wherever possible; when you must verify headlessly, drive the engine yourself
+  (e.g. `window.__scrubs.forEach(s => s.update())` after a `scrollTo`) and sample
+  canvas pixels rather than trusting a raw screenshot.
+- Interaction-driven techniques (pointer-follow-effect, click-navigate, physics-play,
+  cursor-trail) specifically need live mouse/click/drag verification — headless
+  automation often can't reliably drive pointer events + rAF-tweened state.

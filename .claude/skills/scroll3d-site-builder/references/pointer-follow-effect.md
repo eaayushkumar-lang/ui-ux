@@ -1,8 +1,3 @@
----
-name: pointer-follow-effect
-description: Executes ONE section of a site plan handed to it by site-planner, using a real-time Three.js scene driven by CURSOR POSITION instead of scroll progress. Scroll still pins the section and drives overlay copy/reveal-lines like the other techniques; pointer movement drives the camera/scene parallax itself. Best for hero/showcase sections where desktop delight is a bonus, not sections carrying essential content on mobile (touch devices get a static fallback pose). Does NOT decide site structure or content depth — site-planner owns those decisions. Trigger only via site-planner's hand-off, or directly if the user explicitly asks for mouse/pointer-driven parallax by name.
----
-
 # Pointer-Follow-Effect — cursor-driven WebGL execution engine
 
 ## What this actually is (read first)
@@ -18,13 +13,14 @@ scroll just doesn't touch the 3D scene itself in this technique.
 
 Stack: **HTML + CSS + JS + Three.js** (CDN, zero build step) + `choreography.js`.
 
-## Scope — this skill does NOT decide
-This skill executes a section (or sections) from a site plan produced by
-site-planner. It does not decide overall site structure or content depth.
-If invoked without a plan, ask for a `content_brief`, `motion`, and `palette`
-for the section being built — do not invent a full multi-section site yourself.
+## When this section is executing
+This file covers building ONE section from the site plan produced by the planning
+workflow in `SKILL.md`. It does not decide overall site structure or content depth.
+If asked to build a pointer-follow-effect section directly, without a plan, ask for a
+`content_brief`, `motion`, and `palette` for that section instead of inventing a full
+multi-section site yourself.
 
-## When to use this technique (for the director, and for direct requests)
+## When to use this technique
 Pointer-follow-effect suits hero/showcase sections where the interaction is a
 delight-add for desktop visitors, not sections whose content must land
 equally well on mobile — touch/no-hover devices get a frozen centered pose
@@ -35,28 +31,26 @@ this technique with a non-motion-dependent copy treatment.
 
 ## Asset needs
 Same as 3d-scene-effect's `image-plane` mode: at most one still image, no video
-generation needed. Call `asset-generator` for an image only (skip its Step 3 video
-generation) — or build purely procedural geometry (per Step 2 below) if no
+generation needed. See `references/asset-generator.md` for an image only (skip its
+video-generation step) — or build purely procedural geometry (per Step 2 below) if no
 image is supplied and the subject suits an abstract/iconic treatment instead.
 
 ## Prerequisites
-- No external API/credits needed for procedural geometry — Three.js is
-  CDN-loaded. If a photo is used, `asset-generator` supplies it (image only, no
-  Higgsfield video credits spent).
-- This skill installed at `${CLAUDE_PLUGIN_ROOT}/skills/pointer-follow-effect/`.
+No external API/credits needed for procedural geometry — Three.js is CDN-loaded. If a
+photo is used, asset generation supplies it (image only, no Higgsfield video credits spent).
 
 ## THE PIPELINE — executes one plan section
 
 ### 1. Read the section spec
 Take the section's `motion`, `content_brief`, and the site's `palette` from the
-plan handed off by site-planner.
+plan.
 
 ### 2. Build the 3D subject
 - If the section has a supplied/generated photo: texture-map it onto a
   `THREE.PlaneGeometry` (mirrors 3d-scene-effect's `image-plane` mode) — real
   camera movement around a textured plane still reads as genuinely 3D.
 - Otherwise: model the subject procedurally from primitive geometries, same
-  approach as 3d-scene-effect Step 2 — favor simple, iconic silhouettes and a
+  approach as 3d-scene-effect's Step 2 — favor simple, iconic silhouettes and a
   key + rim + fill lighting setup over intricate detail.
 
 ### 3. Drive the scene from POINTER position, not scroll
@@ -82,16 +76,13 @@ plan handed off by site-planner.
   is true, same as the other two engines.
 
 ### 5. Build this section from templates/
-- **Project scaffold (once per site, whichever skill runs FIRST):** copy
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/index.html`,
-  `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/base.css` (as the project's `styles.css`),
-  and `${CLAUDE_PLUGIN_ROOT}/skills/shared-scroll-engine/templates/choreography.js` into the project.
-  There is no per-skill `index.html` any more — the shell is shared so a project
-  can never end up missing the Three.js / cannon-es / choreography tags just
-  because of which technique happened to be built first.
-- **This skill's own files (every time this skill runs):** copy
-  `templates/pointer-follow-effect.js` into the project, and APPEND `templates/styles.css`
-  (a fragment, not a full stylesheet) to the project's `styles.css`.
+- **Project scaffold (once per site, whichever technique builds FIRST):** copy
+  `templates/index.html`, `templates/base.css` (as the project's `styles.css`), and
+  `templates/choreography.js` into the project.
+- **This technique's own files (every time a pointer-follow-effect section is built):**
+  copy `templates/pointer-follow-effect.js` into the project, and APPEND
+  `templates/pointer-follow-effect.styles.css` (a fragment, not a full stylesheet) to
+  the project's `styles.css`.
 - If the project already has the scaffold, do not overwrite it — subsequent
   sections append into what is already there.
 - Register this section in a `PARALLAX_SECTIONS` entry:
@@ -107,20 +98,11 @@ plan handed off by site-planner.
     only when `(hover: hover) and (pointer: fine)` matches
 - Write this section's copy from its `content_brief`.
 - If this is the first section being built for this project (nav bar doesn't
-  exist yet in index.html), generate the `.hud-nav` links from the full
-  `plan.sections` list's `id`/`nav_label` pairs before proceeding to this
-  section's own content.
+  exist yet in index.html), generate the `.hud-nav` links from the full site
+  plan's `id`/`nav_label` pairs before proceeding to this section's own content.
 
-### 6. Deploy to Cloudflare Pages + write out to connected folder
-(Same as video-scroll-effect's Step 7/7b and 3d-scene-effect's Step 5 — runs once,
-after all sections from the plan, whether built by video-scroll-effect,
-3d-scene-effect, pointer-follow-effect, or a mix, are in the same project.)
-- Requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as environment
-  variables.
-- Load credentials first: `set -a && source .env && set +a`.
-- Deploy: `npx wrangler pages deploy <project-dir> --project-name=<slug> --branch=main`.
-- Confirm the live URL loads before telling the user it's ready.
-- Always write out to the connected folder regardless of deploy success.
+### 6. Deploy
+Once every section in the plan is built, see `SKILL.md`'s "Build & Deploy" section.
 
 ## Engine rules
 - Cap pixel ratio via `window.Choreography.capDPR()`, same as the other engines.
@@ -154,5 +136,5 @@ after all sections from the plan, whether built by video-scroll-effect,
 
 ## Files
 - `templates/pointer-follow-effect.js` — Three.js scene + pointer driver + scroll-driven overlay.
-- `templates/styles.css` — `.parallax` CSS fragment, appended to the project's `styles.css`.
-- Project shell (`index.html`, `base.css`, `choreography.js`): `shared-scroll-engine/templates/`.
+- `templates/pointer-follow-effect.styles.css` — `.parallax` CSS fragment, appended to the project's `styles.css`.
+- Project shell (`index.html`, `base.css`, `choreography.js`) is shared across techniques.
