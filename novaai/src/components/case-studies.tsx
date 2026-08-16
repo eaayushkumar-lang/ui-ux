@@ -1,4 +1,6 @@
 import { Reveal } from "@/components/reveal";
+import { glassCard, sectionRaised, sectionDivider } from "@/lib/section-style";
+import { cn } from "@/lib/utils";
 
 const CASES = [
   {
@@ -20,7 +22,7 @@ const CASES = [
 
 export function CaseStudies() {
   return (
-    <section id="case-studies" className="px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32">
+    <section id="case-studies" className={cn("px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32", sectionRaised, sectionDivider)}>
       <div className="mx-auto max-w-6xl">
         <Reveal className="inline-flex border-l-2 border-white bg-white/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] backdrop-blur-md">
           Case Studies
@@ -39,7 +41,7 @@ export function CaseStudies() {
             <Reveal
               key={c.client}
               delay={200 + i * 120}
-              className="flex flex-col rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur-md sm:p-8"
+              className={cn("flex flex-col p-6 sm:p-8", glassCard)}
             >
               <h3 className="text-lg font-medium text-white sm:text-xl">{c.client}</h3>
               <p className="mt-3 text-sm leading-relaxed text-white/70">{c.body}</p>

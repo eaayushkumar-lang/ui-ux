@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Reveal } from "@/components/reveal";
+import { sectionDivider } from "@/lib/section-style";
+import { cn } from "@/lib/utils";
 
 const SERVICES = [
   "Building AI Agents",
@@ -10,7 +12,7 @@ const SERVICES = [
 ];
 
 const fieldClass =
-  "w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none backdrop-blur-md transition-colors duration-300 focus:border-white/40";
+  "w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-colors duration-300 focus:border-white/40 focus:bg-white/[0.09]";
 
 export function Contact() {
   const [sent, setSent] = useState(false);
@@ -22,7 +24,7 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32">
+    <section id="contact" className={cn("px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32", sectionDivider)}>
       <div className="mx-auto max-w-2xl">
         <Reveal className="inline-flex border-l-2 border-white bg-white/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] backdrop-blur-md">
           Contact

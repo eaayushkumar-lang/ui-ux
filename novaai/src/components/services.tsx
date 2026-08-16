@@ -1,5 +1,7 @@
 import { Bot, Workflow, Phone, Layers } from "lucide-react";
 import { Reveal } from "@/components/reveal";
+import { glassCardHover, sectionDivider } from "@/lib/section-style";
+import { cn } from "@/lib/utils";
 
 const SERVICES = [
   {
@@ -26,7 +28,7 @@ const SERVICES = [
 
 export function Services() {
   return (
-    <section id="services" className="px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32">
+    <section id="services" className={cn("px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32", sectionDivider)}>
       <div className="mx-auto max-w-6xl">
         <Reveal className="inline-flex border-l-2 border-white bg-white/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] backdrop-blur-md">
           Services
@@ -47,9 +49,9 @@ export function Services() {
               <Reveal
                 key={s.title}
                 delay={200 + i * 110}
-                className="group rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur-md transition-colors duration-300 hover:bg-white/10 sm:p-8"
+                className={cn("group p-6 sm:p-8", glassCardHover)}
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.10)]">
                   <Icon size={20} strokeWidth={1.5} className="text-white" />
                 </div>
                 <h3 className="mt-5 text-lg font-medium text-white sm:text-xl">{s.title}</h3>

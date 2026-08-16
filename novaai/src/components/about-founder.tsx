@@ -1,4 +1,6 @@
 import { Reveal } from "@/components/reveal";
+import { glassCard, sectionRaised, sectionDivider } from "@/lib/section-style";
+import { cn } from "@/lib/utils";
 
 const STATS = [
   { value: "50+", label: "AI Systems Built" },
@@ -9,7 +11,7 @@ const STATS = [
 
 export function AboutFounder() {
   return (
-    <section id="about" className="px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32">
+    <section id="about" className={cn("px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32", sectionRaised, sectionDivider)}>
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-12 md:grid-cols-2 md:items-center md:gap-16">
           {/* Left — copy */}
@@ -39,7 +41,7 @@ export function AboutFounder() {
               <Reveal
                 key={s.label}
                 delay={200 + i * 110}
-                className="rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur-md"
+                className={cn("p-6", glassCard)}
               >
                 <div className="text-3xl font-normal tracking-tight text-white sm:text-4xl">{s.value}</div>
                 <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.15em] text-white/55">{s.label}</div>

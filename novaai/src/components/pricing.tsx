@@ -1,5 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import { Reveal } from "@/components/reveal";
+import { glassCard, sectionDivider } from "@/lib/section-style";
+import { cn } from "@/lib/utils";
 
 const STEPS = [
   {
@@ -24,7 +26,7 @@ const STEPS = [
 
 export function Pricing() {
   return (
-    <section id="pricing" className="px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32">
+    <section id="pricing" className={cn("px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32", sectionDivider)}>
       <div className="mx-auto max-w-6xl">
         <Reveal className="inline-flex border-l-2 border-white bg-white/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] backdrop-blur-md">
           Pricing
@@ -43,7 +45,7 @@ export function Pricing() {
             <Reveal
               key={s.index}
               delay={200 + i * 120}
-              className="flex flex-col rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur-md sm:p-8"
+              className={cn("flex flex-col p-6 sm:p-8", glassCard)}
             >
               <span className="font-mono text-[11px] tracking-[0.15em] text-white/45">{s.index}</span>
               <h3 className="mt-3 text-lg font-medium text-white sm:text-xl">{s.title}</h3>

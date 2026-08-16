@@ -1,5 +1,7 @@
 import { Quote } from "lucide-react";
 import { Reveal } from "@/components/reveal";
+import { glassCard, sectionRaised, sectionDivider } from "@/lib/section-style";
+import { cn } from "@/lib/utils";
 
 const QUOTES = [
   {
@@ -24,7 +26,7 @@ const QUOTES = [
 
 export function Testimonials() {
   return (
-    <section id="testimonials" className="px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32">
+    <section id="testimonials" className={cn("px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32", sectionRaised, sectionDivider)}>
       <div className="mx-auto max-w-6xl">
         <Reveal className="inline-flex border-l-2 border-white bg-white/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] backdrop-blur-md">
           Testimonials
@@ -43,7 +45,7 @@ export function Testimonials() {
             <Reveal
               key={q.name}
               delay={200 + i * 120}
-              className="flex flex-col rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur-md sm:p-8"
+              className={cn("flex flex-col p-6 sm:p-8", glassCard)}
             >
               <Quote size={22} strokeWidth={1.5} className="text-white/30" />
               <p className="mt-5 flex-1 text-sm leading-relaxed text-white/85">{q.quote}</p>

@@ -1,4 +1,6 @@
 import { Reveal } from "@/components/reveal";
+import { sectionRaised } from "@/lib/section-style";
+import { cn } from "@/lib/utils";
 
 const STATS = [
   { value: "50+", label: "Clients" },
@@ -9,7 +11,7 @@ const STATS = [
 
 export function StatsBar() {
   return (
-    <section className="border-y border-white/10 px-5 py-16 sm:px-8 sm:py-20 md:px-12">
+    <section className={cn("border-y border-white/[0.06] px-5 py-16 sm:px-8 sm:py-20 md:px-12", sectionRaised)}>
       <div className="mx-auto max-w-6xl">
         <Reveal className="text-center font-mono text-[11px] uppercase tracking-[0.15em] text-white/55">
           Trusted by innovative teams worldwide

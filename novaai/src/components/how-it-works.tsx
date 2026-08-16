@@ -1,4 +1,6 @@
 import { Reveal } from "@/components/reveal";
+import { glassCard, sectionDivider } from "@/lib/section-style";
+import { cn } from "@/lib/utils";
 
 const STEPS = [
   {
@@ -25,7 +27,7 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32">
+    <section id="how-it-works" className={cn("px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32", sectionDivider)}>
       <div className="mx-auto max-w-6xl">
         <Reveal className="inline-flex border-l-2 border-white bg-white/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] backdrop-blur-md">
           How It Works
@@ -39,12 +41,12 @@ export function HowItWorks() {
           From first call to a system that runs itself.
         </Reveal>
 
-        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/15 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s, i) => (
             <Reveal
               key={s.index}
               delay={200 + i * 110}
-              className="flex flex-col bg-[#0a0a0a] p-6 sm:p-8"
+              className={cn("flex flex-col p-6 sm:p-8", glassCard)}
             >
               <span className="font-mono text-[11px] tracking-[0.15em] text-white/45">{s.index}</span>
               <h3 className="mt-3 text-lg font-medium text-white sm:text-xl">{s.title}</h3>
