@@ -9,16 +9,16 @@ interface ScrollVideoProps {
 
 // Frame-cache tuning (spec): up to 90 frames, or duration*12 (min 24);
 // cached frames capped at 960px wide.
-const MAX_FRAMES = 90;
+const MAX_FRAMES = 60;
 const MIN_FRAMES = 24;
-const FRAMES_PER_SECOND = 12;
+const FRAMES_PER_SECOND = 8;
 const MAX_FRAME_WIDTH = 960;
 const LERP = 0.12;
 const SEEK_EPSILON = 0.04;
 const EXTRACTION_DELAY_MS = 300;
 const SEEK_TIMEOUT_MS = 4000; // a stalled seek must not hang extraction forever
 const DURATION_PROBE_MS = 4000; // budget for forcing a real duration
-const PLAYBACK_RATE = 2; // speed of the one-shot play-through extraction
+const PLAYBACK_RATE = 3; // speed of the one-shot play-through extraction
 const EXTRACTION_WATCHDOG_MS = 30000; // hard ceiling on the whole extraction
 
 // requestVideoFrameCallback isn't in the DOM lib types yet.
@@ -115,6 +115,9 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
   const smoothed = useRef(0);
   const frames = useRef<ImageBitmap[]>([]);
   const cacheReady = useRef(false);
+  // True once buildCache has finished (success or fail). The live seek-
+  // fallback stays off until then, so it never contends with the extractor.
+  const cacheAttempted = useRef(false);
   const hasFrame = useRef(false);
   const lastSeek = useRef(-1);
   // Resolved duration of the visible <video>, used by the seek fallback. Kept
@@ -186,40 +189,54 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       dlog("visible <video> error:", video?.error?.code, video?.error?.message),
     );
 
-    // Fetch the file exactly once, then point the visible <video> at the blob.
-    // The offscreen extractor (buildCache) reuses the same object URL, so no
-    // second network request is ever issued for the same asset.
+    // Perceived-performance split so the page never sits on a blank/flat
+    // background waiting for the whole file:
+    //   1) the visible <video> streams the DIRECT url straight away, so its
+    //      first frame paints in ~1s (a live poster) instead of after the full
+    //      download. It is the only media consumer of this url.
+    //   2) in the background we download the file ONCE for the offscreen frame
+    //      extractor. cache:"no-store" keeps that request off the disk-cache
+    //      entry the <video> streams from, so the two never collide (that
+    //      collision is what tripped ERR_CACHE_OPERATION_NOT_SUPPORTED before).
+    // buildCache awaits `blobReady`, so the extractor never plays the direct
+    // url at the same time as the visible element.
+    let markBlobReady: () => void = () => {};
+    const blobReady = new Promise<void>((resolve) => {
+      markBlobReady = resolve;
+    });
     async function resolveSource() {
-      // `video` is non-null here (guarded by the early return above); the
-      // await below makes TS re-widen the closed-over ref, so re-narrow once.
       const el = video as HTMLVideoElement;
+      el.src = src; // stream the direct url immediately -> fast first frame
+      el.load();
       try {
-        dlog("resolveSource: fetching blob...");
-        // cache:"reload" bypasses any half-written disk-cache entry; a
-        // successful blob means we never touch the network a second time.
-        const res = await fetch(src, { cache: "reload", mode: "cors" });
+        dlog("resolveSource: fetching blob for extractor...");
+        const res = await fetch(src, { cache: "no-store", mode: "cors" });
         if (!res.ok) throw new Error(`fetch ${res.status}`);
         const blob = await res.blob();
         if (disposed) return;
         objectUrl = URL.createObjectURL(blob);
         extractionSource = objectUrl;
         extractionNeedsCors = false;
-        el.src = objectUrl;
-        dlog("resolveSource: blob ready", blob.size, "bytes ->", objectUrl.slice(0, 24) + "...");
+        dlog("resolveSource: blob ready", blob.size, "bytes");
       } catch (err) {
-        // Blob path unavailable (CORS/network) - fall back to the direct URL.
-        // This is the ONLY path that could still issue two requests, and only
-        // when the browser refuses to hand us the blob at all.
         if (disposed) return;
-        el.src = src;
-        dlog("resolveSource: blob fetch failed, using direct URL. reason:", err);
+        // Extractor falls back to the direct url (a 2nd media element) only in
+        // this rare failure case (CORS/network refused the blob).
+        extractionSource = src;
+        extractionNeedsCors = true;
+        dlog("resolveSource: blob fetch failed; extractor uses direct url:", err);
+      } finally {
+        markBlobReady();
       }
-      el.load();
     }
     void resolveSource();
 
     // --- frame cache extraction (offscreen; reuses the resolved source) ----
     async function buildCache() {
+      // Wait for the background blob download so the extractor plays from the
+      // in-memory object url, never a 2nd concurrent stream of the direct url.
+      await blobReady;
+      if (disposed) return;
       dlog(
         "buildCache: start; needsCors =",
         extractionNeedsCors,
@@ -325,6 +342,7 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
         console.error("[ScrollVideo] frame-cache extraction failed:", err?.name, err?.message, err);
         bitmaps.forEach((b) => b?.close());
       } finally {
+        cacheAttempted.current = true;
         cleanupOff();
       }
     }
@@ -489,9 +507,11 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(bmp, r.x, r.y, r.w, r.h);
         }
-      } else if (hasFrame.current && video) {
-        // Fallback: seek the visible <video> itself. Uses the RESOLVED
-        // duration (video.duration may be non-finite on real MP4s).
+      } else if (cacheAttempted.current && hasFrame.current && video) {
+        // Fallback ONLY after the cache build has finished (and only if it
+        // produced no usable frames). While extraction is still running we do
+        // NOT seek the visible element - it just holds its first frame as a
+        // live poster - so the extractor and the seek path never contend.
         const dur = videoDuration.current;
         if (isFinite(dur) && dur > 0) {
           const t = p * (dur - 0.05);
