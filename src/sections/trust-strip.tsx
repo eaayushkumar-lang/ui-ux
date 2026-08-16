@@ -25,7 +25,7 @@ export function TrustStrip() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section className="relative z-10 overflow-hidden rounded-t-[2rem] border-b border-line/60 bg-surface py-10 shadow-[0_-32px_64px_-32px_rgba(10,6,3,0.6)] [contain:layout_style_paint]">
+    <section className="relative z-10 overflow-hidden rounded-t-[2rem] border-b border-line/60 py-10 shadow-[0_-32px_64px_-32px_rgba(10,6,3,0.6)] [contain:layout_style_paint]">
       <div className="mx-auto max-w-7xl px-6">
         <motion.p
           initial={{ opacity: 0 }}

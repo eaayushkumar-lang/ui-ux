@@ -109,7 +109,7 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="relative z-10 bg-bg py-24 lg:py-32 [contain:layout_style_paint]">
+    <section id="contact" className="relative z-10 py-24 lg:py-32 [contain:layout_style_paint]">
       <div className="mx-auto max-w-2xl px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

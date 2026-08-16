@@ -26,7 +26,7 @@ const stats: Stat[] = [
 
 export function About() {
   return (
-    <section id="about" className="relative z-10 bg-bg py-24 lg:py-32 [contain:layout_style_paint]">
+    <section id="about" className="relative z-10 py-24 lg:py-32 [contain:layout_style_paint]">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <motion.div

@@ -19,7 +19,7 @@ export function CTA() {
     <section
       id="cta"
       ref={sectionRef}
-      className="relative z-10 overflow-hidden bg-surface py-28 lg:py-36 [contain:layout_style_paint]"
+      className="relative z-10 overflow-hidden py-28 lg:py-36 [contain:layout_style_paint]"
     >
       <div className="absolute inset-0">
         <motion.img

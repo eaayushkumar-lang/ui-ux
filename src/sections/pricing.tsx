@@ -51,7 +51,7 @@ function scrollToContact() {
 
 export function Pricing() {
   return (
-    <section id="pricing" className="relative z-10 bg-surface py-24 lg:py-32 [contain:layout_style_paint]">
+    <section id="pricing" className="relative z-10 py-24 lg:py-32 [contain:layout_style_paint]">
       <div className="mx-auto max-w-7xl px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

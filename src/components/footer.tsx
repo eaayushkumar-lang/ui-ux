@@ -32,7 +32,7 @@ function scrollTo(id: string) {
 
 export function Footer() {
   return (
-    <footer className="border-t border-line/60 bg-surface">
+    <footer className="border-t border-line/60 bg-surface/40 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.3fr_1fr_1fr]">
           <div className="max-w-sm">

@@ -88,7 +88,7 @@ export function Testimonials() {
   }
 
   return (
-    <section id="testimonials" className="relative z-10 bg-surface py-24 lg:py-32 [contain:layout_style_paint]">
+    <section id="testimonials" className="relative z-10 py-24 lg:py-32 [contain:layout_style_paint]">
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl">
