@@ -3,18 +3,19 @@
 // navbar / reveal) is untouched and keeps its own styling.
 
 /**
- * Frosted-glass panel for a dark (non-video) background. backdrop-blur alone
- * reads as nothing over solid black, so the "glass" comes from a raised white
- * fill, a hairline border, and a 1px inner top highlight that mimics light
- * catching a frosted edge — so the card looks like a glass panel, not a flat
- * dark rectangle.
+ * Frosted-glass panel for a dark (non-video) background. On solid black there
+ * is nothing translucent behind the card, so backdrop-blur does nothing and a
+ * 6%-white fill is invisible. The "glass" is therefore built from real
+ * contrast: a clearly-raised fill (guaranteed background-color floor), a
+ * top-lit gradient sheen over it, a defined border, and a bright 1px inner top
+ * highlight — so the card reads as a lit glass panel, not a flat black box.
  */
 export const glassCard =
-  "rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.10)]";
+  "rounded-2xl border border-white/15 bg-white/[0.09] bg-linear-to-b from-white/[0.08] to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18)]";
 
-/** Interactive variant: lifts a little brighter on hover, transitions cleanly. */
+/** Interactive variant: fill + border brighten on hover (smooth via bg-color). */
 export const glassCardHover =
-  glassCard + " transition-colors duration-300 hover:bg-white/[0.10] hover:border-white/20";
+  glassCard + " transition-colors duration-300 hover:bg-white/[0.13] hover:border-white/25";
 
 /**
  * Raised near-black band — a touch lighter (and a hair cooler) than the

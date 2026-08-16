@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export function FinalCta() {
   return (
     <section className={cn("px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32", sectionRaised, sectionDivider)}>
-      <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-white/[0.06] px-6 py-16 text-center backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.10)] sm:px-12 sm:py-20">
+      <div className="mx-auto max-w-4xl rounded-3xl border border-white/15 bg-white/[0.09] bg-linear-to-b from-white/[0.08] to-transparent px-6 py-16 text-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18)] sm:px-12 sm:py-20">
         <Reveal
           as="h2"
           className="mx-auto max-w-2xl text-4xl font-normal leading-[1.1] tracking-tight text-white sm:text-5xl"
