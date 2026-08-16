@@ -37,49 +37,50 @@ body {
    modern browser. Scoped to the new sections; the hero is untouched.
    ------------------------------------------------------------------------- */
 .glass-panel {
-  /* ===== TEMPORARY DEBUG PROBE — revert after diagnosis ===================
-     If the cards show BRIGHT RED with a 4px YELLOW border, this rule IS
-     reaching the browser and applying to the card element -> the earlier
-     "black" was a value/perception issue, not a delivery issue. If the cards
-     are STILL plain black, this rule is NOT reaching/applying at all (wrong
-     file bundled, forced-colors/OS high-contrast stripping colors, class not
-     on the element, etc.). The !important beats any utility-layer override. */
-  background-color: red !important;
-  border: 4px solid yellow !important;
-  /* --- real styling (kept below; overridden by the debug lines above) --- */
+  /* Fill is intentionally strong (16% white) so the panel reads as a clearly
+     lit frosted surface against #0a0a0a even on very dark / high-contrast
+     displays, where the earlier 8% was imperceptible. */
+  background-color: rgba(255, 255, 255, 0.16);
   background-image: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.10),
-    rgba(255, 255, 255, 0) 60%
+    rgba(255, 255, 255, 0.20),
+    rgba(255, 255, 255, 0.04) 70%
   );
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .glass-panel-interactive {
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .glass-panel-interactive:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.26);
+  background-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 /* Smaller chip (e.g. service icon tiles). */
 .glass-chip {
-  background-color: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 /* Form inputs — a touch quieter than a card, with a clear focus lift. */
 .glass-field {
-  background-color: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .glass-field:focus {
-  background-color: rgba(255, 255, 255, 0.10);
-  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 /* Alternating raised near-black band + hairline top divider — authored here
