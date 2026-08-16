@@ -13,6 +13,8 @@ const MAX_FRAMES = 60;
 const MIN_FRAMES = 24;
 const FRAMES_PER_SECOND = 8;
 const MAX_FRAME_WIDTH = 960;
+const LOW_END_FRAMES = 10; // low-end: a handful of small cached frames
+const LOW_END_FRAME_WIDTH = 480; // low-end: half-res cached frames
 const LERP = 0.12;
 const SEEK_EPSILON = 0.04;
 const EXTRACTION_DELAY_MS = 300;
@@ -156,7 +158,7 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
     // the visible <video> directly via the seek fallback (no offscreen decode,
     // no createImageBitmap, no per-frame canvas redraw). High-end unchanged.
     const lowEnd = detectLowEnd();
-    dlog("device profile:", lowEnd ? "LOW-END (light seek fallback)" : "high-end (full cache)");
+    dlog("device profile:", lowEnd ? "LOW-END (light 10-frame cache)" : "high-end (full 60-frame cache)");
 
     // Source resolution: the visible <video> and the offscreen extractor must
     // NOT both fetch the CloudFront URL directly - two concurrent range
@@ -203,13 +205,10 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       videoDuration.current = await resolveDuration(video as HTMLVideoElement);
       dlog("visible <video> resolved duration =", videoDuration.current);
       if (disposed) return;
-      if (lowEnd) {
-        // Low-end path: no extraction/canvas. Flip cacheAttempted so the render
-        // loop's seek fallback drives the visible <video> right away.
-        cacheAttempted.current = true;
-        dlog("low-end: native <video> + seek fallback, skipping extraction");
-        return;
-      }
+      // Yield, then extract the frame cache (low-end builds a much smaller
+      // 10-frame / 480px cache; high-end the full one). Native <video> seeking
+      // is unreliable on weak integrated GPUs, so BOTH profiles use the canvas
+      // cache - low-end just does far less work.
       // Yield, then extract the frame cache from a separate offscreen video.
       window.setTimeout(() => {
         if (!disposed) void buildCache();
@@ -239,11 +238,6 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       const el = video as HTMLVideoElement;
       el.src = src; // stream the direct url immediately -> fast first frame
       el.load();
-      if (lowEnd) {
-        // No offscreen extractor on low-end, so skip the blob download entirely.
-        markBlobReady();
-        return;
-      }
       try {
         dlog("resolveSource: fetching blob for extractor...");
         const res = await fetch(src, { cache: "no-store", mode: "cors" });
@@ -324,7 +318,9 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
         dlog("buildCache: resolved duration =", duration);
         if (!isFinite(duration) || duration <= 0) throw new Error("bad duration " + duration);
 
-        const count = Math.max(MIN_FRAMES, Math.min(MAX_FRAMES, Math.round(duration * FRAMES_PER_SECOND)));
+        const count = lowEnd
+          ? LOW_END_FRAMES
+          : Math.max(MIN_FRAMES, Math.min(MAX_FRAMES, Math.round(duration * FRAMES_PER_SECOND)));
         const targets = Array.from({ length: count }, (_, i) => (i / (count - 1)) * (duration - 0.05));
         for (let i = 0; i < count; i++) bitmaps.push(null);
 
@@ -339,7 +335,7 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
           const vw = off.videoWidth;
           const vh = off.videoHeight;
           if (!vw || !vh) throw new Error(`no dims ${vw}x${vh}`);
-          const scale = Math.min(1, MAX_FRAME_WIDTH / vw);
+          const scale = Math.min(1, (lowEnd ? LOW_END_FRAME_WIDTH : MAX_FRAME_WIDTH) / vw);
           scratch.width = Math.round(vw * scale);
           scratch.height = Math.round(vh * scale);
           sctx.drawImage(off, 0, 0, scratch.width, scratch.height);
