@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface ScrollVideoProps {
   src: string;
-  /** Optional poster still. Omit to let the #0a0a0a base show through
+  /** Optional poster still. Omit to let the #f4eadd base show through
    * until the video has a decoded frame. */
   poster?: string;
 }
@@ -531,7 +531,7 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#0a0a0a]"
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#f4eadd]"
     >
       {poster && (
         <img

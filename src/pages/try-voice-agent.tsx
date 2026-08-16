@@ -81,7 +81,7 @@ export function TryVoiceAgentPage() {
               className={cn(
                 "relative flex h-28 w-28 cursor-pointer items-center justify-center rounded-full transition-colors duration-300",
                 callState === "active"
-                  ? "bg-gradient-to-r from-accent to-accent-2 text-accent-ink shadow-[0_0_0_1px_rgba(255,184,0,0.4),0_0_60px_-10px_rgba(255,184,0,0.8)]"
+                  ? "bg-gradient-to-r from-accent to-accent-2 text-accent-ink shadow-[0_0_0_1px_rgba(193,80,46,0.4),0_0_60px_-10px_rgba(193,80,46,0.8)]"
                   : "border border-accent/40 bg-accent/10 text-accent",
               )}
             >

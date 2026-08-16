@@ -85,7 +85,7 @@ function NavItem({
         <motion.span
           layoutId="nav-active-pill"
           transition={SPRING_ISLAND}
-          className="absolute inset-0 rounded-full border border-accent/40 bg-accent/15 shadow-[0_0_18px_-4px_rgba(255,184,0,0.7)]"
+          className="absolute inset-0 rounded-full border border-accent/40 bg-accent/15 shadow-[0_0_18px_-4px_rgba(193,80,46,0.7)]"
         />
       )}
       <span className="relative z-10 flex items-center gap-2">
@@ -122,7 +122,7 @@ function NavCTA({ expanded }: { expanded: boolean }) {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={SPRING_ISLAND}
-      className="relative flex shrink-0 cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-2 px-3 py-2 text-sm font-medium text-accent-ink shadow-[0_0_0_1px_rgba(255,184,0,0.35),0_10px_24px_-10px_rgba(255,107,0,0.7)]"
+      className="relative flex shrink-0 cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-2 px-3 py-2 text-sm font-medium text-accent-ink shadow-[0_0_0_1px_rgba(193,80,46,0.35),0_10px_24px_-10px_rgba(158,58,28,0.7)]"
     >
       <CalendarDays className="h-4 w-4 shrink-0" strokeWidth={1.75} />
       <NavLabel expanded={expanded}>
@@ -173,7 +173,7 @@ export function Navbar() {
         onClick={() => {
           if (scrolled && !hoverOpen) setTapOpen((v) => !v);
         }}
-        className="glass-card pointer-events-auto flex max-w-full items-center gap-1 rounded-full border border-accent/20 p-1.5 shadow-[0_0_0_1px_rgba(255,184,0,0.08),0_20px_48px_-20px_rgba(0,0,0,0.8),0_0_32px_-12px_rgba(255,184,0,0.35)]"
+        className="glass-card pointer-events-auto flex max-w-full items-center gap-1 rounded-full border border-accent/20 p-1.5 shadow-[0_0_0_1px_rgba(193,80,46,0.08),0_20px_48px_-20px_rgba(0,0,0,0.8),0_0_32px_-12px_rgba(193,80,46,0.35)]"
       >
         <motion.button
           layout

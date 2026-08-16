@@ -7,9 +7,9 @@ import { useCursorGlow } from "@/hooks/use-cursor-glow";
 import { cn } from "@/lib/utils";
 
 const STAT_HOVER_SHADOW =
-  "0 0 0 1px rgba(255,184,0,0.4), 0 24px 48px -18px rgba(0,0,0,0.65), 0 0 36px -8px rgba(255,184,0,0.35)";
+  "0 0 0 1px rgba(193,80,46,0.4), 0 24px 48px -18px rgba(0,0,0,0.65), 0 0 36px -8px rgba(193,80,46,0.35)";
 const STAT_BASE_SHADOW =
-  "0 0 0 1px rgba(255,184,0,0), 0 24px 48px -18px rgba(0,0,0,0), 0 0 36px -8px rgba(255,184,0,0)";
+  "0 0 0 1px rgba(193,80,46,0), 0 24px 48px -18px rgba(0,0,0,0), 0 0 36px -8px rgba(193,80,46,0)";
 
 interface Stat {
   value: number;
@@ -40,7 +40,7 @@ export function About() {
               className="gpu-active relative mx-auto aspect-square w-full max-w-[280px] rounded-[2rem] border border-accent/25 bg-gradient-to-br from-surface-3 to-bg motion-safe:animate-breathe"
               style={{
                 boxShadow:
-                  "0 0 0 1px rgba(255,184,0,0.12), 0 40px 80px -30px rgba(0,0,0,0.7), 0 0 60px -10px rgba(255,184,0,0.45)",
+                  "0 0 0 1px rgba(193,80,46,0.12), 0 40px 80px -30px rgba(0,0,0,0.7), 0 0 60px -10px rgba(193,80,46,0.45)",
               }}
             >
               <div className="flex h-full w-full items-center justify-center">

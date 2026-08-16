@@ -11,11 +11,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "text-accent-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.45),inset_0_-1.5px_0_rgba(0,0,0,0.28),0_0_0_1px_rgba(255,184,0,0.35),0_16px_36px_-16px_rgba(255,107,0,0.65)]",
+          "text-accent-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.45),inset_0_-1.5px_0_rgba(0,0,0,0.28),0_0_0_1px_rgba(193,80,46,0.35),0_16px_36px_-16px_rgba(158,58,28,0.65)]",
         secondary:
-          "bg-transparent text-ink border border-line shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(255,184,0,0),0_14px_34px_-16px_rgba(255,184,0,0)] hover:border-accent/50",
+          "bg-transparent text-ink border border-line shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(193,80,46,0),0_14px_34px_-16px_rgba(193,80,46,0)] hover:border-accent/50",
         ghost:
-          "bg-transparent text-ink-dim shadow-[0_0_26px_-8px_rgba(255,184,0,0)] hover:text-ink",
+          "bg-transparent text-ink-dim shadow-[0_0_26px_-8px_rgba(193,80,46,0)] hover:text-ink",
       },
       size: {
         default: "h-12 px-6 text-[15px]",
@@ -34,10 +34,10 @@ type ButtonVariant = "primary" | "secondary" | "ghost";
 
 const HOVER_GLOW: Record<ButtonVariant, string> = {
   primary:
-    "inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1.5px 0 rgba(0,0,0,0.3), 0 0 0 1px rgba(255,184,0,0.6), 0 26px 60px -16px rgba(255,107,0,0.9)",
+    "inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1.5px 0 rgba(0,0,0,0.3), 0 0 0 1px rgba(193,80,46,0.6), 0 26px 60px -16px rgba(158,58,28,0.9)",
   secondary:
-    "inset 0 1px 0 rgba(255,255,255,0.1), 0 0 0 1px rgba(255,184,0,0.3), 0 14px 34px -16px rgba(255,184,0,0.45)",
-  ghost: "0 0 26px -8px rgba(255,184,0,0.35)",
+    "inset 0 1px 0 rgba(255,255,255,0.1), 0 0 0 1px rgba(193,80,46,0.3), 0 14px 34px -16px rgba(193,80,46,0.45)",
+  ghost: "0 0 26px -8px rgba(193,80,46,0.35)",
 };
 
 /** Cursor-tracked metallic sheen, layered under the variant's own fill.

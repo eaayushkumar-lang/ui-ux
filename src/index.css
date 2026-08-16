@@ -9,19 +9,22 @@
   --font-sans: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  --color-bg: #050505;
-  --color-surface: #0f0a06;
-  --color-surface-2: #180f08;
-  --color-surface-3: #21140a;
-  --color-line: #3a260f80;
-  --color-ink: #fafafa;
-  --color-ink-dim: #a0a0a0;
-  --color-ink-faint: #6b6259;
-  --color-accent: #ffb800;
-  --color-accent-2: #ff6b00;
-  --color-coral: #ffd770;
-  --color-accent-dim: #995400;
-  --color-accent-ink: #160e02;
+  /* Warm light brand palette. The site sits over a light sky-blue/white video,
+     so text is a deep warm charcoal-brown (not black) and surfaces are warm
+     cream. Accent is a refined terracotta/rust (no more amber/gold, no black). */
+  --color-bg: #f4eadd;
+  --color-surface: #efe3d4;
+  --color-surface-2: #e8d9c6;
+  --color-surface-3: #dfccb5;
+  --color-line: #8a5a3a33;
+  --color-ink: #2a1f1a;
+  --color-ink-dim: #5a4a3e;
+  --color-ink-faint: #6e5a48;
+  --color-accent: #c1502e;
+  --color-accent-2: #9e3a1c;
+  --color-coral: #e0a07a;
+  --color-accent-dim: #8a3a20;
+  --color-accent-ink: #fff3ec;
 
   --radius-card: 1.25rem;
   --radius-pill: 999px;
@@ -100,10 +103,10 @@
 }
 
 @utility glass-card {
-  background-color: rgb(255 255 255 / 0.035);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgb(255 184 0 / 0.1);
+  background-color: rgb(247 238 228 / 0.68);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgb(193 80 46 / 0.2);
 }
 
 /* Promotes to a GPU compositing layer only while actually interacted with
@@ -176,7 +179,7 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 20%), rgba(255, 184, 0, 0.14), transparent 65%);
+    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 20%), rgba(193, 80, 46, 0.16), transparent 65%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -198,8 +201,8 @@
     inset: 0;
     border-radius: inherit;
     background:
-      radial-gradient(240px circle at var(--mx, 50%) var(--my, 20%), rgba(255, 255, 255, 0.16), transparent 62%),
-      linear-gradient(135deg, rgba(255, 184, 0, 0.1), transparent 55%);
+      radial-gradient(240px circle at var(--mx, 50%) var(--my, 20%), rgba(255, 250, 244, 0.35), transparent 62%),
+      linear-gradient(135deg, rgba(193, 80, 46, 0.12), transparent 55%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -231,7 +234,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     scroll-behavior: smooth;
   }
 

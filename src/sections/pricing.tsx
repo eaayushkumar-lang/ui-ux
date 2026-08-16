@@ -7,11 +7,11 @@ import { useCursorGlow } from "@/hooks/use-cursor-glow";
 import { cn } from "@/lib/utils";
 
 const CARD_HOVER_SHADOW =
-  "0 0 0 1px rgba(255,184,0,0.4), 0 30px 60px -20px rgba(0,0,0,0.65), 0 0 46px -8px rgba(255,184,0,0.4)";
+  "0 0 0 1px rgba(193,80,46,0.4), 0 30px 60px -20px rgba(0,0,0,0.65), 0 0 46px -8px rgba(193,80,46,0.4)";
 const CARD_BASE_SHADOW =
-  "0 0 0 1px rgba(255,184,0,0), 0 30px 60px -20px rgba(0,0,0,0), 0 0 46px -8px rgba(255,184,0,0)";
+  "0 0 0 1px rgba(193,80,46,0), 0 30px 60px -20px rgba(0,0,0,0), 0 0 46px -8px rgba(193,80,46,0)";
 const FEATURED_BASE_SHADOW =
-  "0 0 0 1px rgba(255,184,0,0.35), 0 34px 68px -20px rgba(0,0,0,0.7), 0 0 60px -10px rgba(255,184,0,0.5)";
+  "0 0 0 1px rgba(193,80,46,0.35), 0 34px 68px -20px rgba(0,0,0,0.7), 0 0 60px -10px rgba(193,80,46,0.5)";
 
 interface Step {
   name: string;

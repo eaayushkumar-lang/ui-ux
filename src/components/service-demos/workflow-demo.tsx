@@ -57,7 +57,7 @@ export function WorkflowDemo() {
                   className={cn(
                     "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color,box-shadow,color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
                     lit
-                      ? "border-accent/60 bg-accent/12 text-accent shadow-[0_0_16px_-2px_rgba(255,184,0,0.6)]"
+                      ? "border-accent/60 bg-accent/12 text-accent shadow-[0_0_16px_-2px_rgba(193,80,46,0.6)]"
                       : "border-line text-ink-faint",
                   )}
                 >

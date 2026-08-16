@@ -97,7 +97,7 @@ export function TryAIAgentsPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               transition={SPRING_HOVER}
-              className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-accent to-accent-2 text-accent-ink shadow-[0_0_0_1px_rgba(255,184,0,0.35),0_10px_24px_-10px_rgba(255,107,0,0.7)] disabled:pointer-events-none disabled:opacity-40"
+              className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-accent to-accent-2 text-accent-ink shadow-[0_0_0_1px_rgba(193,80,46,0.35),0_10px_24px_-10px_rgba(158,58,28,0.7)] disabled:pointer-events-none disabled:opacity-40"
               aria-label="Send message"
             >
               <ArrowUp className="h-5 w-5" strokeWidth={2} />

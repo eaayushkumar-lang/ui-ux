@@ -39,7 +39,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.35, ease: EASE }}
-              className="glass-card pointer-events-auto flex items-center gap-2.5 rounded-full border border-accent/25 px-5 py-3 text-sm text-ink shadow-[0_20px_48px_-20px_rgba(0,0,0,0.8),0_0_32px_-12px_rgba(255,184,0,0.35)]"
+              className="glass-card pointer-events-auto flex items-center gap-2.5 rounded-full border border-accent/25 px-5 py-3 text-sm text-ink shadow-[0_20px_48px_-20px_rgba(0,0,0,0.8),0_0_32px_-12px_rgba(193,80,46,0.35)]"
             >
               <Sparkles className="h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} />
               {message}

@@ -5,8 +5,8 @@ import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
 import { SplitText } from "@/components/split-text";
 
 const CARD_HOVER_SHADOW =
-  "0 0 0 1px rgba(255,184,0,0.4), 0 32px 60px -20px rgba(0,0,0,0.7), 0 0 40px -10px rgba(255,184,0,0.3)";
-const CARD_BASE_SHADOW = "0 0 0 1px rgba(255,184,0,0), 0 32px 60px -20px rgba(0,0,0,0), 0 0 40px -10px rgba(255,184,0,0)";
+  "0 0 0 1px rgba(193,80,46,0.4), 0 32px 60px -20px rgba(0,0,0,0.7), 0 0 40px -10px rgba(193,80,46,0.3)";
+const CARD_BASE_SHADOW = "0 0 0 1px rgba(193,80,46,0), 0 32px 60px -20px rgba(0,0,0,0), 0 0 40px -10px rgba(193,80,46,0)";
 
 function initials(name: string) {
   return name

@@ -12,7 +12,7 @@ export function ProgressBar() {
     <div className="fixed inset-x-0 top-0 z-50 h-[2px] bg-transparent">
       <motion.div
         style={{ scaleX, transformOrigin: "0% 50%" }}
-        className="h-full w-full bg-gradient-to-r from-accent to-accent-2 shadow-[0_0_12px_-1px_rgba(255,184,0,0.7)]"
+        className="h-full w-full bg-gradient-to-r from-accent to-accent-2 shadow-[0_0_12px_-1px_rgba(193,80,46,0.7)]"
       />
     </div>
   );

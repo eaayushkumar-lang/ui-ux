@@ -118,7 +118,7 @@ function WorkflowNode({ step, status }: { step: Step; status: StepStatus }) {
           "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color,box-shadow,color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           status === "pending" && "border-line text-ink-faint",
           status === "running" &&
-            "border-accent bg-accent/10 text-accent shadow-[0_0_20px_-2px_rgba(255,184,0,0.6)]",
+            "border-accent bg-accent/10 text-accent shadow-[0_0_20px_-2px_rgba(193,80,46,0.6)]",
           status === "done" && "border-accent bg-gradient-to-r from-accent to-accent-2 text-accent-ink",
         )}
       >
@@ -153,7 +153,7 @@ function Connector({ lit }: { lit: boolean }) {
       <motion.div
         animate={{
           opacity: lit ? 1 : 0.25,
-          boxShadow: lit ? "0 0 12px 1px rgba(255,184,0,0.7)" : "0 0 0px rgba(255,184,0,0)",
+          boxShadow: lit ? "0 0 12px 1px rgba(193,80,46,0.7)" : "0 0 0px rgba(193,80,46,0)",
         }}
         transition={{ duration: 0.4, ease: EASE_OUT }}
         className="h-full w-px bg-gradient-to-b from-accent to-accent-2 lg:h-px lg:w-full lg:bg-gradient-to-r"

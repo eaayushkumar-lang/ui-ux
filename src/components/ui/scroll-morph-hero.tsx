@@ -59,7 +59,7 @@ function FlipCard({ src, index, target }: FlipCardProps) {
             loading="lazy"
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/10 transition-colors group-hover:bg-transparent" />
+          <div className="absolute inset-0 bg-[#2a1f1a]/12 transition-colors group-hover:bg-transparent" />
         </div>
 
         {/* Back Face */}
@@ -69,7 +69,7 @@ function FlipCard({ src, index, target }: FlipCardProps) {
         >
           <div className="text-center">
             <p className="text-[8px] font-bold text-blue-400 uppercase tracking-widest mb-1">View</p>
-            <p className="text-xs font-medium text-white">Details</p>
+            <p className="text-xs font-medium text-[#fff3ec]">Details</p>
           </div>
         </div>
       </motion.div>

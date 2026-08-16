@@ -12,9 +12,9 @@ import { VoiceAgentDemo } from "@/components/service-demos/voice-agent-demo";
 import { FullSystemDemo } from "@/components/service-demos/full-system-demo";
 
 const CARD_HOVER_SHADOW =
-  "0 0 0 1px rgba(255,184,0,0.4), 0 28px 56px -20px rgba(0,0,0,0.65), 0 0 44px -8px rgba(255,184,0,0.35)";
+  "0 0 0 1px rgba(193,80,46,0.4), 0 28px 56px -20px rgba(0,0,0,0.65), 0 0 44px -8px rgba(193,80,46,0.35)";
 const CARD_BASE_SHADOW =
-  "0 0 0 1px rgba(255,184,0,0), 0 28px 56px -20px rgba(0,0,0,0), 0 0 44px -8px rgba(255,184,0,0)";
+  "0 0 0 1px rgba(193,80,46,0), 0 28px 56px -20px rgba(0,0,0,0), 0 0 44px -8px rgba(193,80,46,0)";
 
 interface Service {
   icon: LucideIcon;

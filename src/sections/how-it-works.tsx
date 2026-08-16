@@ -130,7 +130,7 @@ function StepCard({ step }: { step: Step }) {
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-bg text-accent shadow-[0_0_0px_rgba(255,184,0,0)] transition-[box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-accent group-hover:shadow-[0_0_22px_2px_rgba(255,184,0,0.4)]">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-bg text-accent shadow-[0_0_0px_rgba(193,80,46,0)] transition-[box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-accent group-hover:shadow-[0_0_22px_2px_rgba(193,80,46,0.4)]">
           <Icon className="h-5 w-5" strokeWidth={1.75} />
         </span>
         <span className="font-mono text-sm text-ink-faint">{step.index}</span>

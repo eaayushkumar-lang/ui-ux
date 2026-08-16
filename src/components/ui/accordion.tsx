@@ -37,11 +37,11 @@ const AccordionTrigger = React.forwardRef<
       whileHover={{
         scale: 1.02,
         y: -2,
-        boxShadow: "0 12px 28px -18px rgba(255,184,0,0.55)",
+        boxShadow: "0 12px 28px -18px rgba(193,80,46,0.55)",
         transition: SPRING_HOVER,
       }}
       className={cn(
-        "gpu group -mx-3 flex cursor-pointer flex-1 items-center justify-between gap-6 rounded-xl px-3 py-6 text-left text-lg font-medium text-ink transition-colors hover:bg-white/[0.03] hover:text-accent",
+        "gpu group -mx-3 flex cursor-pointer flex-1 items-center justify-between gap-6 rounded-xl px-3 py-6 text-left text-lg font-medium text-ink transition-colors hover:bg-[#2a1f1a]/[0.04] hover:text-accent",
         className,
       )}
       {...props}
