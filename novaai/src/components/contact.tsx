@@ -12,7 +12,7 @@ const SERVICES = [
 ];
 
 const fieldClass =
-  "w-full rounded-xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)] transition-colors duration-300 focus:border-white/40 focus:bg-white/[0.11]";
+  "glass-field w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none";
 
 export function Contact() {
   const [sent, setSent] = useState(false);

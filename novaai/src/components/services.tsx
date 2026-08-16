@@ -51,7 +51,7 @@ export function Services() {
                 delay={200 + i * 110}
                 className={cn("group p-6 sm:p-8", glassCardHover)}
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.10)]">
+                <div className="glass-chip flex h-11 w-11 items-center justify-center rounded-xl">
                   <Icon size={20} strokeWidth={1.5} className="text-white" />
                 </div>
                 <h3 className="mt-5 text-lg font-medium text-white sm:text-xl">{s.title}</h3>
