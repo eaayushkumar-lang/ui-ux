@@ -34,6 +34,13 @@ function coverRect(sw: number, sh: number, dw: number, dh: number) {
  * scroll-driven only. If frame extraction can't run (e.g. the video isn't
  * CORS-readable), it stays in the live-video seek path - still fully
  * scroll-driven, just without the cache's extra smoothness.
+ *
+ * The source file is fetched exactly ONCE as a blob, then the same in-memory
+ * object URL feeds both the visible <video> and the offscreen frame extractor.
+ * That single request is what keeps the two media loads from issuing competing
+ * range requests for the same large file (which trips Chrome's disk cache:
+ * net::ERR_CACHE_OPERATION_NOT_SUPPORTED) and makes the source same-origin so
+ * createImageBitmap never taints.
  */
 export function ScrollVideo({ src, poster }: ScrollVideoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -60,6 +67,17 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
     if (!ctx) return;
 
     let disposed = false;
+
+    // Source resolution: the visible <video> and the offscreen extractor must
+    // NOT both fetch the CloudFront URL directly - two concurrent range
+    // requests for the same large file trip Chrome's disk cache
+    // (net::ERR_CACHE_OPERATION_NOT_SUPPORTED) and one load fails. Instead we
+    // download the file ONCE as a blob and hand the same in-memory object URL
+    // to both consumers, so there is a single real network request. Bonus: a
+    // blob URL is same-origin, so createImageBitmap never taints.
+    let objectUrl: string | null = null;
+    let extractionSource = src; // what buildCache's offscreen video loads
+    let extractionNeedsCors = true; // only the direct-URL fallback needs CORS
 
     function sizeCanvas() {
       if (!canvas) return;
@@ -93,11 +111,41 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
     }
     video.addEventListener("loadeddata", onLoadedData);
 
-    // --- frame cache extraction (offscreen, CORS-enabled) -----------------
+    // Fetch the file exactly once, then point the visible <video> at the blob.
+    // The offscreen extractor (buildCache) reuses the same object URL, so no
+    // second network request is ever issued for the same asset.
+    async function resolveSource() {
+      // `video` is non-null here (guarded by the early return above); the
+      // await below makes TS re-widen the closed-over ref, so re-narrow once.
+      const el = video as HTMLVideoElement;
+      try {
+        // cache:"reload" bypasses any half-written disk-cache entry; a
+        // successful blob means we never touch the network a second time.
+        const res = await fetch(src, { cache: "reload", mode: "cors" });
+        if (!res.ok) throw new Error(`fetch ${res.status}`);
+        const blob = await res.blob();
+        if (disposed) return;
+        objectUrl = URL.createObjectURL(blob);
+        extractionSource = objectUrl;
+        extractionNeedsCors = false;
+        el.src = objectUrl;
+      } catch {
+        // Blob path unavailable (CORS/network) - fall back to the direct URL.
+        // This is the ONLY path that could still issue two requests, and only
+        // when the browser refuses to hand us the blob at all.
+        if (disposed) return;
+        el.src = src;
+      }
+      el.load();
+    }
+    void resolveSource();
+
+    // --- frame cache extraction (offscreen; reuses the resolved source) ----
     async function buildCache() {
       const off = document.createElement("video");
-      off.src = src;
-      off.crossOrigin = "anonymous"; // required for createImageBitmap readback
+      off.src = extractionSource;
+      // Only the direct-URL fallback needs CORS; a blob URL is same-origin.
+      if (extractionNeedsCors) off.crossOrigin = "anonymous";
       off.muted = true;
       off.playsInline = true;
       off.preload = "auto";
@@ -198,6 +246,7 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       video.removeEventListener("loadeddata", onLoadedData);
       frames.current.forEach((b) => b.close());
       frames.current = [];
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [src, dpr]);
 
@@ -217,7 +266,6 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       )}
       <video
         ref={videoRef}
-        src={src}
         muted
         playsInline
         preload="auto"
