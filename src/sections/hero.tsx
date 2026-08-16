@@ -1,6 +1,5 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Compass } from "lucide-react";
-import { RobotFlyby } from "@/components/ui/robot-flyby";
 import { Button } from "@/components/ui/button";
 import { BookACallButton } from "@/components/book-a-call-button";
 import { LiquidHeroTitle, ShimmerText } from "@/components/liquid-text";
@@ -11,17 +10,15 @@ function scrollToId(id: string) {
 }
 
 export function Hero() {
-  const reduceMotion = useReducedMotion();
-
   return (
     <section
       id="hero"
       className="relative z-10 flex min-h-[100dvh] items-center overflow-hidden pt-8 [contain:layout_style_paint]"
     >
-      {/* Text comes first in source order so it stacks on top on mobile;
-          flex-row puts it in the left column on desktop, globe on the right. */}
-      <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-12 px-6 py-16 lg:flex-row lg:gap-10 lg:py-0">
-        <div className="mx-auto max-w-lg text-center lg:mx-0 lg:basis-1/2 lg:text-left">
+      {/* Robot removed - the scroll video is now the only hero visual, so the
+          copy sits over it as a centered single column. */}
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-16 text-center">
+        <div className="mx-auto max-w-2xl">
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -60,19 +57,6 @@ export function Hero() {
             </Button>
           </motion.div>
         </div>
-
-        <motion.div
-          initial={reduceMotion ? undefined : { opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: EASE }}
-          className="mx-auto aspect-square w-full max-w-[380px] sm:max-w-[440px] lg:max-w-none lg:basis-1/2"
-        >
-          {/* Renders in-flow here (not a page-root scroll-linked overlay
-              like the old FloatingGlobe) - once assembled, the robot stays
-              fixed in the hero and scrolls away with the rest of its
-              content, rather than persisting/sliding across the page. */}
-          <RobotFlyby />
-        </motion.div>
       </div>
     </section>
   );
