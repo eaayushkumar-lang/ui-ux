@@ -16,8 +16,19 @@ const MAX_FRAME_WIDTH = 960;
 const LERP = 0.12;
 const SEEK_EPSILON = 0.04;
 const EXTRACTION_DELAY_MS = 300;
-const SEEK_TIMEOUT_MS = 2500; // a stalled seek must not hang extraction forever
+const SEEK_TIMEOUT_MS = 4000; // a stalled seek must not hang extraction forever
 const DURATION_PROBE_MS = 4000; // budget for forcing a real duration
+const PLAYBACK_RATE = 2; // speed of the one-shot play-through extraction
+const EXTRACTION_WATCHDOG_MS = 30000; // hard ceiling on the whole extraction
+
+// requestVideoFrameCallback isn't in the DOM lib types yet.
+type FrameMeta = { mediaTime: number };
+type RVFCVideo = HTMLVideoElement & {
+  requestVideoFrameCallback?: (cb: (now: number, meta: FrameMeta) => void) => number;
+};
+function hasRVFC(v: HTMLVideoElement): v is RVFCVideo {
+  return typeof (v as RVFCVideo).requestVideoFrameCallback === "function";
+}
 
 // Dev-only tracing. Silent in production builds (import.meta.env.DEV === false).
 const DEBUG = Boolean(
@@ -74,42 +85,20 @@ function resolveDuration(v: HTMLVideoElement): Promise<number> {
   });
 }
 
-/** Seek and wait for the frame, but never hang: resolve after a timeout too. */
-function seekTo(v: HTMLVideoElement, time: number): Promise<boolean> {
-  return new Promise<boolean>((resolve) => {
-    let settled = false;
-    const done = (ok: boolean) => {
-      if (settled) return;
-      settled = true;
-      v.removeEventListener("seeked", onSeeked);
-      clearTimeout(to);
-      resolve(ok);
-    };
-    const onSeeked = () => done(true);
-    const to = setTimeout(() => done(false), SEEK_TIMEOUT_MS);
-    v.addEventListener("seeked", onSeeked);
-    try {
-      v.currentTime = time;
-    } catch {
-      done(false);
-    }
-  });
-}
-
 /**
  * Fixed, full-bleed scroll-scrubbed video background. Page scroll maps to
  * the video timeline (smoothed with a lerp), rendered onto a canvas from a
  * pre-extracted ImageBitmap frame cache for jitter-free scrubbing. Until
  * the cache is ready it crossfades poster -> live video (seeked directly),
- * then poster/video -> canvas. Never autoplays as a loop; motion is
- * scroll-driven only. If frame extraction can't run (e.g. the video isn't
- * CORS-readable), it stays in the live-video seek path - still fully
- * scroll-driven, just without the cache's extra smoothness.
+ * then poster/video -> canvas. The visible background is NEVER autoplayed as a
+ * loop; its motion is scroll-driven only. (The frame cache is built from a
+ * separate, hidden, one-shot play-through of an offscreen element - an
+ * internal detail that never shows on screen.)
  *
  * The source file is fetched exactly ONCE as a blob, then the same in-memory
  * object URL feeds both the visible <video> and the offscreen frame extractor.
- * That single request is what keeps the two media loads from issuing competing
- * range requests for the same large file (which trips Chrome's disk cache:
+ * That single request keeps the two media loads from issuing competing range
+ * requests for the same large file (which trips Chrome's disk cache:
  * net::ERR_CACHE_OPERATION_NOT_SUPPORTED) and makes the source same-origin so
  * createImageBitmap never taints.
  */
@@ -237,14 +226,36 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
         "source =",
         extractionSource.slice(0, 24) + "...",
       );
-      const off = document.createElement("video");
+      const off = document.createElement("video") as RVFCVideo;
       off.src = extractionSource;
-      // Only the direct-URL fallback needs CORS; a blob URL is same-origin.
       if (extractionNeedsCors) off.crossOrigin = "anonymous";
       off.muted = true;
       off.playsInline = true;
       off.preload = "auto";
+      // Attach (hidden) so the browser doesn't throttle decode/seek for a
+      // DETACHED element - the prime suspect behind seeks that never fire
+      // 'seeked' on large streams.
+      off.setAttribute("aria-hidden", "true");
+      off.style.cssText =
+        "position:fixed;left:-10000px;top:0;width:2px;height:2px;opacity:0;pointer-events:none;";
+      document.body.appendChild(off);
 
+      const cleanupOff = () => {
+        try {
+          off.pause();
+        } catch {
+          /* ignore */
+        }
+        off.removeAttribute("src");
+        try {
+          off.load();
+        } catch {
+          /* ignore */
+        }
+        off.remove();
+      };
+
+      const bitmaps: (ImageBitmap | null)[] = [];
       try {
         await new Promise<void>((resolve, reject) => {
           off.addEventListener("loadedmetadata", () => resolve(), { once: true });
@@ -261,61 +272,204 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
         if (!isFinite(duration) || duration <= 0) throw new Error("bad duration " + duration);
 
         const count = Math.max(MIN_FRAMES, Math.min(MAX_FRAMES, Math.round(duration * FRAMES_PER_SECOND)));
-        dlog("buildCache: extracting", count, "frames");
+        const targets = Array.from({ length: count }, (_, i) => (i / (count - 1)) * (duration - 0.05));
+        for (let i = 0; i < count; i++) bitmaps.push(null);
+
         const scratch = document.createElement("canvas");
         const sctx = scratch.getContext("2d");
         if (!sctx) throw new Error("no 2d context");
 
-        const bitmaps: ImageBitmap[] = [];
-        for (let i = 0; i < count; i++) {
-          if (disposed) {
-            bitmaps.forEach((b) => b.close());
-            return;
-          }
-          const t = (i / (count - 1)) * (duration - 0.05);
-          const ok = await seekTo(off, t);
+        // Capture the CURRENTLY displayed frame of `off` into slot `index`.
+        // drawImage is synchronous so the pixels are grabbed at call time;
+        // createImageBitmap then copies from that scratch canvas.
+        const captureInto = async (index: number) => {
           const vw = off.videoWidth;
           const vh = off.videoHeight;
-          if (!ok || !vw || !vh) {
-            dlog("buildCache: frame", i, "skipped (ok =", ok, "dims =", `${vw}x${vh})`);
-            continue;
-          }
+          if (!vw || !vh) throw new Error(`no dims ${vw}x${vh}`);
           const scale = Math.min(1, MAX_FRAME_WIDTH / vw);
           scratch.width = Math.round(vw * scale);
           scratch.height = Math.round(vh * scale);
           sctx.drawImage(off, 0, 0, scratch.width, scratch.height);
-          // createImageBitmap throws SecurityError if the source isn't
-          // origin-clean - the blob URL is same-origin so this should never
-          // throw, but we surface it loudly if it ever does.
-          try {
-            bitmaps.push(await createImageBitmap(scratch));
-          } catch (e) {
-            dlog("buildCache: createImageBitmap FAILED at frame", i, e);
-            throw e;
-          }
-          if (i % 15 === 0) dlog("buildCache: captured", i + 1, "/", count);
+          bitmaps[index] = await createImageBitmap(scratch);
+        };
+
+        if (hasRVFC(off)) {
+          dlog("buildCache: extracting", count, "frames via play-through (rVFC)");
+          await extractByPlayback(off, targets, captureInto);
+        } else {
+          dlog("buildCache: extracting", count, "frames via seek (no rVFC)");
+          await extractBySeek(off, targets, captureInto);
         }
 
         if (disposed) {
-          bitmaps.forEach((b) => b.close());
+          bitmaps.forEach((b) => b?.close());
+          cleanupOff();
           return;
         }
-        if (!bitmaps.length) throw new Error("no frames captured");
-        frames.current = bitmaps;
+        const got = bitmaps.filter(Boolean).length;
+        dlog("buildCache: captured", got, "/", count, "frames");
+        if (!got) throw new Error("no frames captured");
+        // Fill any missed slots with the nearest captured neighbour so the
+        // progress-indexed draw never lands on a null.
+        fillGaps(bitmaps);
+
+        frames.current = bitmaps as ImageBitmap[];
         cacheReady.current = true;
         setCanvasReady(true);
         setVideoVisible(false);
         setPosterVisible(false);
-        dlog("buildCache: DONE — cacheReady, frames =", bitmaps.length);
-        // Release the offscreen decoder; the bitmaps are what we keep.
-        off.removeAttribute("src");
-        off.load();
+        dlog("buildCache: DONE — cacheReady, unique frames =", got, "of", count);
       } catch (e) {
-        // Extraction unavailable (CORS / decode / duration). Keep the
-        // live-video seek path - the background still scrubs via the fallback.
-        dlog("buildCache: FAILED — staying on live-video seek fallback. reason:", e);
-        off.removeAttribute("src");
-        off.load();
+        const err = e as Error;
+        // Surface the REAL reason, loudly, so it shows even outside dev tracing.
+        console.error("[ScrollVideo] frame-cache extraction failed:", err?.name, err?.message, err);
+        bitmaps.forEach((b) => b?.close());
+      } finally {
+        cleanupOff();
+      }
+    }
+
+    // Play the offscreen video through ONCE and grab frames as they are
+    // actually presented (requestVideoFrameCallback). This avoids per-frame
+    // random seeks entirely - the failure mode observed on the real 1080p
+    // stream, where most seeks never fired 'seeked'.
+    function extractByPlayback(
+      off: RVFCVideo,
+      targets: number[],
+      captureInto: (i: number) => Promise<void>,
+    ): Promise<void> {
+      return new Promise<void>((resolve, reject) => {
+        let ti = 0;
+        let done = false;
+        let working = false; // guards against ended + rVFC overlapping
+        off.playbackRate = PLAYBACK_RATE;
+        const watchdog = setTimeout(() => finish(), EXTRACTION_WATCHDOG_MS);
+        function finish(err?: unknown) {
+          if (done) return;
+          done = true;
+          clearTimeout(watchdog);
+          off.removeEventListener("ended", onEndedEvent);
+          try {
+            off.pause();
+          } catch {
+            /* ignore */
+          }
+          if (err) reject(err instanceof Error ? err : new Error(String(err)));
+          else resolve();
+        }
+        // Fill every target still pending from the frame currently shown.
+        async function fillUpTo(limitTime: number) {
+          while (ti < targets.length && limitTime + 1e-3 >= targets[ti]) {
+            await captureInto(ti);
+            if (ti % 15 === 0) dlog("buildCache: play-through captured", ti + 1, "/", targets.length);
+            ti++;
+          }
+        }
+        const onFrame = (_now: number, meta: FrameMeta) => {
+          if (disposed) return finish();
+          if (done) return;
+          working = true;
+          void (async () => {
+            try {
+              await fillUpTo(meta.mediaTime);
+            } catch (e) {
+              working = false;
+              return finish(e);
+            }
+            working = false;
+            if (ti >= targets.length) return finish();
+            if (off.ended) return void onEnded();
+            off.requestVideoFrameCallback?.(onFrame);
+          })();
+        };
+        // 'ended' is the reliable end signal: rVFC stops firing once the video
+        // ends (no more presented frames), so the play-through loop alone would
+        // hang. On end, fill any remaining targets from the final frame.
+        async function onEnded() {
+          if (done) return;
+          // let an in-flight onFrame finish first
+          for (let i = 0; i < 20 && working; i++) await new Promise((r) => setTimeout(r, 10));
+          if (done) return;
+          try {
+            while (ti < targets.length) {
+              await captureInto(ti);
+              ti++;
+            }
+            dlog("buildCache: play-through reached end; filled to", ti, "/", targets.length);
+            finish();
+          } catch (e) {
+            finish(e);
+          }
+        }
+        const onEndedEvent = () => void onEnded();
+        off.addEventListener("ended", onEndedEvent);
+        off.requestVideoFrameCallback?.(onFrame);
+        off.play().catch((e) => finish(e));
+      });
+    }
+
+    // Fallback when requestVideoFrameCallback is unavailable: seek frame by
+    // frame. Now DOM-attached and waits a presented frame after 'seeked'.
+    async function extractBySeek(
+      off: RVFCVideo,
+      targets: number[],
+      captureInto: (i: number) => Promise<void>,
+    ) {
+      for (let i = 0; i < targets.length; i++) {
+        if (disposed) return;
+        const ok = await seekToPainted(off, targets[i]);
+        if (!ok) {
+          dlog("buildCache: seek TIMED OUT at frame", i, "t =", targets[i].toFixed(2));
+          continue;
+        }
+        try {
+          await captureInto(i);
+        } catch (e) {
+          const err = e as Error;
+          console.error("[ScrollVideo] capture failed at frame", i, err?.name, err?.message);
+        }
+        if (i % 15 === 0) dlog("buildCache: seek captured", i + 1, "/", targets.length);
+      }
+    }
+
+    function seekToPainted(off: RVFCVideo, time: number): Promise<boolean> {
+      return new Promise<boolean>((resolve) => {
+        let settled = false;
+        const finish = (ok: boolean) => {
+          if (settled) return;
+          settled = true;
+          off.removeEventListener("seeked", onSeeked);
+          clearTimeout(to);
+          resolve(ok);
+        };
+        const onSeeked = () => {
+          // 'seeked' fired, but the frame may not be painted yet; wait one
+          // presented frame when we can.
+          if (off.requestVideoFrameCallback) off.requestVideoFrameCallback(() => finish(true));
+          else finish(true);
+        };
+        const to = setTimeout(() => finish(false), SEEK_TIMEOUT_MS);
+        off.addEventListener("seeked", onSeeked);
+        try {
+          off.currentTime = time;
+        } catch {
+          finish(false);
+        }
+      });
+    }
+
+    function fillGaps(arr: (ImageBitmap | null)[]) {
+      // forward fill
+      let last: ImageBitmap | null = null;
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i]) last = arr[i];
+        else if (last) arr[i] = last;
+      }
+      // backfill any leading nulls
+      let next: ImageBitmap | null = null;
+      for (let i = arr.length - 1; i >= 0; i--) {
+        if (arr[i]) next = arr[i];
+        else if (next) arr[i] = next;
       }
     }
 
@@ -330,9 +484,11 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       if (cacheReady.current && frames.current.length && ctx && canvas) {
         const idx = Math.min(frames.current.length - 1, Math.max(0, Math.round(p * (frames.current.length - 1))));
         const bmp = frames.current[idx];
-        const r = coverRect(bmp.width, bmp.height, canvas.width, canvas.height);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(bmp, r.x, r.y, r.w, r.h);
+        if (bmp) {
+          const r = coverRect(bmp.width, bmp.height, canvas.width, canvas.height);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(bmp, r.x, r.y, r.w, r.h);
+        }
       } else if (hasFrame.current && video) {
         // Fallback: seek the visible <video> itself. Uses the RESOLVED
         // duration (video.duration may be non-finite on real MP4s).
@@ -365,7 +521,8 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       window.removeEventListener("resize", sizeCanvas);
       window.removeEventListener("scroll", readScroll);
       video.removeEventListener("loadeddata", onLoadedData);
-      frames.current.forEach((b) => b.close());
+      // Close each unique bitmap once (fillGaps may repeat references).
+      new Set(frames.current).forEach((b) => b?.close());
       frames.current = [];
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
