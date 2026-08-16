@@ -85,8 +85,11 @@ body {
 
 /* Alternating raised near-black band + hairline top divider — authored here
    (not as arbitrary Tailwind values) for the same robustness reason. */
+/* Translucent (not opaque) so the fixed ScrollVideo stays visible through the
+   band — it now reads as a faint frosted stripe over the video rather than a
+   solid block that hides it. */
 .section-raised {
-  background-color: #0e0e12;
+  background-color: rgba(255, 255, 255, 0.03);
 }
 .section-divider {
   border-top: 1px solid rgba(255, 255, 255, 0.06);

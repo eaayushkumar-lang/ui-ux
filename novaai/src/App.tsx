@@ -29,9 +29,10 @@ export default function App() {
           <div aria-hidden="true" className="h-[80vh]" />
           <SectionTwo />
 
-          {/* Content sections sit on a solid #0a0a0a surface so they stay
-              readable; the cinematic scroll video remains the hero's star. */}
-          <div className="relative bg-[#0a0a0a]">
+          {/* Transparent wrapper: the fixed ScrollVideo (z-0) stays visible
+              through every content section, all the way to the footer. The
+              glass-panel cards frost over the live video, same as the hero. */}
+          <div className="relative">
             <StatsBar />
             <Services />
             <AboutFounder />

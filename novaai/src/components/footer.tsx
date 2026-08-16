@@ -5,7 +5,7 @@ const QUICK_LINKS = ["Home", "Services", "About", "Pricing", "Case Studies", "Bl
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.06] bg-[#0a0a0a] px-5 py-16 sm:px-8 md:px-12">
+    <footer className="border-t border-white/[0.06] bg-black/30 px-5 py-16 backdrop-blur-md sm:px-8 md:px-12">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-12 md:grid-cols-3 md:gap-8">
           {/* Brand */}
