@@ -91,7 +91,7 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       ref={wrapRef}
-      className="relative bg-bg [contain:layout_style]"
+      className="relative [contain:layout_style]"
       style={{ height: "220vh" }}
     >
       <div className="sticky top-0 flex h-dvh flex-col justify-center overflow-hidden py-16">
