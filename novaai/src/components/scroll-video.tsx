@@ -102,6 +102,24 @@ function resolveDuration(v: HTMLVideoElement): Promise<number> {
  * net::ERR_CACHE_OPERATION_NOT_SUPPORTED) and makes the source same-origin so
  * createImageBitmap never taints.
  */
+/**
+ * Heuristic: is this a lower-end device where the full 60-frame canvas
+ * extraction would be too heavy? Any single signal trips it. The optional
+ * boolean `window.__scrollVideoForceLowEnd` overrides it (used only for tests).
+ */
+function detectLowEnd(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const forced = (window as unknown as { __scrollVideoForceLowEnd?: boolean }).__scrollVideoForceLowEnd;
+  if (typeof forced === "boolean") return forced;
+  const cores = navigator.hardwareConcurrency || 8;
+  const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  const noRVFC = !("requestVideoFrameCallback" in HTMLVideoElement.prototype);
+  const reduced =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return cores <= 4 || (typeof mem === "number" && mem <= 4) || noRVFC || reduced;
+}
+
 export function ScrollVideo({ src, poster }: ScrollVideoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -133,6 +151,12 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
     if (!ctx) return;
 
     let disposed = false;
+
+    // Lower-end devices skip the heavy 60-frame extraction entirely and drive
+    // the visible <video> directly via the seek fallback (no offscreen decode,
+    // no createImageBitmap, no per-frame canvas redraw). High-end unchanged.
+    const lowEnd = detectLowEnd();
+    dlog("device profile:", lowEnd ? "LOW-END (light seek fallback)" : "high-end (full cache)");
 
     // Source resolution: the visible <video> and the offscreen extractor must
     // NOT both fetch the CloudFront URL directly - two concurrent range
@@ -179,6 +203,13 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       videoDuration.current = await resolveDuration(video as HTMLVideoElement);
       dlog("visible <video> resolved duration =", videoDuration.current);
       if (disposed) return;
+      if (lowEnd) {
+        // Low-end path: no extraction/canvas. Flip cacheAttempted so the render
+        // loop's seek fallback drives the visible <video> right away.
+        cacheAttempted.current = true;
+        dlog("low-end: native <video> + seek fallback, skipping extraction");
+        return;
+      }
       // Yield, then extract the frame cache from a separate offscreen video.
       window.setTimeout(() => {
         if (!disposed) void buildCache();
@@ -208,6 +239,11 @@ export function ScrollVideo({ src, poster }: ScrollVideoProps) {
       const el = video as HTMLVideoElement;
       el.src = src; // stream the direct url immediately -> fast first frame
       el.load();
+      if (lowEnd) {
+        // No offscreen extractor on low-end, so skip the blob download entirely.
+        markBlobReady();
+        return;
+      }
       try {
         dlog("resolveSource: fetching blob for extractor...");
         const res = await fetch(src, { cache: "no-store", mode: "cors" });
