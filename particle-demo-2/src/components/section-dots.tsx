@@ -1,11 +1,13 @@
+import { holdCenterProgress } from "../particles/scroll-map";
+
 const LABELS = ["Ring", "Ecosystem", "Science", "Results", "Finale"];
 
 /** Right-edge scroll navigation: one dot per section, active = current formation. */
 export function SectionDots({ active }: { active: number }) {
   function go(i: number) {
     const max = document.documentElement.scrollHeight - window.innerHeight;
-    // Section i center sits at progress (i + 0.5) / 5.
-    window.scrollTo({ top: ((i + 0.5) / 5) * max, behavior: "smooth" });
+    // Jump to the center of formation i's hold plateau.
+    window.scrollTo({ top: holdCenterProgress(i) * max, behavior: "smooth" });
   }
   return (
     <div className="fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-end gap-3 md:flex">

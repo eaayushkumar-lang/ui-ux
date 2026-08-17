@@ -109,27 +109,45 @@ function fillGalaxy(p: Float32Array, c: Float32Array, n: number) {
 }
 
 // ---- F2 DNA HELIX ----------------------------------------------------------
+// A clear double helix: TWO ribbon strands offset by PI around a central
+// vertical axis, plus evenly-spaced base-pair rungs bridging them. Strands are
+// given real ribbon thickness (small tube jitter) so they read as two distinct
+// spirals, not hairlines, and the two strands use slightly different blues.
 function fillDNA(p: Float32Array, c: Float32Array, n: number) {
-  const turns = 3.2;
-  const r = 0.52;
-  const H = 2.5;
+  const turns = 2.6; // full twists over the height (fewer = clearer)
+  const r = 0.46; // helix radius
+  const H = 2.7; // total height
+  const NRUNGS = 17; // discrete, evenly-spaced base pairs
+  const STRAND0 = [0.25, 0.75, 1.0]; // cyan-blue
+  const STRAND1 = [0.42, 0.5, 1.0]; // indigo-blue
+  const RUNG = [0.62, 0.72, 0.98]; // pale blue-white
   for (let i = 0; i < n; i++) {
-    const t = Math.random();
-    const y = (t - 0.5) * H;
-    const ang = t * turns * TAU;
-    if (Math.random() < 0.2) {
-      // Base-pair rung connecting the two strands.
-      const s = Math.random();
+    const roll = Math.random();
+    if (roll < 0.7) {
+      // Backbone ribbon of one of the two strands.
+      const strand = Math.random() < 0.5 ? 0 : 1;
+      const t = Math.random();
+      const y = (t - 0.5) * H;
+      const ang = t * turns * TAU + strand * Math.PI;
+      const x = Math.cos(ang) * r + gauss() * 0.045;
+      const z = Math.sin(ang) * r + gauss() * 0.045;
+      set(p, i, x, y + gauss() * 0.02, z);
+      const b = 1.15 + 0.3 * Math.random();
+      const col = strand === 0 ? STRAND0 : STRAND1;
+      set(c, i, col[0] * b, col[1] * b, col[2] * b);
+    } else {
+      // Base-pair rung at one of NRUNGS evenly-spaced heights, spanning the
+      // two strands (which sit PI apart at that height).
+      const rk = (Math.random() * NRUNGS) | 0;
+      const t = (rk + 0.5) / NRUNGS;
+      const y = (t - 0.5) * H;
+      const ang = t * turns * TAU;
       const x0 = Math.cos(ang) * r, z0 = Math.sin(ang) * r;
       const x1 = Math.cos(ang + Math.PI) * r, z1 = Math.sin(ang + Math.PI) * r;
-      set(p, i, mix(x0, x1, s), y, mix(z0, z1, s));
-      set(c, i, 0.22 * 0.9, 0.42 * 0.9, 0.95 * 0.9);
-    } else {
-      // Backbone strand.
-      const strand = Math.random() < 0.5 ? 0 : Math.PI;
-      set(p, i, Math.cos(ang + strand) * r, y, Math.sin(ang + strand) * r);
-      const b = 1.1 + 0.3 * Math.random();
-      set(c, i, 0.26 * b, 0.56 * b, 1.0 * b);
+      const s = Math.random();
+      set(p, i, mix(x0, x1, s) + gauss() * 0.015, y + gauss() * 0.012, mix(z0, z1, s) + gauss() * 0.015);
+      const b = 0.85 + 0.2 * Math.random();
+      set(c, i, RUNG[0] * b, RUNG[1] * b, RUNG[2] * b);
     }
   }
 }

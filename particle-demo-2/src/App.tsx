@@ -3,6 +3,7 @@ import { ParticleCanvas } from "./components/particle-canvas";
 import { Nav } from "./components/nav";
 import { Sections } from "./components/sections";
 import { SectionDots } from "./components/section-dots";
+import { RUNWAY_VH } from "./particles/scroll-map";
 import type { SceneStats } from "./particles/scene";
 
 export function App() {
@@ -42,8 +43,9 @@ export function App() {
       <Sections register={register} />
       <SectionDots active={active} />
 
-      {/* Five full-height sections worth of scroll runway. */}
-      <div style={{ height: "500vh" }} aria-hidden />
+      {/* Long scroll runway: each formation holds on a plateau before morphing
+          (see scroll-map). */}
+      <div style={{ height: `${RUNWAY_VH}vh` }} aria-hidden />
     </div>
   );
 }

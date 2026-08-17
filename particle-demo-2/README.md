@@ -29,14 +29,17 @@ uploads five per-particle target positions/colors and interpolates the current
 segment (`floor(uMorph)` → next) by a single `uMorph` uniform (0..4), eased and
 staggered per particle.
 
-## Scroll sections
+## Scroll sections & pacing
 
-The page is a 500vh runway of five full-height sections. Scroll progress maps to
-`morph = clamp(progress*5 − 0.5, 0, 4)`, so each section holds a pure formation
-at its center and morphs between them in transit. Section content (pill tag,
-headline, subtext, buttons, and the DNA glass card) crossfades in sync with the
-formation via imperative opacity writes. A right-edge dot nav jumps between
-sections.
+The page is a long **1200vh** runway. Scroll progress maps to `morph` through
+`src/particles/scroll-map.ts`, which gives every formation a wide **hold
+plateau** (morph pinned at an integer — the formation sits perfectly still and
+readable) followed by a shorter **transition** band that morphs to the next.
+Each formation therefore holds steady for roughly 1.5 viewports of scrolling
+before it begins to change, so nothing races past at a small scroll. Section
+content (pill tag, headline, subtext, buttons, and the DNA glass card)
+crossfades in sync via imperative opacity writes, and a right-edge dot nav jumps
+to the center of any formation's hold band.
 
 ## Interactivity & quality
 

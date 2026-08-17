@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { ParticleScene, type SceneStats } from "../particles/scene";
 import { detectCaps } from "../particles/capability";
+import { progressToMorph } from "../particles/scroll-map";
 
 interface Props {
   onReady: (caps: { count: number; tier: "high" | "low" }) => void;
@@ -8,9 +9,10 @@ interface Props {
 }
 
 /**
- * Owns the WebGL scene. Scroll drives the 5-formation morph: page progress
- * 0..1 maps to morph clamp(progress*5 - 0.5, 0, 4) so each of the five full-
- * height sections holds a pure formation at its center and morphs between them.
+ * Owns the WebGL scene. Scroll drives the 5-formation morph through
+ * `progressToMorph`, which holds each formation on a wide plateau before a
+ * shorter transition to the next, so nothing changes for a comfortable stretch
+ * of scrolling.
  */
 export function ParticleCanvas({ onReady, onStats }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,7 +30,7 @@ export function ParticleCanvas({ onReady, onStats }: Props) {
       if (!usingScroll) return;
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      scene.setMorphTarget(Math.min(4, Math.max(0, p * 5 - 0.5)));
+      scene.setMorphTarget(progressToMorph(p));
     }
     window.addEventListener("scroll", readScroll, { passive: true });
     readScroll();

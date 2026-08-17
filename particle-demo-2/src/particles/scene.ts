@@ -6,7 +6,8 @@ export interface SceneStats {
   frameMs: number;
   fps: number;
   coldStart: number;
-  morph: number; // 0..4
+  morph: number; // 0..4 (smoothed current value)
+  target: number; // 0..4 (scroll target, before smoothing)
 }
 
 export interface SceneOptions {
@@ -185,7 +186,7 @@ export class ParticleScene {
   }
 
   getStats(): SceneStats {
-    return { count: this.count, frameMs: this.frameMs, fps: 1000 / this.frameMs, coldStart: this.coldStart, morph: this.morph };
+    return { count: this.count, frameMs: this.frameMs, fps: 1000 / this.frameMs, coldStart: this.coldStart, morph: this.morph, target: this.morphTarget };
   }
 
   private loop = () => {
