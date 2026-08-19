@@ -1,6 +1,6 @@
 import { holdCenterProgress } from "../particles/scroll-map";
 
-const LABELS = ["Ring", "Ecosystem", "Science", "Results", "Finale"];
+const LABELS = ["Ring", "Helix", "Growth", "Eclipse", "Ecosystem"];
 
 /** Right-edge scroll navigation: one dot per section, active = current formation. */
 export function SectionDots({ active }: { active: number }) {

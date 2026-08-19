@@ -7,9 +7,12 @@
 // a comfortable stretch of scrolling before it starts changing.
 
 export const N = 5;
-export const HOLD_W = 1.6; // relative width of each "hold steady" band
-export const TRANS_W = 1.2; // relative width of each morph transition
-export const RUNWAY_VH = 1200; // total scroll runway (was 500vh)
+// Wide holds + a long runway so even large discrete mouse-wheel jumps
+// (100-150px per event) land well inside a plateau rather than skipping past a
+// whole formation. Each hold spans ~2.2 viewports of scroll; transitions ~1.
+export const HOLD_W = 2.2; // relative width of each "hold steady" band
+export const TRANS_W = 1.0; // relative width of each morph transition
+export const RUNWAY_VH = 1700; // total scroll runway
 
 type Seg = { w: number; hold?: number; from?: number };
 

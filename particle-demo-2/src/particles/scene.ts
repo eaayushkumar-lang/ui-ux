@@ -210,7 +210,7 @@ export class ParticleScene {
     (this.uniforms.uMouse.value as THREE.Vector3).set(this.pointer.x * halfW, this.pointer.y * halfH, 0);
 
     // Slow rotation only near the DNA formation (morph ~2); other formations stay put.
-    const dnaProx = Math.max(0, 1 - Math.abs(this.morph - 2));
+    const dnaProx = Math.max(0, 1 - Math.abs(this.morph - 1)); // DNA is formation 1
     this.spin += dt * 0.45 * dnaProx;
     this.points.rotation.y = this.spin + this.pointer.x * 0.32;
     this.points.rotation.x = -this.pointer.y * 0.18;
