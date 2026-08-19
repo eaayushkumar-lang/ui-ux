@@ -1,144 +1,138 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { PenTool, Rocket, Search, TrendingUp, type LucideIcon } from "lucide-react";
-import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
+import { motion } from "framer-motion";
+import { Brain, GitBranch, Radio, UserRoundCog, Zap, type LucideIcon } from "lucide-react";
+import { EASE_OUT as EASE } from "@/lib/motion";
 import { LiquidHeadingReveal } from "@/components/liquid-text";
-import { cn } from "@/lib/utils";
 
 interface Step {
-  index: string;
+  n: string;
   icon: LucideIcon;
   title: string;
   description: string;
+  detail: string[];
 }
 
 const steps: Step[] = [
   {
-    index: "01",
-    icon: Search,
-    title: "Discovery",
-    description:
-      "We map every workflow, tool, and decision point in your operation to find where an agent creates real leverage.",
+    n: "01",
+    icon: Radio,
+    title: "Trigger",
+    description: "Something happens in your business.",
+    detail: ["New message", "New email", "Form submission", "New lead", "Phone call", "Scheduled event"],
   },
   {
-    index: "02",
-    icon: PenTool,
-    title: "Design",
-    description:
-      "We architect the exact agent, integrations, and guardrails your workflow needs, then design a rollout your team can adopt.",
+    n: "02",
+    icon: Brain,
+    title: "Understand",
+    description: "AI reads and understands the incoming information — what's being asked, and by whom.",
+    detail: [],
   },
   {
-    index: "03",
-    icon: Rocket,
-    title: "Deploy",
-    description:
-      "We ship into your live stack, connect your existing tools, and run it alongside your team until it's carrying real work.",
+    n: "03",
+    icon: GitBranch,
+    title: "Decide",
+    description: "Your business rules determine the correct next step — no guesswork, no improvising.",
+    detail: [],
   },
   {
-    index: "04",
-    icon: TrendingUp,
-    title: "Outperform",
-    description:
-      "Your system keeps improving on its own data, compounding the advantage while competitors are still writing their first prompt.",
+    n: "04",
+    icon: Zap,
+    title: "Act",
+    description: "The system does the work.",
+    detail: ["Respond", "Qualify", "Update your CRM", "Schedule", "Send information", "Create records", "Notify staff"],
+  },
+  {
+    n: "05",
+    icon: UserRoundCog,
+    title: "Human Handoff",
+    description: "When real judgment is required, the request is routed to the right person — with full context.",
+    detail: [],
   },
 ];
 
-const Heading = () => (
-  <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl">
-    <LiquidHeadingReveal>From first call to a system that runs itself.</LiquidHeadingReveal>
-  </h2>
-);
-
 export function HowItWorks() {
-  const reduceMotion = useReducedMotion();
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [distance, setDistance] = useState(0);
-
-  useEffect(() => {
-    function measure() {
-      if (trackRef.current) {
-        setDistance(Math.max(0, trackRef.current.scrollWidth - window.innerWidth + 48));
-      }
-    }
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: wrapRef,
-    offset: ["start start", "end end"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], [0, -distance]);
-
-  if (reduceMotion) {
-    return (
-      <section id="how-it-works" className="relative z-10 py-24 lg:py-32 [contain:layout_style_paint]">
-        <div className="mx-auto max-w-7xl px-6">
-          <Heading />
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step) => (
-              <StepCard key={step.title} step={step} />
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section
-      id="how-it-works"
-      ref={wrapRef}
-      className="relative [contain:layout_style]"
-      style={{ height: "220vh" }}
-    >
-      <div className="sticky top-0 flex h-dvh flex-col justify-center overflow-hidden py-16">
-        <div className="mx-auto w-full max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.6, ease: EASE }}
-          >
-            <Heading />
-          </motion.div>
-        </div>
-
-        <motion.div
-          ref={trackRef}
-          style={{ x }}
-          className="mt-14 flex w-max gap-6 px-6 lg:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
+    <section id="how-it-works" className="relative z-10 py-24 lg:py-32 [contain:layout_style_paint]">
+      <div className="mx-auto max-w-4xl px-6">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="max-w-2xl text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          {steps.map((step) => (
-            <StepCard key={step.title} step={step} />
+          <LiquidHeadingReveal>How your AI system actually works.</LiquidHeadingReveal>
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
+          className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-dim"
+        >
+          No jargon. Here is the exact path every request takes, from the moment it arrives to the
+          moment it's handled.
+        </motion.p>
+
+        <ol className="relative mt-14 space-y-4">
+          {/* connecting line */}
+          <span
+            aria-hidden
+            className="absolute bottom-6 left-[27px] top-6 w-px bg-gradient-to-b from-accent/40 via-line to-accent/40"
+          />
+          {steps.map((step, i) => (
+            <StepRow key={step.title} step={step} index={i} />
           ))}
-        </motion.div>
+        </ol>
+
+        <motion.blockquote
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="glass-card mt-12 rounded-[var(--radius-card)] border-accent/25 p-8 text-center"
+        >
+          <p className="text-balance text-xl font-medium leading-snug text-ink md:text-2xl">
+            Your team doesn't operate the automation.{" "}
+            <span className="text-accent">The automation operates the workflow.</span>
+          </p>
+        </motion.blockquote>
       </div>
     </section>
   );
 }
 
-function StepCard({ step }: { step: Step }) {
+function StepRow({ step, index }: { step: Step; index: number }) {
   const Icon = step.icon;
   return (
-    <motion.div
-      whileHover={{ scale: 1.03, y: -4, transition: SPRING_HOVER }}
-      className={cn(
-        "gpu glass-card group flex w-[280px] shrink-0 cursor-pointer flex-col gap-6 rounded-[var(--radius-card)] p-7 sm:w-[320px] sm:p-8",
-      )}
+    <motion.li
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.55, delay: index * 0.08, ease: EASE }}
+      className="relative flex gap-5"
     >
-      <div className="flex items-center justify-between">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-bg text-accent shadow-[0_0_0px_rgba(193,80,46,0)] transition-[box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-accent group-hover:shadow-[0_0_22px_2px_rgba(193,80,46,0.4)]">
-          <Icon className="h-5 w-5" strokeWidth={1.75} />
-        </span>
-        <span className="font-mono text-sm text-ink-faint">{step.index}</span>
-      </div>
-      <div>
-        <h3 className="text-lg font-medium text-ink">{step.title}</h3>
+      <span className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-line bg-bg text-accent shadow-[0_0_0_6px_var(--color-bg)]">
+        <Icon className="h-5 w-5" strokeWidth={1.75} />
+      </span>
+      <div className="glass-card flex-1 rounded-[var(--radius-card)] p-6">
+        <div className="flex items-baseline gap-3">
+          <span className="font-mono text-sm text-ink-faint">{step.n}</span>
+          <h3 className="text-lg font-medium text-ink">{step.title}</h3>
+        </div>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-dim">{step.description}</p>
+        {step.detail.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {step.detail.map((d) => (
+              <span
+                key={d}
+                className="rounded-full border border-line/70 bg-bg/50 px-3 py-1 font-mono text-[12px] tracking-[0.02em] text-ink-dim"
+              >
+                {d}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-    </motion.div>
+    </motion.li>
   );
 }

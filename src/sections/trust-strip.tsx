@@ -1,22 +1,20 @@
 import { motion, useReducedMotion } from "framer-motion";
 
-interface Metric {
-  value: string;
-  label: string;
-}
-
-const metrics: Metric[] = [
-  { value: "50+", label: "Clients" },
-  { value: "200+", label: "Automations" },
-  { value: "10M+", label: "Tasks Automated" },
-  { value: "99.9%", label: "Uptime" },
+// Honest micro-proof: how we work, not fabricated client counts or metrics.
+const proofs: string[] = [
+  "AI-Driven",
+  "Custom-Built",
+  "Human-in-the-Loop",
+  "Built Around Your Workflow",
+  "Scalable Systems",
+  "Own Your Accounts & Data",
 ];
 
-function MetricItem({ metric }: { metric: Metric }) {
+function ProofItem({ label }: { label: string }) {
   return (
-    <span className="flex shrink-0 items-baseline gap-2 whitespace-nowrap px-8 font-mono text-sm tracking-[0.02em]">
-      <span className="text-accent">{metric.value}</span>
-      <span className="text-ink-dim">{metric.label}</span>
+    <span className="flex shrink-0 items-center gap-2 whitespace-nowrap px-8 font-mono text-sm tracking-[0.02em]">
+      <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+      <span className="text-ink-dim">{label}</span>
     </span>
   );
 }
@@ -34,7 +32,7 @@ export function TrustStrip() {
           transition={{ duration: 0.5 }}
           className="mb-6 text-center font-mono text-[12px] tracking-[0.08em] text-ink-faint"
         >
-          Trusted by innovative teams worldwide
+          How every AUXAI.AI system is built
         </motion.p>
       </div>
 
@@ -53,14 +51,14 @@ export function TrustStrip() {
       >
         {reduceMotion ? (
           <div className="flex flex-wrap items-center justify-center">
-            {metrics.map((metric) => (
-              <MetricItem key={metric.label} metric={metric} />
+            {proofs.map((label) => (
+              <ProofItem key={label} label={label} />
             ))}
           </div>
         ) : (
           <div className="gpu-active marquee-track flex w-max items-center">
-            {[...metrics, ...metrics].map((metric, i) => (
-              <MetricItem key={`${metric.label}-${i}`} metric={metric} />
+            {[...proofs, ...proofs].map((label, i) => (
+              <ProofItem key={`${label}-${i}`} label={label} />
             ))}
           </div>
         )}

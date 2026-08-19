@@ -10,10 +10,11 @@ import {
 import {
   ArrowUpRight,
   BookOpen,
+  Building2,
   CalendarDays,
   CircleHelp,
   LayoutGrid,
-  Star,
+  Route,
   Workflow,
   type LucideIcon,
 } from "lucide-react";
@@ -25,12 +26,13 @@ import { cn } from "@/lib/utils";
 
 const MotionLink = motion.create(Link);
 
-const SECTION_IDS = ["hero", "services", "how-it-works", "testimonials", "faq", "cta"];
+const SECTION_IDS = ["hero", "services", "how-it-works", "industries", "process", "faq", "cta"];
 
 const links: { id: string; label: string; icon: LucideIcon }[] = [
-  { id: "services", label: "Services", icon: LayoutGrid },
+  { id: "services", label: "Solutions", icon: LayoutGrid },
   { id: "how-it-works", label: "How It Works", icon: Workflow },
-  { id: "testimonials", label: "Reviews", icon: Star },
+  { id: "industries", label: "Industries", icon: Building2 },
+  { id: "process", label: "Process", icon: Route },
   { id: "faq", label: "FAQ", icon: CircleHelp },
 ];
 
@@ -127,7 +129,7 @@ function NavCTA({ expanded }: { expanded: boolean }) {
       <CalendarDays className="h-4 w-4 shrink-0" strokeWidth={1.75} />
       <NavLabel expanded={expanded}>
         <span className="flex items-center gap-1">
-          Book a Call
+          Book Audit
           <ArrowUpRight className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
         </span>
       </NavLabel>

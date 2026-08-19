@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
+import { Compass } from "lucide-react";
 import { BookACallButton } from "@/components/book-a-call-button";
+import { Button } from "@/components/ui/button";
 import { EASE_OUT as EASE } from "@/lib/motion";
 import { LiquidHeadingReveal } from "@/components/liquid-text";
+
+function scrollToId(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 export function CTA() {
   return (
@@ -9,9 +15,7 @@ export function CTA() {
       id="cta"
       className="relative z-10 overflow-hidden py-28 lg:py-36 [contain:layout_style_paint]"
     >
-      {/* Transparent: the fixed ScrollVideo shows through, matching every other
-          section (the old per-section background image + opaque `from-surface`
-          gradient scrim that hid the video have been removed). */}
+      {/* Transparent: the fixed ScrollVideo shows through, matching every other section. */}
       <div className="relative mx-auto max-w-3xl px-6 text-center">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -20,7 +24,9 @@ export function CTA() {
           transition={{ duration: 0.6, ease: EASE }}
           className="text-3xl font-medium leading-tight tracking-tight text-ink md:text-5xl"
         >
-          <LiquidHeadingReveal>Your competitors are still doing this by hand.</LiquidHeadingReveal>
+          <LiquidHeadingReveal>
+            Your business already runs on workflows. The question is whether they're still manual.
+          </LiquidHeadingReveal>
         </motion.h2>
 
         <motion.p
@@ -30,8 +36,8 @@ export function CTA() {
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           className="mx-auto mt-5 max-w-md text-[17px] leading-relaxed text-ink-dim"
         >
-          Book a call and we'll show you exactly what to automate first, and
-          what it's worth to you.
+          We'll identify exactly where AI and automation can remove repetitive work from your
+          business — and what it's worth to you.
         </motion.p>
 
         <motion.div
@@ -39,9 +45,13 @@ export function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-          className="mt-10"
+          className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
-          <BookACallButton size="lg" />
+          <BookACallButton size="lg">Book Your Free Automation Audit</BookACallButton>
+          <Button variant="secondary" size="lg" onClick={() => scrollToId("services")}>
+            <Compass className="h-4 w-4" strokeWidth={1.75} />
+            See What We Can Automate
+          </Button>
         </motion.div>
       </div>
     </section>

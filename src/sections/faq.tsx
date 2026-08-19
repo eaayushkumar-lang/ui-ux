@@ -10,34 +10,54 @@ import { LiquidHeadingReveal } from "@/components/liquid-text";
 
 const faqs = [
   {
-    question: "How fast can you get an agent live?",
+    question: "What exactly does AUXAI.AI build?",
     answer:
-      "Most first agents go live within a few weeks of kickoff, not months, because we build on top of your existing tools instead of replacing your stack.",
+      "AI agents and automation systems that run real business workflows — customer support, lead qualification, scheduling, follow-ups, and internal operations — connected to the tools you already use.",
   },
   {
-    question: "Do we need an in-house AI or data team?",
+    question: "Will AI replace my employees?",
     answer:
-      "No. We handle the engineering, integration, and monitoring. Your team gives us access and context, and we handle everything technical from there.",
+      "No. It removes the repetitive work that eats their day so they can focus on decisions, relationships, and judgment. AI handles the routine; people handle what needs people.",
   },
   {
-    question: "What happens to our existing tools and software?",
+    question: "Can the system run without someone constantly triggering it?",
     answer:
-      "Nothing gets ripped out. Agents connect into the systems you already run, whether that's your CRM, your phone lines, or internal tools.",
+      "Yes. Systems respond to real events — a new message, a form, a call, a scheduled time — and run on their own. Your team doesn't operate the automation; the automation operates the workflow.",
   },
   {
-    question: "How do you handle security and data access?",
+    question: "Can you integrate with our existing tools?",
     answer:
-      "Every integration runs on scoped, revocable access with a full activity log, so you always know exactly what an agent touched and why.",
+      "In almost every case, yes. Systems connect into your CRM, inbox, phone lines, calendar, and internal tools. Nothing gets ripped out and replaced.",
   },
   {
-    question: "What if the agent gets something wrong?",
+    question: "Can a human take over when needed?",
     answer:
-      "Every system ships with guardrails and escalation paths, so anything outside its confidence threshold gets routed to a person before it becomes a problem.",
+      "Always. Every system has defined handoff points — anything outside its confidence or scope is routed to the right person with full context.",
   },
   {
-    question: "What does working with AUXAI.AI cost?",
+    question: "How long does implementation take?",
     answer:
-      "Every engagement is scoped to the systems you actually need, not a flat package. You'll get a clear number on the call, before any work starts.",
+      "Most first systems go live in a few weeks, not months, because we build on top of your existing stack instead of rebuilding it.",
+  },
+  {
+    question: "What happens after deployment?",
+    answer:
+      "We monitor how the system performs, tune it against real usage, and expand it as new workflows become worth automating.",
+  },
+  {
+    question: "Do we need to replace our current software?",
+    answer:
+      "No. The whole approach is to work with the tools you already run, not around them.",
+  },
+  {
+    question: "How do you handle complex or unusual requests?",
+    answer:
+      "The system recognizes when something falls outside its rules and hands it to a person — it never guesses on something it shouldn't.",
+  },
+  {
+    question: "What does ongoing maintenance include?",
+    answer:
+      "Monitoring, tuning, handling edge cases as they appear, and extending the system as your business changes. You own your accounts and data throughout.",
   },
 ];
 

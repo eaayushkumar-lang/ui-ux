@@ -4,11 +4,14 @@ import { cn } from "@/lib/utils";
 
 const sections = [
   { id: "hero", label: "Home" },
-  { id: "services", label: "Services" },
+  { id: "problem", label: "The problem" },
+  { id: "services", label: "What we build" },
   { id: "how-it-works", label: "How it works" },
-  { id: "testimonials", label: "Reviews" },
+  { id: "industries", label: "Industries" },
+  { id: "process", label: "Process" },
+  { id: "contact", label: "Get assessment" },
   { id: "faq", label: "FAQ" },
-  { id: "cta", label: "Book a call" },
+  { id: "cta", label: "Book audit" },
 ];
 
 export function NavDots() {

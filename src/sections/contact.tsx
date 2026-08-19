@@ -118,8 +118,19 @@ export function Contact() {
           transition={{ duration: 0.6, ease: EASE }}
           className="text-center text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          <LiquidHeadingReveal>Let's Build Your AI System</LiquidHeadingReveal>
+          <LiquidHeadingReveal>Find out what you can automate.</LiquidHeadingReveal>
         </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
+          className="mx-auto mt-5 max-w-lg text-center text-[17px] leading-relaxed text-ink-dim"
+        >
+          Tell us how your business works. We'll identify the repetitive workflows worth automating —
+          and send back a clear assessment, not a sales pitch.
+        </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -266,7 +277,7 @@ export function Contact() {
                       Sending...
                     </>
                   ) : (
-                    "Send Message"
+                    "Get My Automation Assessment"
                   )}
                 </Button>
               </motion.form>

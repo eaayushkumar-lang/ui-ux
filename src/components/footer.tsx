@@ -11,10 +11,11 @@ interface QuickLink {
 
 const quickLinks: QuickLink[] = [
   { id: "hero", label: "Home" },
-  { id: "services", label: "Services" },
-  { id: "about", label: "About" },
-  { id: "pricing", label: "Pricing" },
-  { id: "case-studies", label: "Case Studies" },
+  { id: "services", label: "Solutions" },
+  { id: "how-it-works", label: "How It Works" },
+  { id: "industries", label: "Industries" },
+  { id: "process", label: "Process" },
+  { id: "why", label: "About" },
   { to: "/blog", label: "Blog" },
   { id: "contact", label: "Contact" },
 ];
@@ -97,7 +98,7 @@ export function Footer() {
               hello@auxai.ai
             </a>
             <BookACallButton variant="secondary" size="sm" className="mt-6">
-              Book a Free Call
+              Book Automation Audit
             </BookACallButton>
           </div>
         </div>
