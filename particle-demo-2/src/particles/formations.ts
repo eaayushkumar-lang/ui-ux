@@ -100,17 +100,20 @@ function fillDNA(p: Float32Array, c: Float32Array, n: number) {
       const strand = Math.random() < 0.5 ? 0 : 1;
       const t = Math.random();
       const y = (t - 0.5) * H;
+      const rr = r * (0.72 + 0.4 * Math.sin(t * Math.PI)); // spindle: wider mid-height
       const ang = t * turns * TAU + strand * Math.PI;
-      const tubeR = Math.abs(gauss()) * 0.12;
+      const tubeR = Math.abs(gauss()) * 0.11;
       const tubeA = Math.random() * TAU;
-      const x = Math.cos(ang) * r + Math.cos(tubeA) * tubeR;
-      const z = Math.sin(ang) * r + Math.sin(tubeA) * tubeR;
+      const x = Math.cos(ang) * rr + Math.cos(tubeA) * tubeR;
+      const z = Math.sin(ang) * rr + Math.sin(tubeA) * tubeR;
       set(p, i, x, y + gauss() * 0.035, z);
-      if (Math.random() < 0.14) {
-        set(c, i, 1.5, 1.55, 1.75); // white-blue sparkle
+      if (Math.random() < 0.09) {
+        set(c, i, 1.25, 1.3, 1.55); // occasional blue-white sparkle
       } else {
-        const m = Math.random(); // blue <-> purple
-        set(c, i, mix(0.3, 0.55, m) * 1.25, mix(0.5, 0.4, m) * 1.25, 1.0 * 1.25);
+        // Saturated blue<->purple; kept dim so additive stacking stays blue,
+        // not blown out to white.
+        const m = Math.random();
+        set(c, i, mix(0.32, 0.6, m) * 0.82, mix(0.46, 0.34, m) * 0.82, 1.0 * 0.82);
       }
     } else if (roll < 0.9) {
       // Base-pair rung bridging the two strands at a regular height.
@@ -122,7 +125,7 @@ function fillDNA(p: Float32Array, c: Float32Array, n: number) {
       const x1 = Math.cos(ang + Math.PI) * r, z1 = Math.sin(ang + Math.PI) * r;
       const s = Math.random();
       set(p, i, mix(x0, x1, s) + gauss() * 0.02, y + gauss() * 0.015, mix(z0, z1, s) + gauss() * 0.02);
-      set(c, i, 0.62 * 1.1, 0.62 * 1.1, 0.98 * 1.1);
+      set(c, i, 0.5, 0.5, 0.82);
     } else {
       // Faint dust envelope for the "twisted galaxy of dust" haze.
       const t = Math.random();
@@ -140,18 +143,22 @@ function fillDNA(p: Float32Array, c: Float32Array, n: number) {
 // Low wavy horizon anchored to the BOTTOM of the frame, viewed at a low angle,
 // blue (left) -> red/orange (right), brighter along the crests.
 function fillWave(p: Float32Array, c: Float32Array, n: number) {
+  // A near-horizontal ground plane sitting low in the frame. It is NOT tilted
+  // into a wall — the camera looks horizontally, so perspective alone makes the
+  // far edge converge to a horizon line in the lower third, near edge fills the
+  // bottom. Far rows compress toward the horizon, reading as a bright ridge.
   for (let i = 0; i < n; i++) {
-    const gx = -2.0 + Math.random() * 4.0;
-    const gz = -0.2 + Math.random() * 2.4; // recedes away
+    const gx = -2.3 + Math.random() * 4.6;
+    const depth = Math.random(); // 0 near .. 1 far
+    const z = 0.9 - depth * 2.9; // near (in front of origin) -> far (behind)
     const h =
-      0.16 * Math.sin(gx * 2.0 + gz * 1.4) +
-      0.09 * Math.sin(gx * 3.5 - gz * 1.1) +
-      0.05 * noise3(gx, gz, 0);
-    const [x, y, z] = rot(gx, h, gz, -1.02, 0, 0);
-    set(p, i, x, y - 0.72, z); // pushed down to the lower third
-    const t = (gx + 2.0) / 4.0; // blue (left) -> red (right)
-    const crest = 0.9 + Math.max(0, h) * 2.4; // crests glow
-    const b = (0.9 + 0.25 * Math.random()) * crest;
+      0.13 * Math.sin(gx * 2.0 + depth * 6.5) +
+      0.07 * Math.sin(gx * 3.6 - depth * 4.2) +
+      0.04 * noise3(gx, depth * 3, 0);
+    set(p, i, gx, h - 0.78, z);
+    const t = (gx + 2.3) / 4.6; // blue (left) -> red (right)
+    const crest = 0.9 + Math.max(0, h) * 2.8; // crests glow
+    const b = (0.85 + 0.25 * Math.random()) * crest;
     set(c, i, mix(BLUE[0], ORANGE[0], t) * b, mix(BLUE[1], ORANGE[1], t) * b, mix(BLUE[2], ORANGE[2], t) * b);
   }
 }
@@ -199,32 +206,34 @@ function fillBlackHole(p: Float32Array, c: Float32Array, n: number) {
 // flat ellipses seen from slightly above.
 function fillGalaxy(p: Float32Array, c: Float32Array, n: number) {
   const tilt = 1.15;
+  const drop = 0.22; // shift the whole disc down so it sits below the headline
   for (let i = 0; i < n; i++) {
     const roll = Math.random();
-    if (roll < 0.14) {
-      // Hot elongated core: white center -> pink -> red.
+    if (roll < 0.2) {
+      // Hot elongated core: a bright, concentrated white->pink->red glow.
       const cr = Math.abs(gauss());
-      const [x, y, z] = rot(gauss() * 0.17, gauss() * 0.06, 0, tilt, 0, 0);
-      set(p, i, x, y, z);
-      const w = Math.max(0, 1 - cr / 2.2);
-      set(c, i, 1.0 * 2.0, mix(0.35, 0.9, w) * 2.0, mix(0.4, 0.85, w) * 2.0);
-    } else if (roll < 0.72) {
+      const [x, y, z] = rot(gauss() * 0.15, gauss() * 0.05, 0, tilt, 0, 0);
+      set(p, i, x, y - drop, z);
+      const w = Math.max(0, 1 - cr / 2.0);
+      const b = 2.6 + 1.2 * w; // hot, blows toward white at the very center
+      set(c, i, 1.0 * b, mix(0.4, 0.92, w) * b, mix(0.45, 0.85, w) * b);
+    } else if (roll < 0.74) {
       // Concentric elliptical rings.
       const ringIdx = (Math.random() * 3) | 0;
-      const baseR = 0.5 + ringIdx * 0.42;
+      const baseR = 0.44 + ringIdx * 0.38;
       const ang = Math.random() * TAU;
-      const px = Math.cos(ang) * baseR + gauss() * 0.025;
-      const py = Math.sin(ang) * baseR * 0.92 + gauss() * 0.025;
+      const px = Math.cos(ang) * baseR + gauss() * 0.022;
+      const py = Math.sin(ang) * baseR * 0.92 + gauss() * 0.022;
       const [x, y, z] = rot(px, py, 0, tilt, 0, 0);
-      set(p, i, x, y, z);
+      set(p, i, x, y - drop, z);
       const f = ringIdx / 2; // 0 inner -> 1 outer
-      const b = 1.15 - 0.25 * f;
+      const b = 1.2 - 0.25 * f;
       set(c, i, mix(1.0, 0.45, f) * b, mix(0.5, 0.4, f) * b, mix(0.6, 1.0, f) * b);
     } else {
       // Sparse dim stars.
       const rad = 0.5 + Math.random() * 1.6;
       const a = Math.random() * TAU;
-      set(p, i, Math.cos(a) * rad + (Math.random() - 0.5) * 0.4, Math.sin(a) * rad + (Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.8);
+      set(p, i, Math.cos(a) * rad + (Math.random() - 0.5) * 0.4, Math.sin(a) * rad + (Math.random() - 0.5) * 0.4 - drop, (Math.random() - 0.5) * 0.8);
       const s = 0.25 + Math.random() * 0.25;
       set(c, i, 0.62 * s, 0.64 * s, 0.85 * s);
     }
