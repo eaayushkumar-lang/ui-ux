@@ -23,7 +23,7 @@ interface ScrollFramesProps {
 // CloudFront (this sandbox has neither that access nor ffmpeg available).
 // Setting this ahead of the real files would hold the sequence on the last
 // successfully loaded frame for the remainder of the scroll.
-const DEFAULTS = { basePath: "/scroll-frames/frame-", count: 72, ext: "webp", pad: 4 };
+const DEFAULTS = { basePath: "/scroll-frames/frame-", count: 150, ext: "webp", pad: 4 };
 // Tuned via simulation (see scripts/ — settle time after a scroll stops
 // drops from ~600ms at 0.12 to ~475ms at 0.15, a meaningfully tighter
 // tracking feel) now that crossfade (below) — not this factor — is what
