@@ -537,7 +537,7 @@ targets, so they get a real (if minimal) route each -
 **Book a Call, unified**: every "Book a Call" surface (Hero, CTA, Navbar,
 Footer, TrialShell) now routes through one `BookACallButton`
 (`components/book-a-call-button.tsx`) pointing at `CAL_LINK`
-(`lib/links.ts`, currently `https://cal.com` as an explicit placeholder),
+(`lib/links.ts`, `https://cal.com/aurevyn/30min`),
 opening in a new tab with a trailing arrow icon - previously these five
 buttons had three different behaviors (scroll-to-CTA, `mailto:`, and
 scroll-to-CTA again). The Dynamic Island's compact nav pill keeps its
@@ -597,7 +597,7 @@ error-state exception), and a red inline error pointing at a direct
 message field.
 
 **Book a Call → real destination.** `lib/links.ts` now points
-`CAL_LINK` at `https://cal.com/aurevyn` (was the bare domain). Every
+`CAL_LINK` at `https://cal.com/aurevyn/30min`. Every
 `BookACallButton` (Hero, CTA, Footer, TrialShell) and the Navbar's
 Dynamic Island pill now render a leading `CalendarDays` icon in addition
 to the existing trailing arrow, and both explicitly set
