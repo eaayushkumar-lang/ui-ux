@@ -5,6 +5,7 @@ import { HomePage } from "@/pages/home";
 import { ComingSoonPage } from "@/pages/coming-soon";
 import { ToastProvider } from "@/hooks/use-toast";
 import { CursorGlow } from "@/components/cursor-glow";
+import { WhatsAppButton } from "@/components/whatsapp-button";
 
 // Home stays a static import since it's the entry route almost every
 // visitor lands on first. Everything else is route-level code-split: each
@@ -124,6 +125,7 @@ export default function App() {
         {/* Independent, additive cursor-follow glow — does not touch the hero
             ScrollFrames layer; disabled for touch / reduced-motion. */}
         <CursorGlow />
+        <WhatsAppButton />
         <BrowserRouter>
           <ScrollToTop />
           <AnimatedRoutes />
