@@ -3,9 +3,8 @@ import { Navbar } from "@/components/navbar";
 import { NavDots } from "@/components/nav-dots";
 import { ProgressBar } from "@/components/progress-bar";
 import { NoiseOverlay } from "@/components/noise-overlay";
-import { ScrollVideo } from "@/components/scroll-video";
+import { ScrollFrames } from "@/components/scroll-frames";
 import { BrandIntro } from "@/components/brand-intro";
-import { HERO_VIDEO_URL } from "@/lib/hero-video";
 import { Hero } from "@/sections/hero";
 
 // Hero renders above the fold on first paint, so it stays a static import.
@@ -36,7 +35,7 @@ export function HomePage() {
       {/* Fixed, full-page scroll-scrubbed video background (z-0). This
           video/animation is a LOCKED, approved asset — do not modify. Sections
           below are transparent so it stays visible through the whole page. */}
-      <ScrollVideo src={HERO_VIDEO_URL} />
+     <ScrollFrames />
       {/* Branded intro over the (already-visible, dimmed) video. Self-removes
           in ~2.4s; skipped entirely under reduced motion. */}
       <BrandIntro />

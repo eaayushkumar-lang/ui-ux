@@ -29,11 +29,11 @@ New-Item -ItemType Directory -Force -Path $Out | Out-Null
 # Sample $Count evenly-spaced frames across the whole clip. Parse/format numbers
 # with the invariant culture so a comma-decimal locale can't corrupt the fps arg.
 $inv    = [System.Globalization.CultureInfo]::InvariantCulture
-$durStr = (& ffprobe -v error -show_entries format=duration -of csv=p=0 $Src).Trim()
+$durStr = (& ffprobe -tls_verify 0 -v error -show_entries format=duration -of csv=p=0 $Src).Trim()
 $dur    = [double]::Parse($durStr, $inv)
 $fps    = ([double]$Count / $dur).ToString($inv)
 
-& ffmpeg -y -i $Src `
+& ffmpeg -y -tls_verify 0 -i $Src `
   -vf "fps=$fps,scale=${Width}:-2:flags=lanczos" `
   -frames:v $Count `
   -c:v libwebp -q:v $Quality `
