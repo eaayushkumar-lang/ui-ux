@@ -10,7 +10,7 @@ import { LiquidHeadingReveal } from "@/components/liquid-text";
 
 const faqs = [
   {
-    question: "What exactly does AUXAI.AI build?",
+    question: "What exactly does Aurevyn build?",
     answer:
       "AI agents and automation systems that run real business workflows — customer support, lead qualification, scheduling, follow-ups, and internal operations — connected to the tools you already use.",
   },

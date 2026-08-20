@@ -91,11 +91,11 @@ export function Footer() {
               Get in Touch
             </span>
             <a
-              href="mailto:hello@auxai.ai"
+              href="mailto:hello@aurevyn.ai"
               className="mt-4 flex items-center gap-2 text-[15px] text-ink-dim transition-colors hover:text-ink"
             >
               <Mail className="h-4 w-4" strokeWidth={1.75} />
-              hello@auxai.ai
+              hello@aurevyn.ai
             </a>
             <BookACallButton variant="secondary" size="sm" className="mt-6">
               Book Automation Audit
@@ -104,7 +104,7 @@ export function Footer() {
         </div>
 
         <div className="mt-16 flex flex-col gap-4 border-t border-line/60 pt-8 text-[13px] text-ink-faint sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} AUXAI.AI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Aurevyn. All rights reserved.</p>
           <div className="flex items-center gap-5">
             <Link to="/privacy" className="transition-colors hover:text-ink">
               Privacy Policy

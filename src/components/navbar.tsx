@@ -185,7 +185,7 @@ export function Navbar() {
             scrollTo("hero");
           }}
           transition={SPRING_ISLAND}
-          aria-label="AUXAI.AI home"
+          aria-label="Aurevyn home"
           className={cn(
             "relative flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full",
             active === "hero" && "bg-accent/15",

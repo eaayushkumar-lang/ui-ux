@@ -3,10 +3,11 @@ import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer
 import { EASE_OUT as EASE } from "@/lib/motion";
 import { LogoMark } from "@/components/logo-mark";
 
-const BRAND = "AUXAI.AI";
+const BRAND = "Aurevyn";
 const TAGLINE = "We don't automate tasks. We build systems that outperform everyone.";
-// Index in BRAND where the accent-coloured ".AI" begins ("AUXAI" | ".AI").
-const ACCENT_FROM = 5;
+// Aurevyn has no accent-coloured suffix; render the whole wordmark in ink
+// (ACCENT_FROM past the last index means no letter gets the accent colour).
+const ACCENT_FROM = BRAND.length;
 
 // Snappy, staggered letter reveal: blur-to-focus + a small rise, cascading
 // left-to-right. Kept short so the whole intro lands in the 1.5-2.5s window.
@@ -36,7 +37,7 @@ const word: Variants = {
 };
 
 /**
- * Branded intro that plays on every page load: the logo mark + "AUXAI.AI"
+ * Branded intro that plays on every page load: the logo mark + "Aurevyn"
  * reveal letter-by-letter (blur-to-focus), the tagline rises word-by-word,
  * then the whole layer fades out to hand off to the settled hero.
  *

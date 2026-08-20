@@ -32,7 +32,7 @@ export function TrustStrip() {
           transition={{ duration: 0.5 }}
           className="mb-6 text-center font-mono text-[12px] tracking-[0.08em] text-ink-faint"
         >
-          How every AUXAI.AI system is built
+          How every Aurevyn system is built
         </motion.p>
       </div>
 

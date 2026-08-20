@@ -4,7 +4,7 @@ import { Mic } from "lucide-react";
 import { TypingText } from "./typing-text";
 import { EASE_IN_OUT } from "@/lib/motion";
 
-const RESPONSE = "Hello, this is AUXAI. How can I help you today?";
+const RESPONSE = "Hello, this is Aurevyn. How can I help you today?";
 const BAR_COUNT = 22;
 
 export function VoiceAgentDemo() {

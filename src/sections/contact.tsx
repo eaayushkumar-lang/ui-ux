@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const SERVICES = ["AI Agents", "Workflow Automation", "Voice Agents", "Full AI System"];
-const STORAGE_KEY = "auxai_contact_submissions";
+const STORAGE_KEY = "aurevyn_contact_submissions";
 const MESSAGE_MIN_LENGTH = 10;
 
 interface FormState {

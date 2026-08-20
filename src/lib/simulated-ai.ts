@@ -32,7 +32,7 @@ const rules: ReplyRule[] = [
   },
   {
     test: (input) => /hello|hi\b|hey/i.test(input),
-    reply: "Hey! I'm the AUXAI agent. Ask me to schedule something, summarize a document, or draft an email.",
+    reply: "Hey! I'm the Aurevyn agent. Ask me to schedule something, summarize a document, or draft an email.",
   },
 ];
 

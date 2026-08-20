@@ -1,7 +1,7 @@
-# Design System: AUXAI.AI
+# Design System: Aurevyn
 
 Generated per the `stitch-design-taste` semantic design system format. This is
-the single source of truth for AUXAI.AI's visual language - cross-referenced
+the single source of truth for Aurevyn's visual language - cross-referenced
 against `ui-ux-pro-max`, `emil-design-eng`, `impeccable-lite`,
 `design-taste-frontend`, and `design-taste-frontend-v1`.
 
@@ -521,7 +521,7 @@ reads as "target hit" rather than rendering nonsensically wide.
 email format, service selection, message all required; company
 optional), inline error states, and a success animation that swaps in via
 `AnimatePresence`. No backend exists for this static site, so a
-submission is saved to `localStorage` (`auxai_contact_submissions`) as an
+submission is saved to `localStorage` (`aurevyn_contact_submissions`) as an
 honest backup rather than silently discarded or faked as a real network
 call.
 
@@ -559,7 +559,7 @@ instead of the scrolling track, not a paused-but-still-present one.
 
 **SEO & favicon**: `index.html` now carries a real title/description, Open
 Graph + Twitter Card tags, and a canonical URL - all pointed at
-`https://auxai.ai` as an explicit placeholder domain until the site has a
+`https://aurevyn.ai` as an explicit placeholder domain until the site has a
 real one. `og-image.svg`/`twitter:image` is a hand-built branded graphic
 (same reasoning as the About photo: a placeholder should look like a
 placeholder, not a faked photo). The favicon was quietly still the
@@ -597,7 +597,7 @@ error-state exception), and a red inline error pointing at a direct
 message field.
 
 **Book a Call → real destination.** `lib/links.ts` now points
-`CAL_LINK` at `https://cal.com/auxai` (was the bare domain). Every
+`CAL_LINK` at `https://cal.com/aurevyn` (was the bare domain). Every
 `BookACallButton` (Hero, CTA, Footer, TrialShell) and the Navbar's
 Dynamic Island pill now render a leading `CalendarDays` icon in addition
 to the existing trailing arrow, and both explicitly set

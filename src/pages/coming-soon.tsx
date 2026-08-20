@@ -49,8 +49,8 @@ export function ComingSoonPage({ title }: { title: string }) {
             <h1 className="mt-5 text-2xl font-medium tracking-tight text-ink">{title}</h1>
             <p className="mt-3 max-w-xs text-[15px] leading-relaxed text-ink-dim">
               This page is coming soon. In the meantime, reach us directly at{" "}
-              <a href="mailto:hello@auxai.ai" className="text-accent hover:text-coral">
-                hello@auxai.ai
+              <a href="mailto:hello@aurevyn.ai" className="text-accent hover:text-coral">
+                hello@aurevyn.ai
               </a>
               .
             </p>

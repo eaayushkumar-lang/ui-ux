@@ -52,7 +52,7 @@ interface Testimonial {
 const testimonials: Testimonial[] = [
   {
     quote:
-      "AUXAI.AI didn't hand us a chatbot. They rebuilt how dispatch decisions get made, and our team stopped drowning in the same three questions every day.",
+      "Aurevyn didn't hand us a chatbot. They rebuilt how dispatch decisions get made, and our team stopped drowning in the same three questions every day.",
     name: "Priya Nandakumar",
     role: "VP Operations",
     company: "Halcyon Freight",
@@ -68,7 +68,7 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Every vendor before them promised automation. AUXAI.AI is the first one that shipped something our analysts actually trust with real client data.",
+      "Every vendor before them promised automation. Aurevyn is the first one that shipped something our analysts actually trust with real client data.",
     name: "Elena Sokolova",
     role: "Head of Portfolio Ops",
     company: "Clearwater Capital",

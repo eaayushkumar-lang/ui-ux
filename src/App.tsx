@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { HomePage } from "@/pages/home";
 import { ComingSoonPage } from "@/pages/coming-soon";
 import { ToastProvider } from "@/hooks/use-toast";
+import { CursorGlow } from "@/components/cursor-glow";
 
 // Home stays a static import since it's the entry route almost every
 // visitor lands on first. Everything else is route-level code-split: each
@@ -120,6 +121,9 @@ export default function App() {
     // cursor-follow sheen) still carry their own useReducedMotion() checks.
     <MotionConfig reducedMotion="user">
       <ToastProvider>
+        {/* Independent, additive cursor-follow glow — does not touch the hero
+            ScrollFrames layer; disabled for touch / reduced-motion. */}
+        <CursorGlow />
         <BrowserRouter>
           <ScrollToTop />
           <AnimatedRoutes />

@@ -11,4 +11,4 @@ export const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY"; // Get from emailjs
 // Destination address - your EmailJS template should send To this
 // address (either hardcode it in the template's "To Email" field, or
 // reference {{to_email}} if the template is built to use it).
-export const CONTACT_DESTINATION_EMAIL = "hello@auxai.ai";
+export const CONTACT_DESTINATION_EMAIL = "hello@aurevyn.ai";

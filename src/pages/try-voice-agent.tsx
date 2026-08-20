@@ -13,7 +13,7 @@ interface Line {
 }
 
 const SCRIPT: Line[] = [
-  { role: "ai", text: "Hello, this is AUXAI. How can I help you today?" },
+  { role: "ai", text: "Hello, this is Aurevyn. How can I help you today?" },
   { role: "user", text: "I need to book an appointment" },
   { role: "ai", text: "Sure! I can help with that. What date works best for you?" },
   { role: "user", text: "Tomorrow at 3 PM" },
@@ -164,7 +164,7 @@ function TranscriptLine({ line, isLatest }: { line: Line; isLatest: boolean }) {
           isAI ? "text-accent" : "text-ink-faint",
         )}
       >
-        {isAI ? "AUXAI" : "Caller"}
+        {isAI ? "Aurevyn" : "Caller"}
       </span>
       <p className="max-w-[85%] text-sm leading-relaxed text-ink">
         {isLatest ? <TypingText text={line.text} start speed={22} /> : line.text}

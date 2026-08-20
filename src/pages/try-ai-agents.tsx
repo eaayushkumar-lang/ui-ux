@@ -21,7 +21,7 @@ export function TryAIAgentsPage() {
     {
       id: nextId++,
       role: "assistant",
-      content: "Hi, I'm the AUXAI agent. What do you need done?",
+      content: "Hi, I'm the Aurevyn agent. What do you need done?",
     },
   ]);
   const [input, setInput] = useState("");
