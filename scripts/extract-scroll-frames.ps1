@@ -1,7 +1,8 @@
 # Pre-extract the hero scroll-scrub frames from the EXACT SAME CloudFront hero
-# video into public/scroll-frames/frame-0001.webp .. frame-0072.webp (1280px WebP).
+# video into public/scroll-frames/frame-0001.webp .. frame-0150.webp (1280px WebP).
 # Windows / PowerShell equivalent of scripts/extract-scroll-frames.sh — no footage
-# is swapped, it is the same source file the current hero already streams.
+# is swapped, it is the same source file the current hero already streams. Frame
+# count raised from 72 to 150 for finer scroll granularity.
 #
 # Requires FFmpeg (ffmpeg + ffprobe) on PATH. Install once with:
 #     winget install Gyan.FFmpeg
@@ -13,7 +14,7 @@ $ErrorActionPreference = "Stop"
 # Same URL as src/lib/hero-video.ts — do not change the footage.
 $Src     = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260729_102822_0e6c87e8-c141-4744-bf32-ad30db296371.mp4"
 $Out     = "public/scroll-frames"
-$Count   = 72     # keep in sync with ScrollFrames' `count` default
+$Count   = 150    # keep in sync with ScrollFrames' `count` default
 $Width   = 1280
 $Quality = 72     # libwebp quality (0-100)
 

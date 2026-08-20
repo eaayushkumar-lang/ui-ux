@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
 # Pre-extract the hero scroll-scrub frames from the EXACT SAME CloudFront hero
-# video into public/scroll-frames/frame-0001.webp .. frame-0072.webp (1280px
+# video into public/scroll-frames/frame-0001.webp .. frame-0150.webp (1280px
 # wide WebP). No footage is swapped — this is the same source file the current
-# ScrollVideo already streams.
+# ScrollVideo already streams. Frame count raised from 72 to 150 for finer
+# scroll granularity (less visual distance between consecutive frames).
 #
 # The ScrollFrames component (src/components/scroll-frames.tsx) draws these to a
 # canvas on scroll, replacing the runtime video decode. Re-run whenever the
@@ -20,7 +21,7 @@ set -euo pipefail
 # Same URL as src/lib/hero-video.ts — do not change the footage.
 SRC="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260729_102822_0e6c87e8-c141-4744-bf32-ad30db296371.mp4"
 OUT="public/scroll-frames"
-COUNT=72      # keep in sync with ScrollFrames' `count` default
+COUNT=150     # keep in sync with ScrollFrames' `count` default
 WIDTH=1280
 QUALITY=72    # libwebp quality (0-100)
 
