@@ -122,14 +122,12 @@ export function Contact() {
         {
           from_name: values.name,
           from_email: values.email,
-          company: values.company,
+          business: values.company,
           website: values.website,
           industry: values.industry,
           team_size: values.teamSize,
-          service: values.service,
           biggest_workflow: values.biggestWorkflow,
           message: values.message,
-          to_email: CONTACT_DESTINATION_EMAIL,
         },
         { publicKey: EMAILJS_PUBLIC_KEY },
       );
