@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 
 const MotionLink = motion.create(Link);
 
-const SECTION_IDS = ["hero", "services", "how-it-works", "industries", "process", "faq", "cta"];
+const SECTION_IDS = ["hero", "services", "what-you-get", "real-systems", "how-it-works", "industries", "process", "faq", "cta"];
 
 const links: { id: string; label: string; icon: LucideIcon }[] = [
   { id: "services", label: "Solutions", icon: LayoutGrid },

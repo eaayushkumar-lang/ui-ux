@@ -7,57 +7,68 @@ import {
 } from "@/components/ui/accordion";
 import { EASE_OUT as EASE } from "@/lib/motion";
 import { LiquidHeadingReveal } from "@/components/liquid-text";
+import { BookACallButton } from "@/components/book-a-call-button";
 
 const faqs = [
   {
     question: "What exactly does Aurevyn build?",
     answer:
-      "AI agents and automation systems that run real business workflows — customer support, lead qualification, scheduling, follow-ups, and internal operations — connected to the tools you already use.",
+      "AI agents and automation systems that run real business workflows — customer support, lead qualification, scheduling, follow-ups, and internal operations. Each system connects to the tools you already use and runs on real triggers (a message, a call, a form submission) without anyone watching it.",
   },
   {
     question: "Will AI replace my employees?",
     answer:
-      "No. It removes the repetitive work that eats their day so they can focus on decisions, relationships, and judgment. AI handles the routine; people handle what needs people.",
+      "No. It removes the repetitive work that eats their day — answering the same questions, copying data between tools, following up manually. Your people stay focused on decisions, relationships, and judgment. AI handles the routine; people handle what needs people.",
   },
   {
-    question: "Can the system run without someone constantly triggering it?",
+    question: "How is this different from a chatbot?",
     answer:
-      "Yes. Systems respond to real events — a new message, a form, a call, a scheduled time — and run on their own. Your team doesn't operate the automation; the automation operates the workflow.",
+      "A chatbot answers questions. An Aurevyn system runs a workflow. It qualifies leads, updates your CRM, books appointments, sends follow-ups, and routes complex requests to the right person — all from a single trigger, with no one managing it. The AI is one layer in a complete system, not the whole product.",
+  },
+  {
+    question: "Does someone on my team need to manage this?",
+    answer:
+      "No. The system runs on triggers — a new message, a form submission, a phone call, a scheduled time. It doesn't need someone to start it, watch it, or tell it what to do. Your team interacts with the system only when a human decision is genuinely required.",
   },
   {
     question: "Can you integrate with our existing tools?",
     answer:
-      "In almost every case, yes. Systems connect into your CRM, inbox, phone lines, calendar, and internal tools. Nothing gets ripped out and replaced.",
+      "In almost every case, yes. Systems connect into your CRM, inbox, phone lines, calendar, and internal tools. We build around your stack — nothing gets ripped out and replaced.",
   },
   {
-    question: "Can a human take over when needed?",
+    question: "What happens when the AI doesn't know the answer?",
     answer:
-      "Always. Every system has defined handoff points — anything outside its confidence or scope is routed to the right person with full context.",
+      "Every system has defined handoff points. When a request falls outside the system's confidence — unusual question, complex situation, high-stakes decision — it routes to the right person with full context. It never guesses on something it shouldn't.",
   },
   {
     question: "How long does implementation take?",
     answer:
-      "Most first systems go live in a few weeks, not months, because we build on top of your existing stack instead of rebuilding it.",
+      "Most first systems go live in 2-4 weeks, not months. We build on top of your existing stack instead of rebuilding it. The audit call identifies the highest-impact workflow, and we start there.",
+  },
+  {
+    question: "What if it doesn't work for my business?",
+    answer:
+      "The audit call exists specifically to find out before any money changes hands. We map your workflows, identify what's actually worth automating, and tell you honestly if the return doesn't justify the investment. If it doesn't fit, we'll tell you.",
+  },
+  {
+    question: "What does the audit call cover?",
+    answer:
+      "We walk through your current workflows — where time goes, what's repetitive, where things fall through. You get a clear picture of what's worth automating and a realistic estimate of what that looks like. 30 minutes, free, no obligation.",
+  },
+  {
+    question: "How much does it cost?",
+    answer:
+      "Every system is scoped to your specific requirements — integrations, complexity, and scale. We don't do cookie-cutter packages. After the audit call, you get a custom proposal with transparent pricing. Starting from $997/month.",
   },
   {
     question: "What happens after deployment?",
     answer:
-      "We monitor how the system performs, tune it against real usage, and expand it as new workflows become worth automating.",
+      "We monitor how the system performs, tune it against real usage, and handle edge cases as they appear. Systems are expanded as new workflows become worth automating. You own your accounts and data throughout.",
   },
   {
     question: "Do we need to replace our current software?",
     answer:
-      "No. The whole approach is to work with the tools you already run, not around them.",
-  },
-  {
-    question: "How do you handle complex or unusual requests?",
-    answer:
-      "The system recognizes when something falls outside its rules and hands it to a person — it never guesses on something it shouldn't.",
-  },
-  {
-    question: "What does ongoing maintenance include?",
-    answer:
-      "Monitoring, tuning, handling edge cases as they appear, and extending the system as your business changes. You own your accounts and data throughout.",
+      "No. The whole approach is to work with the tools you already run, not around them. If it's in your stack and has an API or integration path, we can connect to it.",
   },
 ];
 
@@ -74,6 +85,15 @@ export function FAQ() {
         >
           <LiquidHeadingReveal>Questions worth asking before you commit.</LiquidHeadingReveal>
         </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
+          className="mt-5 text-lg leading-relaxed text-ink-dim"
+        >
+          Honest answers to the questions business owners actually ask.
+        </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -99,6 +119,17 @@ export function FAQ() {
               </AccordionItem>
             ))}
           </Accordion>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="mt-10 flex flex-col items-center gap-3 text-center"
+        >
+          <p className="text-[15px] text-ink-dim">Still have questions?</p>
+          <BookACallButton variant="secondary">Talk to us — no obligation</BookACallButton>
         </motion.div>
       </div>
     </section>

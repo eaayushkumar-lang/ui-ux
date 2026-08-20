@@ -7,15 +7,11 @@ import { ScrollFrames } from "@/components/scroll-frames";
 import { BrandIntro } from "@/components/brand-intro";
 import { Hero } from "@/sections/hero";
 
-// Hero renders above the fold on first paint, so it stays a static import.
-// Everything below it is off-screen at load time - code-splitting these keeps
-// the initial bundle to just what's needed for first paint, and
-// useActiveSection watches for these ids to mount instead of requiring them
-// synchronously (see watchForElements), so late-mounted sections no longer
-// break nav-dot highlighting.
 const TrustStrip = lazy(() => import("@/sections/trust-strip").then((m) => ({ default: m.TrustStrip })));
 const Problem = lazy(() => import("@/sections/problem").then((m) => ({ default: m.Problem })));
 const Services = lazy(() => import("@/sections/services").then((m) => ({ default: m.Services })));
+const WhatYouGet = lazy(() => import("@/sections/what-you-get").then((m) => ({ default: m.WhatYouGet })));
+const RealSystems = lazy(() => import("@/sections/real-systems").then((m) => ({ default: m.RealSystems })));
 const HowItWorks = lazy(() =>
   import("@/sections/how-it-works").then((m) => ({ default: m.HowItWorks })),
 );
@@ -33,25 +29,24 @@ export function HomePage() {
   return (
     <div className="relative min-h-dvh bg-bg">
       {/* Fixed, full-page scroll-scrubbed video background (z-0). This
-          video/animation is a LOCKED, approved asset — do not modify. Sections
-          below are transparent so it stays visible through the whole page. */}
-     <ScrollFrames />
-      {/* Branded intro over the (already-visible, dimmed) video. Self-removes
-          in ~2.4s; skipped entirely under reduced motion. */}
+          video/animation is a LOCKED, approved asset — do not modify. */}
+      <ScrollFrames />
       <BrandIntro />
       <NoiseOverlay />
       <ProgressBar />
       <Navbar />
       <NavDots />
 
-      {/* Conversion funnel: attention -> clarity -> problem -> desire ->
-          understanding -> demo -> trust -> action. */}
+      {/* Conversion funnel: attention -> problem -> offer clarity ->
+          proof -> desire -> understanding -> action. */}
       <main>
         <Hero />
         <Suspense fallback={null}>
           <TrustStrip />
           <Problem />
           <Services />
+          <WhatYouGet />
+          <RealSystems />
           <HowItWorks />
           <Demo />
           <Industries />

@@ -5,10 +5,11 @@ import { cn } from "@/lib/utils";
 const sections = [
   { id: "hero", label: "Home" },
   { id: "problem", label: "The problem" },
-  { id: "services", label: "What we build" },
+  { id: "services", label: "Solutions" },
+  { id: "what-you-get", label: "What you get" },
+  { id: "real-systems", label: "Real systems" },
   { id: "how-it-works", label: "How it works" },
   { id: "industries", label: "Industries" },
-  { id: "process", label: "Process" },
   { id: "contact", label: "Get assessment" },
   { id: "faq", label: "FAQ" },
   { id: "cta", label: "Book audit" },

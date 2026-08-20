@@ -13,7 +13,27 @@ import {
 } from "@/lib/emailjs";
 import { cn } from "@/lib/utils";
 
-const SERVICES = ["AI Agents", "Workflow Automation", "Voice Agents", "Full AI System"];
+const SERVICES = [
+  "AI Customer Support",
+  "Lead Qualification & Routing",
+  "Appointment Automation",
+  "AI Follow-Up Systems",
+  "Internal Operations",
+  "Custom AI Agent",
+  "Not sure yet — help me figure it out",
+];
+
+const TEAM_SIZES = ["Just me", "2-5", "6-20", "21-50", "50+"];
+const INDUSTRIES = [
+  "Dental / Healthcare",
+  "Real Estate",
+  "Professional Services",
+  "Sales / Revenue",
+  "Local Business / Retail",
+  "E-commerce",
+  "Other",
+];
+
 const STORAGE_KEY = "aurevyn_contact_submissions";
 const MESSAGE_MIN_LENGTH = 10;
 
@@ -21,13 +41,27 @@ interface FormState {
   name: string;
   email: string;
   company: string;
+  website: string;
+  industry: string;
+  teamSize: string;
   service: string;
+  biggestWorkflow: string;
   message: string;
 }
 
 type Status = "idle" | "sending" | "success" | "error";
 
-const initialState: FormState = { name: "", email: "", company: "", service: "", message: "" };
+const initialState: FormState = {
+  name: "",
+  email: "",
+  company: "",
+  website: "",
+  industry: "",
+  teamSize: "",
+  service: "",
+  biggestWorkflow: "",
+  message: "",
+};
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -36,17 +70,13 @@ function validate(values: FormState) {
   if (!values.name.trim()) errors.name = "Tell us your name.";
   if (!values.email.trim()) errors.email = "An email address is required.";
   else if (!EMAIL_RE.test(values.email)) errors.email = "That doesn't look like a valid email.";
-  if (!values.service) errors.service = "Pick the service you need.";
-  if (!values.message.trim()) errors.message = "Add a few words about what you need.";
+  if (!values.service) errors.service = "Pick what you're looking for.";
+  if (!values.message.trim()) errors.message = "A few words about what you need.";
   else if (values.message.trim().length < MESSAGE_MIN_LENGTH)
-    errors.message = `Message must be at least ${MESSAGE_MIN_LENGTH} characters.`;
+    errors.message = `At least ${MESSAGE_MIN_LENGTH} characters, please.`;
   return errors;
 }
 
-/** No backend exists for this static site, so every submission attempt
- * is persisted to localStorage as a backup regardless of whether the
- * EmailJS send itself succeeds - real data is never lost just because
- * the EmailJS placeholder IDs above haven't been swapped in yet. */
 function saveSubmission(values: FormState) {
   try {
     const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
@@ -54,8 +84,8 @@ function saveSubmission(values: FormState) {
     next.push({ ...values, submittedAt: new Date().toISOString() });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   } catch {
-    // localStorage can throw in private-browsing/storage-full edge cases -
-    // the submission still gets its EmailJS attempt either way.
+    // localStorage can throw in private-browsing / storage-full — the
+    // submission still gets its EmailJS attempt.
   }
 }
 
@@ -93,7 +123,11 @@ export function Contact() {
           from_name: values.name,
           from_email: values.email,
           company: values.company,
+          website: values.website,
+          industry: values.industry,
+          team_size: values.teamSize,
           service: values.service,
+          biggest_workflow: values.biggestWorkflow,
           message: values.message,
           to_email: CONTACT_DESTINATION_EMAIL,
         },
@@ -101,9 +135,6 @@ export function Contact() {
       );
       setStatus("success");
     } catch {
-      // Expected until the placeholder EMAILJS_* ids in lib/emailjs.ts are
-      // swapped for real ones - the submission is already safe in
-      // localStorage from saveSubmission() above regardless.
       setStatus("error");
     }
   }
@@ -118,7 +149,7 @@ export function Contact() {
           transition={{ duration: 0.6, ease: EASE }}
           className="text-center text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          <LiquidHeadingReveal>Find out what you can automate.</LiquidHeadingReveal>
+          <LiquidHeadingReveal>Get your free automation assessment.</LiquidHeadingReveal>
         </motion.h2>
 
         <motion.p
@@ -128,8 +159,8 @@ export function Contact() {
           transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
           className="mx-auto mt-5 max-w-lg text-center text-[17px] leading-relaxed text-ink-dim"
         >
-          Tell us how your business works. We'll identify the repetitive workflows worth automating —
-          and send back a clear assessment, not a sales pitch.
+          Tell us how your business works today. We'll identify the repetitive workflows worth
+          automating — and send back a clear assessment, not a sales pitch.
         </motion.p>
 
         <motion.div
@@ -157,9 +188,10 @@ export function Contact() {
                 >
                   <CheckCircle2 className="h-8 w-8" strokeWidth={1.75} />
                 </motion.span>
-                <h3 className="mt-6 text-xl font-medium text-ink">Message Sent!</h3>
+                <h3 className="mt-6 text-xl font-medium text-ink">Assessment Request Sent!</h3>
                 <p className="mt-2 max-w-xs text-[15px] leading-relaxed text-ink-dim">
-                  We'll respond within 24 hours.
+                  We'll review your workflows and respond within 24 hours with a
+                  clear assessment of what's worth automating.
                 </p>
                 <button
                   type="button"
@@ -169,7 +201,7 @@ export function Contact() {
                   }}
                   className="mt-6 text-[13px] text-ink-faint underline decoration-line underline-offset-4 transition-colors hover:text-ink"
                 >
-                  Send another message
+                  Send another request
                 </button>
               </motion.div>
             ) : (
@@ -183,18 +215,18 @@ export function Contact() {
                 noValidate
                 className="flex flex-col gap-5"
               >
-                <Field label="Name" error={errors.name}>
-                  <input
-                    type="text"
-                    value={values.name}
-                    onChange={(e) => update("name", e.target.value)}
-                    placeholder="Your name"
-                    disabled={sending}
-                    className={cn(fieldClass, errors.name && errorFieldClass)}
-                  />
-                </Field>
-
+                {/* Row 1: Name + Email */}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <Field label="Your Name" error={errors.name}>
+                    <input
+                      type="text"
+                      value={values.name}
+                      onChange={(e) => update("name", e.target.value)}
+                      placeholder="Full name"
+                      disabled={sending}
+                      className={cn(fieldClass, errors.name && errorFieldClass)}
+                    />
+                  </Field>
                   <Field label="Email" error={errors.email}>
                     <input
                       type="email"
@@ -205,53 +237,85 @@ export function Contact() {
                       className={cn(fieldClass, errors.email && errorFieldClass)}
                     />
                   </Field>
-                  <Field label="Company" optional>
+                </div>
+
+                {/* Row 2: Company + Website */}
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <Field label="Business Name" optional>
                     <input
                       type="text"
                       value={values.company}
                       onChange={(e) => update("company", e.target.value)}
-                      placeholder="Company name"
+                      placeholder="Your business"
+                      disabled={sending}
+                      className={fieldClass}
+                    />
+                  </Field>
+                  <Field label="Website" optional>
+                    <input
+                      type="url"
+                      value={values.website}
+                      onChange={(e) => update("website", e.target.value)}
+                      placeholder="https://..."
                       disabled={sending}
                       className={fieldClass}
                     />
                   </Field>
                 </div>
 
-                <Field label="Service Needed" error={errors.service}>
-                  <div className="relative">
-                    <select
-                      value={values.service}
-                      onChange={(e) => update("service", e.target.value)}
+                {/* Row 3: Industry + Team Size */}
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <Field label="Industry" optional>
+                    <SelectField
+                      value={values.industry}
+                      onChange={(v) => update("industry", v)}
+                      placeholder="Select industry"
+                      options={INDUSTRIES}
                       disabled={sending}
-                      className={cn(
-                        fieldClass,
-                        "appearance-none pr-10",
-                        !values.service && "text-ink-faint",
-                        errors.service && errorFieldClass,
-                      )}
-                    >
-                      <option value="" disabled>
-                        Select a service
-                      </option>
-                      {SERVICES.map((service) => (
-                        <option key={service} value={service} className="text-ink">
-                          {service}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint"
-                      strokeWidth={1.75}
                     />
-                  </div>
+                  </Field>
+                  <Field label="Team Size" optional>
+                    <SelectField
+                      value={values.teamSize}
+                      onChange={(v) => update("teamSize", v)}
+                      placeholder="How many people"
+                      options={TEAM_SIZES}
+                      disabled={sending}
+                    />
+                  </Field>
+                </div>
+
+                {/* Service */}
+                <Field label="What are you looking for?" error={errors.service}>
+                  <SelectField
+                    value={values.service}
+                    onChange={(v) => update("service", v)}
+                    placeholder="Select a service"
+                    options={SERVICES}
+                    disabled={sending}
+                    error={!!errors.service}
+                  />
                 </Field>
 
-                <Field label="Message" error={errors.message}>
+                {/* Biggest workflow */}
+                <Field label="What's the most repetitive workflow in your business?" optional>
+                  <input
+                    type="text"
+                    value={values.biggestWorkflow}
+                    onChange={(e) => update("biggestWorkflow", e.target.value)}
+                    placeholder="e.g. Answering patient inquiries, following up on proposals..."
+                    disabled={sending}
+                    className={fieldClass}
+                  />
+                </Field>
+
+                {/* Message */}
+                <Field label="Anything else we should know?" error={errors.message}>
                   <textarea
                     value={values.message}
                     onChange={(e) => update("message", e.target.value)}
-                    placeholder="What do you want to automate?"
-                    rows={4}
+                    placeholder="What does your day-to-day look like? What would you automate first?"
+                    rows={3}
                     disabled={sending}
                     className={cn(fieldClass, "resize-none", errors.message && errorFieldClass)}
                   />
@@ -262,7 +326,10 @@ export function Contact() {
                     <MailWarning className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.75} />
                     <span>
                       Something went wrong. Please try again or email us directly at{" "}
-                      <a href={`mailto:${CONTACT_DESTINATION_EMAIL}`} className="underline decoration-current underline-offset-2">
+                      <a
+                        href={`mailto:${CONTACT_DESTINATION_EMAIL}`}
+                        className="underline decoration-current underline-offset-2"
+                      >
                         {CONTACT_DESTINATION_EMAIL}
                       </a>
                       .
@@ -280,12 +347,61 @@ export function Contact() {
                     "Get My Automation Assessment"
                   )}
                 </Button>
+
+                <p className="text-center text-[12px] text-ink-faint">
+                  Free. No obligation. We'll send a clear assessment of what's worth automating.
+                </p>
               </motion.form>
             )}
           </AnimatePresence>
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function SelectField({
+  value,
+  onChange,
+  placeholder,
+  options,
+  disabled,
+  error,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  options: string[];
+  disabled?: boolean;
+  error?: boolean;
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        className={cn(
+          fieldClass,
+          "appearance-none pr-10",
+          !value && "text-ink-faint",
+          error && errorFieldClass,
+        )}
+      >
+        <option value="" disabled>
+          {placeholder}
+        </option>
+        {options.map((opt) => (
+          <option key={opt} value={opt} className="text-ink">
+            {opt}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint"
+        strokeWidth={1.75}
+      />
+    </div>
   );
 }
 

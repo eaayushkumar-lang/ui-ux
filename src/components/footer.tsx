@@ -12,12 +12,13 @@ interface QuickLink {
 const quickLinks: QuickLink[] = [
   { id: "hero", label: "Home" },
   { id: "services", label: "Solutions" },
+  { id: "what-you-get", label: "What You Get" },
+  { id: "real-systems", label: "Real Systems" },
   { id: "how-it-works", label: "How It Works" },
   { id: "industries", label: "Industries" },
-  { id: "process", label: "Process" },
-  { id: "why", label: "About" },
+  { id: "faq", label: "FAQ" },
   { to: "/blog", label: "Blog" },
-  { id: "contact", label: "Contact" },
+  { id: "contact", label: "Get Assessment" },
 ];
 
 const social = [
