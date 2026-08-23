@@ -559,7 +559,7 @@ instead of the scrolling track, not a paused-but-still-present one.
 
 **SEO & favicon**: `index.html` now carries a real title/description, Open
 Graph + Twitter Card tags, and a canonical URL - all pointed at
-`https://aurevyn.ai` as an explicit placeholder domain until the site has a
+`https://aurevynai.site` as an explicit placeholder domain until the site has a
 real one. `og-image.svg`/`twitter:image` is a hand-built branded graphic
 (same reasoning as the About photo: a placeholder should look like a
 placeholder, not a faked photo). The favicon was quietly still the
