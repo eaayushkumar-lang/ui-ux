@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import {
-  Bot,
   CalendarClock,
+  Database,
+  FileText,
   Headset,
+  Phone,
   Repeat,
   Settings2,
   UserCheck,
@@ -21,9 +23,7 @@ interface Service {
   n: string;
   icon: LucideIcon;
   title: string;
-  problem: string;
-  system: string;
-  outcome: string;
+  description: string;
 }
 
 const services: Service[] = [
@@ -31,49 +31,49 @@ const services: Service[] = [
     n: "01",
     icon: Headset,
     title: "AI Customer Support",
-    problem: "Your team answers the same questions all day.",
-    system: "An agent handles repetitive questions and routes anything complex to the right person.",
-    outcome: "Instant answers, around the clock — humans only touch what needs judgment.",
+    description: "Instant replies to inquiries, any time of day.",
   },
   {
     n: "02",
     icon: UserCheck,
     title: "AI Lead Qualification",
-    problem: "Good leads go cold before anyone follows up.",
-    system: "Captures, understands, qualifies, and routes every incoming lead automatically.",
-    outcome: "Every lead is engaged in seconds and sent to the right place.",
+    description: "Asks the right questions, captures what your team needs.",
   },
   {
     n: "03",
     icon: CalendarClock,
-    title: "Appointment Automation",
-    problem: "Booking means back-and-forth and dropped inquiries.",
-    system: "Runs the inquiry → qualification → scheduling flow end to end.",
-    outcome: "A full calendar without the manual coordination.",
+    title: "AI Appointment Booking",
+    description: "Books directly onto your calendar, no back and forth.",
   },
   {
     n: "04",
     icon: Repeat,
-    title: "AI Follow-Up Systems",
-    problem: "Follow-ups depend on someone remembering.",
-    system: "Follows up automatically based on your business rules and timing.",
-    outcome: "Nothing falls through the cracks, ever.",
+    title: "Automated Follow-Up",
+    description: "Nudges leads who went quiet, so nothing falls through.",
   },
   {
     n: "05",
-    icon: Settings2,
-    title: "Internal Operations",
-    problem: "Skilled people stuck on repetitive admin.",
-    system: "Automates repetitive internal workflows and moves data between your tools.",
-    outcome: "Your team back on the work that actually needs them.",
+    icon: Database,
+    title: "Lead → CRM Automation",
+    description: "Every inquiry logged, organized, and ready to act on.",
   },
   {
     n: "06",
-    icon: Bot,
-    title: "Custom AI Agents",
-    problem: "Off-the-shelf tools don't fit how you work.",
-    system: "Agents designed around your exact processes, tools, and rules.",
-    outcome: "A system built for your business, not a generic template.",
+    icon: Phone,
+    title: "AI Receptionist",
+    description: "Handles chat, WhatsApp, and voice inquiries automatically.",
+  },
+  {
+    n: "07",
+    icon: FileText,
+    title: "Document & Data Processing",
+    description: "Extracts and organizes information without manual entry.",
+  },
+  {
+    n: "08",
+    icon: Settings2,
+    title: "Custom Business Workflows",
+    description: "Anything repetitive, automated around your existing tools.",
   },
 ];
 
@@ -89,7 +89,7 @@ export function Services() {
             transition={{ duration: 0.6, ease: EASE }}
             className="text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
           >
-            <LiquidHeadingReveal>We build systems, not just automations.</LiquidHeadingReveal>
+            <LiquidHeadingReveal>Systems we build</LiquidHeadingReveal>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -98,12 +98,12 @@ export function Services() {
             transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
             className="mt-5 text-lg leading-relaxed text-ink-dim"
           >
-            Each one starts with a real problem, becomes a working system, and ends in a measurable
-            outcome for your business.
+            Eight categories of repetitive work businesses hand off to Aurevyn — each one built
+            around how you already operate.
           </motion.p>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
           {services.map((service, i) => (
             <ServiceCard key={service.title} service={service} index={i} />
           ))}
@@ -144,22 +144,8 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
         <span className="font-mono text-sm text-ink-faint">{service.n}</span>
       </div>
 
-      <h3 className="mt-6 text-xl font-medium text-ink">{service.title}</h3>
-
-      <dl className="mt-4 space-y-3 border-t border-line/50 pt-4 text-[14px] leading-relaxed">
-        <div>
-          <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">Problem</dt>
-          <dd className="mt-1 text-ink-dim">{service.problem}</dd>
-        </div>
-        <div>
-          <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">System</dt>
-          <dd className="mt-1 text-ink-dim">{service.system}</dd>
-        </div>
-        <div>
-          <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-accent">Outcome</dt>
-          <dd className="mt-1 font-medium text-ink">{service.outcome}</dd>
-        </div>
-      </dl>
+      <h3 className="mt-6 text-lg font-medium text-ink">{service.title}</h3>
+      <p className="mt-2 text-[14px] leading-relaxed text-ink-dim">{service.description}</p>
     </motion.article>
   );
 }

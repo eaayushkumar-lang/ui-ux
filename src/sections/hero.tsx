@@ -9,6 +9,8 @@ function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+const scrollToDemoSystems = () => scrollToId("demo-systems");
+
 export function Hero() {
   return (
     <section
@@ -27,7 +29,7 @@ export function Hero() {
             className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface/60 px-4 py-1.5 font-mono text-xs tracking-[0.04em] text-ink-dim backdrop-blur-sm"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            AI agents &amp; automation systems for modern businesses
+            AI-powered automation systems for modern businesses
           </motion.p>
 
           <motion.h1
@@ -37,7 +39,7 @@ export function Hero() {
             className="text-4xl font-medium leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl"
           >
             <LiquidHeroTitle>
-              Stop paying people to do work <span className="text-accent">AI can handle.</span>
+              We build AI-powered systems that <span className="text-accent">eliminate repetitive business work.</span>
             </LiquidHeroTitle>
           </motion.h1>
 
@@ -47,8 +49,8 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.2, ease: EASE }}
             className="mx-auto mt-6 max-w-xl text-balance text-lg leading-relaxed text-ink-dim sm:text-xl"
           >
-            We build AI agents and automated systems that handle repetitive customer, sales, and
-            operational workflows — so your team focuses on the work that actually needs humans.
+            Automate lead handling, customer support, follow-ups, appointment booking, data entry,
+            and internal workflows — built around the tools you already use.
           </motion.p>
 
           <motion.div
@@ -58,12 +60,12 @@ export function Hero() {
             className="mt-10 flex flex-wrap items-center justify-center gap-4"
           >
             <BookACallButton size="lg">Book a Free Automation Audit</BookACallButton>
-            <Button variant="secondary" size="lg" onClick={() => scrollToId("how-it-works")}>
+            <Button variant="secondary" size="lg" onClick={scrollToDemoSystems}>
               <Compass
                 className="h-4 w-4 transition-transform duration-150 ease-out group-hover:rotate-45"
                 strokeWidth={1.75}
               />
-              See How It Works
+              View Our Demo Systems
             </Button>
           </motion.div>
 

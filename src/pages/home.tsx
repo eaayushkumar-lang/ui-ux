@@ -7,22 +7,21 @@ import { ScrollFrames } from "@/components/scroll-frames";
 import { BrandIntro } from "@/components/brand-intro";
 import { Hero } from "@/sections/hero";
 
-const TrustStrip = lazy(() => import("@/sections/trust-strip").then((m) => ({ default: m.TrustStrip })));
-const Problem = lazy(() => import("@/sections/problem").then((m) => ({ default: m.Problem })));
 const Services = lazy(() => import("@/sections/services").then((m) => ({ default: m.Services })));
-const WhatYouGet = lazy(() => import("@/sections/what-you-get").then((m) => ({ default: m.WhatYouGet })));
+const Demo = lazy(() => import("@/sections/demo").then((m) => ({ default: m.Demo })));
 const RealSystems = lazy(() => import("@/sections/real-systems").then((m) => ({ default: m.RealSystems })));
+const BeforeAfter = lazy(() =>
+  import("@/sections/before-after").then((m) => ({ default: m.BeforeAfter })),
+);
 const HowItWorks = lazy(() =>
   import("@/sections/how-it-works").then((m) => ({ default: m.HowItWorks })),
 );
-const Demo = lazy(() => import("@/sections/demo").then((m) => ({ default: m.Demo })));
-const Industries = lazy(() => import("@/sections/industries").then((m) => ({ default: m.Industries })));
 const About = lazy(() => import("@/sections/about").then((m) => ({ default: m.About })));
-const Process = lazy(() => import("@/sections/process").then((m) => ({ default: m.Process })));
-const Contact = lazy(() => import("@/sections/contact").then((m) => ({ default: m.Contact })));
+const Founder = lazy(() => import("@/sections/founder").then((m) => ({ default: m.Founder })));
+const Industries = lazy(() => import("@/sections/industries").then((m) => ({ default: m.Industries })));
 const FAQ = lazy(() => import("@/sections/faq").then((m) => ({ default: m.FAQ })));
-const Pricing = lazy(() => import("@/sections/pricing").then((m) => ({ default: m.Pricing })));
 const CTA = lazy(() => import("@/sections/cta").then((m) => ({ default: m.CTA })));
+const Contact = lazy(() => import("@/sections/contact").then((m) => ({ default: m.Contact })));
 const Footer = lazy(() => import("@/components/footer").then((m) => ({ default: m.Footer })));
 
 export function HomePage() {
@@ -37,25 +36,23 @@ export function HomePage() {
       <Navbar />
       <NavDots />
 
-      {/* Conversion funnel: attention -> problem -> offer clarity ->
-          proof -> desire -> understanding -> action. */}
+      {/* Structure: Hero -> What We Automate -> Interactive Demo ->
+          Demo Systems by Industry -> Before/After -> How It Works ->
+          Why Aurevyn -> Founder -> Built For -> FAQ -> Free Audit CTA -> Contact. */}
       <main>
         <Hero />
         <Suspense fallback={null}>
-          <TrustStrip />
-          <Problem />
           <Services />
-          <WhatYouGet />
-          <RealSystems />
-          <HowItWorks />
           <Demo />
-          <Industries />
+          <RealSystems />
+          <BeforeAfter />
+          <HowItWorks />
           <About />
-          <Process />
-          <Contact />
+          <Founder />
+          <Industries />
           <FAQ />
-          <Pricing />
           <CTA />
+          <Contact />
         </Suspense>
       </main>
 

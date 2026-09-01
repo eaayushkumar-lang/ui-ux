@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Target, Wrench, Users, LineChart, type LucideIcon } from "lucide-react";
+import { Plug, Settings2, UserRoundCog, Zap, type LucideIcon } from "lucide-react";
 import { EASE_OUT as EASE, SPRING_HOVER } from "@/lib/motion";
 import { LiquidHeadingReveal } from "@/components/liquid-text";
 
@@ -11,24 +11,24 @@ interface Pillar {
 
 const pillars: Pillar[] = [
   {
-    icon: Target,
-    title: "Business-First",
-    description: "We start with the workflow and the outcome, not the technology. The AI is a means, never the point.",
+    icon: Zap,
+    title: "Practical automation",
+    description: "We focus on tasks that genuinely consume time.",
   },
   {
-    icon: Wrench,
-    title: "Custom-Built",
-    description: "Every system is designed around how your business actually runs — not forced into a generic template.",
+    icon: Settings2,
+    title: "Custom systems",
+    description: "No one-size-fits-all automation packages.",
   },
   {
-    icon: Users,
-    title: "Human + AI",
-    description: "AI handles the repetitive work. Your people handle judgment. The handoff between them is deliberate.",
+    icon: UserRoundCog,
+    title: "Human handoff",
+    description: "AI handles what it can. People take over when needed.",
   },
   {
-    icon: LineChart,
-    title: "Continuously Improved",
-    description: "Systems are monitored, tuned, and expanded over time — they get better as your business grows.",
+    icon: Plug,
+    title: "Built around your existing tools",
+    description: "We connect the systems your team already uses.",
   },
 ];
 
@@ -44,7 +44,7 @@ export function About() {
             transition={{ duration: 0.6, ease: EASE }}
             className="text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
           >
-            <LiquidHeadingReveal>We don't sell bots. We build business systems.</LiquidHeadingReveal>
+            <LiquidHeadingReveal>Not another chatbot.</LiquidHeadingReveal>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -53,8 +53,7 @@ export function About() {
             transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
             className="mt-5 text-lg leading-relaxed text-ink-dim"
           >
-            A chatbot answers a question. A system runs a workflow. That difference is the whole
-            business — and it's what we build.
+            We design complete workflows around the way your business actually operates.
           </motion.p>
         </div>
 

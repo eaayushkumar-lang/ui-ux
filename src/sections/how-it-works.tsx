@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Brain, GitBranch, Radio, UserRoundCog, Zap, type LucideIcon } from "lucide-react";
+import { Compass, Rocket, Search, Wrench, type LucideIcon } from "lucide-react";
 import { EASE_OUT as EASE } from "@/lib/motion";
 import { LiquidHeadingReveal } from "@/components/liquid-text";
 
@@ -8,44 +8,32 @@ interface Step {
   icon: LucideIcon;
   title: string;
   description: string;
-  detail: string[];
 }
 
 const steps: Step[] = [
   {
     n: "01",
-    icon: Radio,
-    title: "Trigger",
-    description: "Something happens in your business.",
-    detail: ["New message", "New email", "Form submission", "New lead", "Phone call", "Scheduled event"],
+    icon: Search,
+    title: "Discover",
+    description: "We identify repetitive processes costing your team time.",
   },
   {
     n: "02",
-    icon: Brain,
-    title: "Understand",
-    description: "AI reads and understands the incoming information — what's being asked, and by whom.",
-    detail: [],
+    icon: Compass,
+    title: "Design",
+    description: "We map the workflow and decide where AI and automation make sense.",
   },
   {
     n: "03",
-    icon: GitBranch,
-    title: "Decide",
-    description: "Your business rules determine the correct next step — no guesswork, no improvising.",
-    detail: [],
+    icon: Wrench,
+    title: "Build",
+    description: "We connect your existing tools into one automated system.",
   },
   {
     n: "04",
-    icon: Zap,
-    title: "Act",
-    description: "The system does the work.",
-    detail: ["Respond", "Qualify", "Update your CRM", "Schedule", "Send information", "Create records", "Notify staff"],
-  },
-  {
-    n: "05",
-    icon: UserRoundCog,
-    title: "Human Handoff",
-    description: "When real judgment is required, the request is routed to the right person — with full context.",
-    detail: [],
+    icon: Rocket,
+    title: "Deploy",
+    description: "We test, launch, and monitor the system.",
   },
 ];
 
@@ -60,7 +48,7 @@ export function HowItWorks() {
           transition={{ duration: 0.6, ease: EASE }}
           className="max-w-2xl text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          <LiquidHeadingReveal>How your AI system actually works.</LiquidHeadingReveal>
+          <LiquidHeadingReveal>How Aurevyn works.</LiquidHeadingReveal>
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -69,12 +57,10 @@ export function HowItWorks() {
           transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
           className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-dim"
         >
-          No jargon. Here is the exact path every request takes, from the moment it arrives to the
-          moment it's handled.
+          A straightforward path from your current workflow to a system that runs itself.
         </motion.p>
 
         <ol className="relative mt-14 space-y-4">
-          {/* connecting line */}
           <span
             aria-hidden
             className="absolute bottom-6 left-[27px] top-6 w-px bg-gradient-to-b from-accent/40 via-line to-accent/40"
@@ -120,18 +106,6 @@ function StepRow({ step, index }: { step: Step; index: number }) {
           <h3 className="text-lg font-medium text-ink">{step.title}</h3>
         </div>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-dim">{step.description}</p>
-        {step.detail.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {step.detail.map((d) => (
-              <span
-                key={d}
-                className="rounded-full border border-line/70 bg-bg/50 px-3 py-1 font-mono text-[12px] tracking-[0.02em] text-ink-dim"
-              >
-                {d}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
     </motion.li>
   );

@@ -11,11 +11,11 @@ interface QuickLink {
 
 const quickLinks: QuickLink[] = [
   { id: "hero", label: "Home" },
-  { id: "services", label: "Solutions" },
-  { id: "what-you-get", label: "What You Get" },
-  { id: "real-systems", label: "Real Systems" },
+  { id: "services", label: "What We Automate" },
+  { id: "demo-systems", label: "Demo Systems" },
   { id: "how-it-works", label: "How It Works" },
-  { id: "industries", label: "Industries" },
+  { id: "why", label: "Why Aurevyn" },
+  { id: "built-for", label: "Industries" },
   { id: "faq", label: "FAQ" },
   { to: "/blog", label: "Blog" },
   { id: "contact", label: "Get Assessment" },
@@ -40,7 +40,8 @@ export function Footer() {
           <div className="max-w-sm">
             <Logo />
             <p className="mt-4 text-[15px] leading-relaxed text-ink-dim">
-              AI agents and automation systems for teams who refuse to compete on effort.
+              A new automation studio focused on building practical AI systems for modern
+              businesses.
             </p>
             <ul className="mt-6 flex items-center gap-3">
               {social.map((item) => (

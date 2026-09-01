@@ -15,24 +15,18 @@ import { cn } from "@/lib/utils";
 
 const SERVICES = [
   "AI Customer Support",
-  "Lead Qualification & Routing",
-  "Appointment Automation",
-  "AI Follow-Up Systems",
-  "Internal Operations",
-  "Custom AI Agent",
+  "AI Lead Qualification",
+  "AI Appointment Booking",
+  "Automated Follow-Up",
+  "Lead → CRM Automation",
+  "AI Receptionist",
+  "Document & Data Processing",
+  "Custom Business Workflows",
   "Not sure yet — help me figure it out",
 ];
 
 const TEAM_SIZES = ["Just me", "2-5", "6-20", "21-50", "50+"];
-const INDUSTRIES = [
-  "Dental / Healthcare",
-  "Real Estate",
-  "Professional Services",
-  "Sales / Revenue",
-  "Local Business / Retail",
-  "E-commerce",
-  "Other",
-];
+const INDUSTRIES = ["Healthcare", "Real Estate", "Professional Services", "Local Business", "Other"];
 
 const STORAGE_KEY = "aurevyn_contact_submissions";
 const MESSAGE_MIN_LENGTH = 10;

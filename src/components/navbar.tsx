@@ -14,7 +14,7 @@ import {
   CalendarDays,
   CircleHelp,
   LayoutGrid,
-  Route,
+  Sparkles,
   Workflow,
   type LucideIcon,
 } from "lucide-react";
@@ -26,13 +26,13 @@ import { cn } from "@/lib/utils";
 
 const MotionLink = motion.create(Link);
 
-const SECTION_IDS = ["hero", "services", "what-you-get", "real-systems", "how-it-works", "industries", "process", "faq", "cta"];
+const SECTION_IDS = ["hero", "services", "demo-systems", "how-it-works", "why", "built-for", "faq", "cta"];
 
 const links: { id: string; label: string; icon: LucideIcon }[] = [
   { id: "services", label: "Solutions", icon: LayoutGrid },
   { id: "how-it-works", label: "How It Works", icon: Workflow },
-  { id: "industries", label: "Industries", icon: Building2 },
-  { id: "process", label: "Process", icon: Route },
+  { id: "why", label: "Why Aurevyn", icon: Sparkles },
+  { id: "built-for", label: "Industries", icon: Building2 },
   { id: "faq", label: "FAQ", icon: CircleHelp },
 ];
 
