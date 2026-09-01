@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 const sections = [
   { id: "hero", label: "Home" },
   { id: "services", label: "What we automate" },
+  { id: "proof", label: "Proof & trust" },
   { id: "demo", label: "Demo" },
   { id: "demo-systems", label: "Demo systems" },
   { id: "before-after", label: "Before / after" },

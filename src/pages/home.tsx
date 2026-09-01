@@ -8,6 +8,7 @@ import { BrandIntro } from "@/components/brand-intro";
 import { Hero } from "@/sections/hero";
 
 const Services = lazy(() => import("@/sections/services").then((m) => ({ default: m.Services })));
+const Proof = lazy(() => import("@/sections/proof").then((m) => ({ default: m.Proof })));
 const Demo = lazy(() => import("@/sections/demo").then((m) => ({ default: m.Demo })));
 const RealSystems = lazy(() => import("@/sections/real-systems").then((m) => ({ default: m.RealSystems })));
 const BeforeAfter = lazy(() =>
@@ -36,13 +37,15 @@ export function HomePage() {
       <Navbar />
       <NavDots />
 
-      {/* Structure: Hero -> What We Automate -> Interactive Demo ->
-          Demo Systems by Industry -> Before/After -> How It Works ->
-          Why Aurevyn -> Founder -> Built For -> FAQ -> Free Audit CTA -> Contact. */}
+      {/* Structure: Hero -> What We Automate -> Proof & Trust ->
+          Interactive Demo -> Demo Systems by Industry -> Before/After ->
+          How It Works -> Why Aurevyn -> Founder -> Built For -> FAQ ->
+          Free Audit CTA -> Contact. */}
       <main>
         <Hero />
         <Suspense fallback={null}>
           <Services />
+          <Proof />
           <Demo />
           <RealSystems />
           <BeforeAfter />
