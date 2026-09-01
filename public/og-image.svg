@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="navy-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A1428"/>
+      <stop offset="100%" stop-color="#0D1B36"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="34%" r="65%">
+      <stop offset="0%" stop-color="#e8935a" stop-opacity="0.16"/>
+      <stop offset="55%" stop-color="#c1502e" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#0A1428" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff8a5c"/>
+      <stop offset="100%" stop-color="#c1502e"/>
+    </linearGradient>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M 42 0 L 0 0 0 42" fill="none" stroke="#ff8a5c" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#navy-bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Logo mark: rounded-square badge + "A" glyph, matching src/components/logo-mark.tsx -->
+  <g transform="translate(600 168)">
+    <rect x="-44" y="-44" width="88" height="88" rx="22" fill="#15233F"/>
+    <path d="M0 -26 L27.5 26 H22.4 L0 -3.5 L-22.4 26 H-27.5 Z" fill="url(#mark)" transform="scale(1.9)"/>
+  </g>
+
+  <text
+    x="600"
+    y="330"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="60"
+    font-weight="700"
+    letter-spacing="0.5"
+    fill="#F7F4EF"
+  >Aurevyn AI Automation</text>
+
+  <text
+    x="600"
+    y="392"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="28"
+    letter-spacing="0.3"
+    fill="#ffb08a"
+  >AI Automation for Growing Businesses</text>
+
+  <line x1="500" y1="452" x2="700" y2="452" stroke="#3A4A6B" stroke-width="1"/>
+
+  <text
+    x="600"
+    y="500"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="24"
+    letter-spacing="0.5"
+    fill="#9AA7C0"
+  >www.aurevynai.site</text>
+</svg>

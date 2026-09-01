@@ -19,7 +19,7 @@ export function Logo({ className }: { className?: string }) {
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <LogoMark />
       <span className="font-mono text-[15px] font-medium tracking-[0.02em] text-ink">
-        AUXAI<span className="text-accent">.AI</span>
+        Aurevyn
       </span>
     </span>
   );

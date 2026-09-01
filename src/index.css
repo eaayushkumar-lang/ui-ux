@@ -9,17 +9,22 @@
   --font-sans: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  --color-bg: #08090c;
-  --color-surface: #0e1116;
-  --color-surface-2: #151922;
-  --color-surface-3: #1b202b;
-  --color-line: #23293380;
-  --color-ink: #f3f4f6;
-  --color-ink-dim: #9aa1ad;
-  --color-ink-faint: #656c78;
-  --color-accent: #3fd9be;
-  --color-accent-dim: #2a8f7d;
-  --color-accent-ink: #04120e;
+  /* Warm light brand palette. The site sits over a light sky-blue/white video,
+     so text is a deep warm charcoal-brown (not black) and surfaces are warm
+     cream. Accent is a refined terracotta/rust (no more amber/gold, no black). */
+  --color-bg: #f4eadd;
+  --color-surface: #efe3d4;
+  --color-surface-2: #e8d9c6;
+  --color-surface-3: #dfccb5;
+  --color-line: #8a5a3a33;
+  --color-ink: #2a1f1a;
+  --color-ink-dim: #5a4a3e;
+  --color-ink-faint: #6e5a48;
+  --color-accent: #c1502e;
+  --color-accent-2: #9e3a1c;
+  --color-coral: #e0a07a;
+  --color-accent-dim: #8a3a20;
+  --color-accent-ink: #fff3ec;
 
   --radius-card: 1.25rem;
   --radius-pill: 999px;
@@ -28,6 +33,17 @@
   --animate-accordion-down: accordion-down 0.25s cubic-bezier(0.23, 1, 0.32, 1);
   --animate-accordion-up: accordion-up 0.2s cubic-bezier(0.23, 1, 0.32, 1);
   --animate-breathe: breathe 4.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  --animate-blink: blink 1s steps(1) infinite;
+  --animate-shimmer: shimmer 5s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
 }
 
 @keyframes breathe {
@@ -39,6 +55,17 @@
   50% {
     opacity: 0.85;
     transform: scale(1.06);
+  }
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
   }
 }
 
@@ -75,13 +102,139 @@
   }
 }
 
+@utility glass-card {
+  background-color: rgb(247 238 228 / 0.68);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgb(193 80 46 / 0.2);
+}
+
+/* Promotes to a GPU compositing layer only while actually interacted with
+ * (hover/focus) - most usages sit on cards/buttons whose transform only
+ * changes on a Framer Motion whileHover, so leaving will-change: transform
+ * on permanently would hold a compositing layer open for every card on the
+ * page for no benefit. Continuously-animating elements (marquee, breathe,
+ * scroll-linked parallax, the particle canvas) use `gpu-active` instead. */
+@utility gpu {
+  will-change: auto;
+  transform: translateZ(0);
+
+  &:hover,
+  &:focus-visible {
+    will-change: transform;
+  }
+}
+
+@utility gpu-active {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Liquid-metal click ripple: a single pseudo-element positioned at the
+ * click point (--cx/--cy, set imperatively, never through React state)
+ * and animated purely via transform + opacity. Works identically whether
+ * the component renders as <button> or (via Radix Slot) wraps an <a>/
+ * <Link>, since it never needs an extra child node. */
+@utility liquid-metal {
+  &::after {
+    content: "";
+    position: absolute;
+    left: var(--cx, 50%);
+    top: var(--cy, 50%);
+    width: 12px;
+    height: 12px;
+    margin: -6px 0 0 -6px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 70%);
+    opacity: 0;
+    transform: scale(0);
+    pointer-events: none;
+  }
+
+  &[data-rippling="true"]::after {
+    animation: liquid-ripple-pulse 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@keyframes liquid-ripple-pulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(14);
+  }
+}
+
+/* Cursor-tracked hover sheen for premium cards (About/Case Studies) - a
+ * subtler cousin of the button's liquid-metal: no ripple, no click state,
+ * just a soft radial highlight that follows --mx/--my (set imperatively
+ * by useCursorGlow, never through React state) and fades in on hover. */
+@utility cursor-glow {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 20%), rgba(193, 80, 46, 0.16), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Same cursor-tracking, layered with a diagonal glass shine for a more
+ * metallic read - used on Pricing cards ("liquid metal card style"). */
+@utility liquid-metal-card {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(240px circle at var(--mx, 50%) var(--my, 20%), rgba(255, 250, 244, 0.35), transparent 62%),
+      linear-gradient(135deg, rgba(193, 80, 46, 0.12), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+@utility marquee-track {
+  animation: marquee 28s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-line);
+    -webkit-font-smoothing: antialiased;
+    backface-visibility: hidden;
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     scroll-behavior: smooth;
   }
 
@@ -107,6 +260,27 @@
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* Global escape hatch for every *CSS*-driven animation/transition site-
+   * wide (marquee, breathe, blink, shimmer, accordion open/close, the
+   * liquid-metal click ripple, hover transitions, etc.). !important is
+   * deliberate here - it's the one place in this codebase intentionally
+   * overriding component-level utility classes, since a bare `*` selector
+   * otherwise loses to literally every more-specific animation/transition
+   * class already in use. This does NOT reach Framer Motion's own
+   * transform/opacity animations (Motion drives those via direct inline
+   * style writes on every frame, not CSS transitions), which is why the
+   * app is also wrapped in <MotionConfig reducedMotion="user"> and why
+   * the canvas/SVG-filter-driven effects (particle field, floating globe,
+   * liquid text) each have their own useReducedMotion() checks. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

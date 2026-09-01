@@ -6,43 +6,33 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { EASE_OUT as EASE } from "@/lib/motion";
+import { LiquidHeadingReveal } from "@/components/liquid-text";
+import { BookACallButton } from "@/components/book-a-call-button";
 
 const faqs = [
   {
-    question: "How fast can you get an agent live?",
-    answer:
-      "Most first agents go live within a few weeks of kickoff, not months, because we build on top of your existing tools instead of replacing your stack.",
+    question: "How long does setup take?",
+    answer: "Most systems are live within a few days once we've mapped your workflow.",
   },
   {
-    question: "Do we need an in-house AI or data team?",
-    answer:
-      "No. We handle the engineering, integration, and monitoring. Your team gives us access and context, and we handle everything technical from there.",
+    question: "Do I need to change the tools my team already uses?",
+    answer: "No — we connect and automate around your existing tools wherever possible.",
   },
   {
-    question: "What happens to our existing tools and software?",
+    question: "What if the AI can't handle something?",
     answer:
-      "Nothing gets ripped out. Agents connect into the systems you already run, whether that's your CRM, your phone lines, or internal tools.",
+      "It hands off to your team seamlessly. AI handles the repetitive work; people handle the rest.",
   },
   {
-    question: "How do you handle security and data access?",
+    question: "How much does it cost?",
     answer:
-      "Every integration runs on scoped, revocable access with a full activity log, so you always know exactly what an agent touched and why.",
-  },
-  {
-    question: "What if the agent gets something wrong?",
-    answer:
-      "Every system ships with guardrails and escalation paths, so anything outside its confidence threshold gets routed to a person before it becomes a problem.",
-  },
-  {
-    question: "What does working with AUXAI.AI cost?",
-    answer:
-      "Every engagement is scoped to the systems you actually need, not a flat package. You'll get a clear number on the call, before any work starts.",
+      "It depends on scope — the Free Automation Audit gives you a clear picture before any commitment.",
   },
 ];
 
 export function FAQ() {
   return (
-    <section id="faq" className="relative z-10 bg-bg py-24 lg:py-32">
+    <section id="faq" className="relative z-10 py-24 lg:py-32 [contain:layout_style_paint]">
       <div className="mx-auto max-w-3xl px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -51,7 +41,7 @@ export function FAQ() {
           transition={{ duration: 0.6, ease: EASE }}
           className="text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          Questions worth asking before you commit.
+          <LiquidHeadingReveal>Frequently asked questions.</LiquidHeadingReveal>
         </motion.h2>
 
         <motion.div
@@ -78,6 +68,17 @@ export function FAQ() {
               </AccordionItem>
             ))}
           </Accordion>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="mt-10 flex flex-col items-center gap-3 text-center"
+        >
+          <p className="text-[15px] text-ink-dim">Still have questions?</p>
+          <BookACallButton variant="secondary">Talk to us — no obligation</BookACallButton>
         </motion.div>
       </div>
     </section>

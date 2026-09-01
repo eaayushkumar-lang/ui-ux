@@ -1,5 +1,5 @@
 {
-  "name": "auxai-site",
+  "name": "aurevyn-site",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -10,6 +10,7 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@fontsource-variable/outfit": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.1.2",
     "@radix-ui/react-accordion": "^1.2.2",

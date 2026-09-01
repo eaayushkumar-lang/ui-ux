@@ -1,9 +1,23 @@
 import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SPRING_HOVER } from "@/lib/motion";
 
 const Accordion = AccordionPrimitive.Root;
+const MotionTrigger = motion.create(AccordionPrimitive.Trigger);
+
+// See button.tsx for why these are omitted: their native DOM event
+// signature conflicts with Motion's own (e.g. onDrag receives a Motion
+// PanInfo, not a DragEvent), and nothing here uses the native versions.
+type MotionConflictingHandlers =
+  | "onDrag"
+  | "onDragStart"
+  | "onDragEnd"
+  | "onAnimationStart"
+  | "onAnimationEnd"
+  | "onAnimationIteration";
 
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
@@ -15,23 +29,29 @@ AccordionItem.displayName = "AccordionItem";
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
+  Omit<React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>, MotionConflictingHandlers>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Header className="flex">
-    <AccordionPrimitive.Trigger
+    <MotionTrigger
       ref={ref}
+      whileHover={{
+        scale: 1.02,
+        y: -2,
+        boxShadow: "0 12px 28px -18px rgba(193,80,46,0.55)",
+        transition: SPRING_HOVER,
+      }}
       className={cn(
-        "group -mx-3 flex flex-1 items-center justify-between gap-6 rounded-xl px-3 py-6 text-left text-lg font-medium text-ink transition-colors hover:bg-white/[0.03] hover:text-accent",
+        "gpu group -mx-3 flex cursor-pointer flex-1 items-center justify-between gap-6 rounded-xl px-3 py-6 text-left text-lg font-medium text-ink transition-colors hover:bg-[#2a1f1a]/[0.04] hover:text-accent",
         className,
       )}
       {...props}
     >
       {children}
       <Plus
-        className="h-5 w-5 shrink-0 text-ink-faint transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-data-[state=open]:rotate-45 group-data-[state=open]:text-accent"
+        className="h-5 w-5 shrink-0 text-ink-faint transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[state=open]:rotate-45 group-data-[state=open]:text-accent"
         strokeWidth={1.75}
       />
-    </AccordionPrimitive.Trigger>
+    </MotionTrigger>
   </AccordionPrimitive.Header>
 ));
 AccordionTrigger.displayName = "AccordionTrigger";

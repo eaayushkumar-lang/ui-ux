@@ -4,11 +4,18 @@ import { cn } from "@/lib/utils";
 
 const sections = [
   { id: "hero", label: "Home" },
-  { id: "services", label: "Services" },
+  { id: "services", label: "What we automate" },
+  { id: "proof", label: "Proof & trust" },
+  { id: "demo", label: "Demo" },
+  { id: "demo-systems", label: "Demo systems" },
+  { id: "before-after", label: "Before / after" },
   { id: "how-it-works", label: "How it works" },
-  { id: "testimonials", label: "Reviews" },
+  { id: "why", label: "Why Aurevyn" },
+  { id: "founder", label: "Founder" },
+  { id: "built-for", label: "Built for" },
   { id: "faq", label: "FAQ" },
-  { id: "cta", label: "Book a call" },
+  { id: "cta", label: "Book audit" },
+  { id: "contact", label: "Contact" },
 ];
 
 export function NavDots() {

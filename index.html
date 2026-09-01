@@ -3,14 +3,66 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#08090c" />
+    <meta name="theme-color" content="#050505" />
+
+    <!-- Resolve DNS for third-party hosts contacted from the contact form
+         (EmailJS) and every "Book a Call" link (Cal.com) early, before
+         either is actually requested. -->
+    <link rel="dns-prefetch" href="https://cal.com" />
+    <link rel="dns-prefetch" href="https://api.emailjs.com" />
+
+    <title>Aurevyn — AI Automation Systems for Modern Businesses</title>
     <meta
       name="description"
-      content="AUXAI.AI designs, builds, and deploys AI agents and automation systems for teams who refuse to compete on effort."
+      content="Aurevyn AI Automation helps dental clinics, HVAC companies and real estate agencies automate lead replies, appointment booking and follow-ups using AI."
     />
-    <title>AUXAI.AI - AI Agents and Automation Systems</title>
+    <meta
+      name="keywords"
+      content="AI automation agency India, dental clinic automation, HVAC automation, real estate automation, AI lead generation India"
+    />
+    <meta name="author" content="Aurevyn AI Automation" />
+    <!-- Placeholder domain until the site has a real production URL. -->
+    <link rel="canonical" href="https://www.aurevynai.site/" />
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Aurevyn AI Automation Agency" />
+    <meta
+      property="og:description"
+      content="We help dental clinics, HVAC companies and real estate agencies automatically reply to leads, book appointments and follow up 24/7 using AI. No extra staff needed."
+    />
+    <meta property="og:url" content="https://www.aurevynai.site" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://www.aurevynai.site/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Aurevyn AI Automation" />
+
+    <!-- Twitter/X Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Aurevyn AI Automation Agency" />
+    <meta
+      name="twitter:description"
+      content="AI automation for dental clinics, HVAC companies and real estate agencies. Replies in 60 seconds. 24/7. No extra staff needed."
+    />
+    <meta name="twitter:image" content="https://www.aurevynai.site/og-image.png" />
+
+    <!-- Google Analytics 4 -->
+    <!-- Replace G-XXXXXXXXXX with your real Google Analytics 4 Measurement ID from analytics.google.com -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-XXXXXXXXXX");
+    </script>
+
+    <!-- Alternative: Plausible Analytics (privacy-friendly) -->
+    <!-- <script defer data-domain="aurevynai.site" src="https://plausible.io/js/script.js"></script> -->
   </head>
   <body>
     <div id="root"></div>

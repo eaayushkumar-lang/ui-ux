@@ -1,117 +1,217 @@
-import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Menu, X } from "lucide-react";
-import { Logo } from "@/components/logo-mark";
-import { Button } from "@/components/ui/button";
-import { EASE_DRAWER, EASE_OUT } from "@/lib/motion";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+} from "framer-motion";
+import {
+  ArrowUpRight,
+  BookOpen,
+  Building2,
+  CalendarDays,
+  CircleHelp,
+  LayoutGrid,
+  Sparkles,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
+import { LogoMark } from "@/components/logo-mark";
+import { SPRING_ISLAND } from "@/lib/motion";
+import { CAL_LINK } from "@/lib/links";
+import { useActiveSection } from "@/hooks/use-active-section";
+import { cn } from "@/lib/utils";
 
-const links = [
-  { id: "services", label: "Services" },
-  { id: "how-it-works", label: "How it works" },
-  { id: "testimonials", label: "Reviews" },
-  { id: "faq", label: "FAQ" },
+const MotionLink = motion.create(Link);
+
+const SECTION_IDS = ["hero", "services", "demo-systems", "how-it-works", "why", "built-for", "faq", "cta"];
+
+const links: { id: string; label: string; icon: LucideIcon }[] = [
+  { id: "services", label: "Solutions", icon: LayoutGrid },
+  { id: "how-it-works", label: "How It Works", icon: Workflow },
+  { id: "why", label: "Why Aurevyn", icon: Sparkles },
+  { id: "built-for", label: "Industries", icon: Building2 },
+  { id: "faq", label: "FAQ", icon: CircleHelp },
 ];
 
-export function Navbar() {
-  const [open, setOpen] = useState(false);
-  const reduceMotion = useReducedMotion();
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
-  function scrollTo(id: string) {
-    setOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+function NavLabel({ expanded, children }: { expanded: boolean; children: ReactNode }) {
+  return (
+    <AnimatePresence initial={false}>
+      {expanded && (
+        <motion.span
+          initial={{ width: 0, opacity: 0 }}
+          animate={{ width: "auto", opacity: 1 }}
+          exit={{ width: 0, opacity: 0 }}
+          transition={SPRING_ISLAND}
+          className="overflow-hidden whitespace-nowrap"
+        >
+          {children}
+        </motion.span>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function NavItem({
+  id,
+  label,
+  icon: Icon,
+  expanded,
+  active,
+}: {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  expanded: boolean;
+  active: boolean;
+}) {
+  return (
+    <motion.button
+      layout
+      type="button"
+      onClick={() => scrollTo(id)}
+      transition={SPRING_ISLAND}
+      className={cn(
+        "relative flex shrink-0 cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-colors",
+        active ? "text-accent" : "text-ink-dim hover:text-ink",
+      )}
+      aria-current={active}
+    >
+      {active && (
+        <motion.span
+          layoutId="nav-active-pill"
+          transition={SPRING_ISLAND}
+          className="absolute inset-0 rounded-full border border-accent/40 bg-accent/15 shadow-[0_0_18px_-4px_rgba(193,80,46,0.7)]"
+        />
+      )}
+      <span className="relative z-10 flex items-center gap-2">
+        <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+        <NavLabel expanded={expanded}>{label}</NavLabel>
+      </span>
+    </motion.button>
+  );
+}
+
+function NavBlogLink({ expanded }: { expanded: boolean }) {
+  return (
+    <MotionLink
+      layout
+      to="/blog"
+      transition={SPRING_ISLAND}
+      className="relative flex shrink-0 cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-ink-dim transition-colors hover:text-ink"
+    >
+      <span className="relative z-10 flex items-center gap-2">
+        <BookOpen className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+        <NavLabel expanded={expanded}>Blog</NavLabel>
+      </span>
+    </MotionLink>
+  );
+}
+
+function NavCTA({ expanded }: { expanded: boolean }) {
+  return (
+    <motion.a
+      layout
+      href={CAL_LINK}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      transition={SPRING_ISLAND}
+      className="relative flex shrink-0 cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-2 px-3 py-2 text-sm font-medium text-accent-ink shadow-[0_0_0_1px_rgba(193,80,46,0.35),0_10px_24px_-10px_rgba(158,58,28,0.7)]"
+    >
+      <CalendarDays className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+      <NavLabel expanded={expanded}>
+        <span className="flex items-center gap-1">
+          Book Audit
+          <ArrowUpRight className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
+        </span>
+      </NavLabel>
+    </motion.a>
+  );
+}
+
+export function Navbar() {
+  const reduceMotion = useReducedMotion();
+  const active = useActiveSection(SECTION_IDS);
+
+  const [scrolled, setScrolled] = useState(false);
+  const [hoverOpen, setHoverOpen] = useState(false);
+  const [tapOpen, setTapOpen] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
+
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > 32);
+  });
+
+  const expanded = !scrolled || hoverOpen || tapOpen;
+
+  useEffect(() => {
+    if (!tapOpen) return;
+    function handlePointerDown(event: PointerEvent) {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setTapOpen(false);
+      }
+    }
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [tapOpen]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 border-b border-line/60 bg-bg/70 backdrop-blur-xl">
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6">
-        <a href="#hero" onClick={(e) => { e.preventDefault(); scrollTo("hero"); }}>
-          <Logo />
-        </a>
-
-        <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
-          {links.map((link) => (
-            <button
-              key={link.id}
-              type="button"
-              onClick={() => scrollTo(link.id)}
-              className="text-sm text-ink-dim transition-colors hover:text-ink"
-            >
-              {link.label}
-            </button>
-          ))}
-        </nav>
-
-        <div className="hidden lg:block">
-          <Button size="sm" onClick={() => scrollTo("cta")}>
-            Book a Call
-          </Button>
-        </div>
-
-        <button
+    <header className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+      <motion.div
+        ref={navRef}
+        layout
+        transition={reduceMotion ? { duration: 0 } : SPRING_ISLAND}
+        onMouseEnter={() => setHoverOpen(true)}
+        onMouseLeave={() => setHoverOpen(false)}
+        onClick={() => {
+          if (scrolled && !hoverOpen) setTapOpen((v) => !v);
+        }}
+        className="glass-card pointer-events-auto flex max-w-full items-center gap-1 rounded-full border border-accent/20 p-1.5 shadow-[0_0_0_1px_rgba(193,80,46,0.08),0_20px_48px_-20px_rgba(0,0,0,0.8),0_0_32px_-12px_rgba(193,80,46,0.35)]"
+      >
+        <motion.button
+          layout
           type="button"
-          className="relative flex h-10 w-10 items-center justify-center text-ink transition-transform duration-100 ease-out active:scale-90 lg:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
+          onClick={(e) => {
+            e.stopPropagation();
+            scrollTo("hero");
+          }}
+          transition={SPRING_ISLAND}
+          aria-label="Aurevyn home"
+          className={cn(
+            "relative flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full",
+            active === "hero" && "bg-accent/15",
+          )}
         >
-          <AnimatePresence mode="wait" initial={false}>
-            {open ? (
-              <motion.span
-                key="close"
-                initial={reduceMotion ? undefined : { opacity: 0, rotate: -45, scale: 0.85 }}
-                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                exit={reduceMotion ? undefined : { opacity: 0, rotate: 45, scale: 0.85 }}
-                transition={{ duration: 0.15, ease: EASE_OUT }}
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <X className="h-5 w-5" strokeWidth={1.75} />
-              </motion.span>
-            ) : (
-              <motion.span
-                key="menu"
-                initial={reduceMotion ? undefined : { opacity: 0, rotate: 45, scale: 0.85 }}
-                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                exit={reduceMotion ? undefined : { opacity: 0, rotate: -45, scale: 0.85 }}
-                transition={{ duration: 0.15, ease: EASE_OUT }}
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <Menu className="h-5 w-5" strokeWidth={1.75} />
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </button>
-      </div>
+          <LogoMark className="h-5 w-5" />
+        </motion.button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{
-              duration: reduceMotion ? 0.15 : 0.32,
-              ease: EASE_DRAWER,
-            }}
-            className="overflow-hidden border-b border-white/10 bg-bg lg:hidden"
-          >
-            <nav aria-label="Mobile" className="flex flex-col gap-1 px-6 pb-8 pt-4">
-              {links.map((link) => (
-                <button
-                  key={link.id}
-                  type="button"
-                  onClick={() => scrollTo(link.id)}
-                  className="py-3 text-left text-base text-ink-dim transition-colors hover:text-ink"
-                >
-                  {link.label}
-                </button>
-              ))}
-              <Button className="mt-2 w-full" onClick={() => scrollTo("cta")}>
-                Book a Call
-              </Button>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <div
+          className="flex items-center gap-1 overflow-x-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {links.map((link) => (
+            <NavItem
+              key={link.id}
+              id={link.id}
+              label={link.label}
+              icon={link.icon}
+              expanded={expanded}
+              active={active === link.id}
+            />
+          ))}
+          <NavBlogLink expanded={expanded} />
+          <NavCTA expanded={expanded} />
+        </div>
+      </motion.div>
     </header>
   );
 }

@@ -1,117 +1,84 @@
-import { useRef } from "react";
-import { cubicBezier, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Compass } from "lucide-react";
-import { Globe } from "@/components/globe";
+import { motion } from "framer-motion";
+import { Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { EASE_IN_OUT, EASE_OUT } from "@/lib/motion";
-
-const EASE = EASE_OUT;
-const scrollEase = cubicBezier(...EASE_IN_OUT);
+import { BookACallButton } from "@/components/book-a-call-button";
+import { LiquidHeroTitle } from "@/components/liquid-text";
+import { EASE_OUT as EASE } from "@/lib/motion";
 
 function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function HeroCopy() {
-  return (
-    <div className="max-w-4xl">
-      <motion.h1
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: EASE }}
-        className="text-balance text-3xl font-medium leading-[1.15] tracking-tight text-ink sm:text-4xl"
-      >
-        We don't automate tasks.{" "}
-        <span className="text-accent">We build systems that outperform everyone.</span>
-      </motion.h1>
-
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.12, ease: EASE }}
-        className="mt-6 max-w-md text-[17px] leading-relaxed text-ink-dim"
-      >
-        AUXAI.AI designs, builds, and deploys AI agents and automation systems for
-        teams who refuse to compete on effort.
-      </motion.p>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.24, ease: EASE }}
-        className="mt-10 flex flex-wrap items-center gap-4"
-      >
-        <Button onClick={() => scrollToId("cta")}>
-          Book a Call
-          <ArrowRight
-            className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5"
-            strokeWidth={1.75}
-          />
-        </Button>
-        <Button variant="secondary" onClick={() => scrollToId("services")}>
-          <Compass
-            className="h-4 w-4 transition-transform duration-150 ease-out group-hover:rotate-45"
-            strokeWidth={1.75}
-          />
-          Explore Services
-        </Button>
-      </motion.div>
-    </div>
-  );
-}
+const scrollToDemoSystems = () => scrollToId("demo-systems");
 
 export function Hero() {
-  const pinRef = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
+  return (
+    <section
+      id="hero"
+      className="relative z-10 flex min-h-[100dvh] items-center overflow-hidden pt-8 [contain:layout_style_paint]"
+    >
+      {/* The scroll video is the only hero visual, so the copy sits over it as
+          a centered single column. The video/animation itself is a locked
+          asset — only the surrounding copy and CTAs are tuned here. */}
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-16 text-center">
+        <div className="mx-auto max-w-2xl">
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface/60 px-4 py-1.5 font-mono text-xs tracking-[0.04em] text-ink-dim backdrop-blur-sm"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+            AI-powered automation systems for modern businesses
+          </motion.p>
 
-  const { scrollYProgress } = useScroll({
-    target: pinRef,
-    offset: ["start start", "end start"],
-  });
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
+            className="text-4xl font-medium leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl"
+          >
+            <LiquidHeroTitle>
+              We build AI-powered systems that <span className="text-accent">eliminate repetitive business work.</span>
+            </LiquidHeroTitle>
+          </motion.h1>
 
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9], { ease: scrollEase });
-  const opacity = useTransform(scrollYProgress, [0, 0.75, 1], [1, 1, 0.35], {
-    ease: [scrollEase, scrollEase],
-  });
-  const radius = useTransform(scrollYProgress, [0, 1], [0, 40], { ease: scrollEase });
-  const panelY = useTransform(scrollYProgress, [0, 1], [0, -60], { ease: scrollEase });
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: EASE }}
+            className="mx-auto mt-6 max-w-xl text-balance text-lg leading-relaxed text-ink-dim sm:text-xl"
+          >
+            Automate lead handling, customer support, follow-ups, appointment booking, data entry,
+            and internal workflows — built around the tools you already use.
+          </motion.p>
 
-  if (reduceMotion) {
-    return (
-      <section id="hero" className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg">
-        <HeroBackground />
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-[72px]">
-          <HeroCopy />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: EASE }}
+            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          >
+            <BookACallButton size="lg">Book a Free Automation Audit</BookACallButton>
+            <Button variant="secondary" size="lg" onClick={scrollToDemoSystems}>
+              <Compass
+                className="h-4 w-4 transition-transform duration-150 ease-out group-hover:rotate-45"
+                strokeWidth={1.75}
+              />
+              View Our Demo Systems
+            </Button>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
+            className="mt-5 font-mono text-[12px] tracking-[0.03em] text-ink-faint"
+          >
+            No sales pitch — a working map of what you can automate first.
+          </motion.p>
         </div>
-      </section>
-    );
-  }
-
-  return (
-    <div id="hero" ref={pinRef} className="relative h-[170dvh]">
-      <div className="sticky top-0 h-dvh overflow-hidden">
-        <motion.div
-          style={{ scale, opacity, borderRadius: radius, y: panelY }}
-          className="relative flex h-full w-full items-center overflow-hidden bg-bg"
-        >
-          <HeroBackground />
-          <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-[72px]">
-            <HeroCopy />
-          </div>
-        </motion.div>
       </div>
-    </div>
-  );
-}
-
-function HeroBackground() {
-  return (
-    <>
-      <div className="absolute inset-y-0 right-[-10%] w-full opacity-80 lg:w-[64%]">
-        <Globe />
-      </div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-bg via-bg/75 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
-    </>
+    </section>
   );
 }

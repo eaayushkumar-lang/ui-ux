@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { PenTool, Rocket, Search, TrendingUp, type LucideIcon } from "lucide-react";
+import { Compass, Rocket, Search, Wrench, type LucideIcon } from "lucide-react";
 import { EASE_OUT as EASE } from "@/lib/motion";
+import { LiquidHeadingReveal } from "@/components/liquid-text";
 
 interface Step {
-  index: string;
+  n: string;
   icon: LucideIcon;
   title: string;
   description: string;
@@ -11,82 +12,101 @@ interface Step {
 
 const steps: Step[] = [
   {
-    index: "01",
+    n: "01",
     icon: Search,
-    title: "Discovery",
-    description:
-      "We map every workflow, tool, and decision point in your operation to find where an agent creates real leverage.",
+    title: "Discover",
+    description: "We identify repetitive processes costing your team time.",
   },
   {
-    index: "02",
-    icon: PenTool,
+    n: "02",
+    icon: Compass,
     title: "Design",
-    description:
-      "We architect the exact agent, integrations, and guardrails your workflow needs, then design a rollout your team can adopt.",
+    description: "We map the workflow and decide where AI and automation make sense.",
   },
   {
-    index: "03",
+    n: "03",
+    icon: Wrench,
+    title: "Build",
+    description: "We connect your existing tools into one automated system.",
+  },
+  {
+    n: "04",
     icon: Rocket,
     title: "Deploy",
-    description:
-      "We ship into your live stack, connect your existing tools, and run it alongside your team until it's carrying real work.",
-  },
-  {
-    index: "04",
-    icon: TrendingUp,
-    title: "Outperform",
-    description:
-      "Your system keeps improving on its own data, compounding the advantage while competitors are still writing their first prompt.",
+    description: "We test, launch, and monitor the system.",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative z-10 bg-bg py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="how-it-works" className="relative z-10 py-24 lg:py-32 [contain:layout_style_paint]">
+      <div className="mx-auto max-w-4xl px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
+          className="max-w-2xl text-3xl font-medium leading-tight tracking-tight text-ink md:text-4xl"
         >
-          From first call to a system that runs itself.
+          <LiquidHeadingReveal>How Aurevyn works.</LiquidHeadingReveal>
         </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
+          className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-dim"
+        >
+          A straightforward path from your current workflow to a system that runs itself.
+        </motion.p>
 
-        <div className="relative mt-16 grid grid-cols-1 gap-10 md:grid-cols-4 md:gap-6">
-          <div
-            className="absolute left-0 right-0 top-6 hidden h-px bg-line md:block"
-            aria-hidden="true"
+        <ol className="relative mt-14 space-y-4">
+          <span
+            aria-hidden
+            className="absolute bottom-6 left-[27px] top-6 w-px bg-gradient-to-b from-accent/40 via-line to-accent/40"
           />
           {steps.map((step, i) => (
-            <motion.div
-              key={step.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: i * 0.07, ease: EASE }}
-              className="relative border-l border-line pl-6 md:border-l-0 md:pl-0"
-            >
-              <div className="relative z-10 flex items-center gap-3 md:mb-6">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-bg text-accent">
-                  <step.icon className="h-5 w-5" strokeWidth={1.75} />
-                </span>
-                <span className="font-mono text-sm text-ink-faint md:hidden">
-                  {step.index}
-                </span>
-              </div>
-              <span className="hidden font-mono text-sm text-ink-faint md:block">
-                {step.index}
-              </span>
-              <h3 className="mt-2 text-lg font-medium text-ink">{step.title}</h3>
-              <p className="mt-2 max-w-xs text-[15px] leading-relaxed text-ink-dim">
-                {step.description}
-              </p>
-            </motion.div>
+            <StepRow key={step.title} step={step} index={i} />
           ))}
-        </div>
+        </ol>
+
+        <motion.blockquote
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="glass-card mt-12 rounded-[var(--radius-card)] border-accent/25 p-8 text-center"
+        >
+          <p className="text-balance text-xl font-medium leading-snug text-ink md:text-2xl">
+            Your team doesn't operate the automation.{" "}
+            <span className="text-accent">The automation operates the workflow.</span>
+          </p>
+        </motion.blockquote>
       </div>
     </section>
+  );
+}
+
+function StepRow({ step, index }: { step: Step; index: number }) {
+  const Icon = step.icon;
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.55, delay: index * 0.08, ease: EASE }}
+      className="relative flex gap-5"
+    >
+      <span className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-line bg-bg text-accent shadow-[0_0_0_6px_var(--color-bg)]">
+        <Icon className="h-5 w-5" strokeWidth={1.75} />
+      </span>
+      <div className="glass-card flex-1 rounded-[var(--radius-card)] p-6">
+        <div className="flex items-baseline gap-3">
+          <span className="font-mono text-sm text-ink-faint">{step.n}</span>
+          <h3 className="text-lg font-medium text-ink">{step.title}</h3>
+        </div>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-dim">{step.description}</p>
+      </div>
+    </motion.li>
   );
 }
